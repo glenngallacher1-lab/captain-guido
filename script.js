@@ -35,7 +35,7 @@ function createOceanParticles() {
 }
 
 // ============================================
-// MAP SETUP - OCEANIC EARTH THEME WITH ZOOM
+// MAP SETUP - OCEANIC EARTH THEME WITH ZOOM (NO ROUTE LINES)
 // ============================================
 const map = L.map("map", {
   worldCopyJump: true,
@@ -103,128 +103,25 @@ const chapters = [
   { name: "Return to Ostia", coords: [41.73, 12.29], unlocked: false }
 ];
 
-// Create realistic ocean routes that avoid land
+// Create realistic ocean routes that avoid land (for ship animation only, no visible lines)
 const oceanRoutes = [
-  // Route 1: Ostia to Cairo (through Mediterranean)
-  [
-    [41.73, 12.29],    // Port of Ostia
-    [40.5, 14],        // South of Italy
-    [37, 18],          // Ionian Sea
-    [35, 23],          // South of Greece
-    [33, 28],          // East Mediterranean
-    [30.0444, 31.2357] // Signals in Cairo
-  ],
-  // Route 2: Cairo to Arabian Sea (through Suez Canal/Red Sea)
-  [
-    [30.0444, 31.2357], // Signals in Cairo
-    [29, 33],           // Red Sea entrance
-    [25, 36],           // Mid Red Sea
-    [20, 40],           // Red Sea exit
-    [18, 50],           // Gulf of Aden
-    [20, 60]            // Arabian Tides
-  ],
-  // Route 3: Arabian Sea to Indian Ocean
-  [
-    [20, 60],           // Arabian Tides
-    [15, 65],           // Arabian Sea south
-    [10, 70],           // Indian Ocean
-    [0, 75],            // Equator crossing
-    [-10, 80]           // Indian Abyss
-  ],
-  // Route 4: Indian Ocean to Philippine Sea
-  [
-    [-10, 80],          // Indian Abyss
-    [-8, 90],           // East Indian Ocean
-    [-5, 100],          // Andaman Sea area
-    [0, 110],           // Equator crossing
-    [5, 120],           // South China Sea
-    [10, 125],          // Approaching Philippines
-    [15, 130]           // Philippine Sea
-  ],
-  // Route 5: Philippine Sea to South Pacific
-  [
-    [15, 130],          // Philippine Sea
-    [10, 140],          // East of Philippines
-    [5, 150],           // Micronesia
-    [0, 160],           // Equator Pacific
-    [-5, 165],          // Solomon Sea
-    [-10, 170],         // Coral Sea
-    [-15, 175],         // Fiji area
-    [-18, -175],        // Date line crossing
-    [-21.694129, -147.915508] // South Pacific
-  ],
-  // Route 6: South Pacific to North Pacific
-  [
-    [-21.694129, -147.915508], // South Pacific
-    [-15, -155],        // Central Pacific
-    [-10, -160],        // North of Tahiti
-    [0, -165],          // Equator crossing
-    [10, -165],         // North Pacific
-    [20, -162],         // Hawaii area
-    [30, -158],         // North of Hawaii
-    [40, -150]          // North Pacific
-  ],
-  // Route 7: North Pacific to Bering Sea
-  [
-    [40, -150],         // North Pacific
-    [45, -155],         // Aleutian approach
-    [50, -165],         // Aleutian Islands
-    [55, -172],         // Approaching Bering
-    [58, -175]          // Bering Sea
-  ],
-  // Route 8: Bering Sea to North Atlantic (through Arctic waters)
-  [
-    [58, -175],         // Bering Sea
-    [62, -170],         // North Bering
-    [65, -160],         // Arctic Alaska
-    [68, -145],         // Arctic Canada
-    [70, -120],         // Northwest Passage
-    [68, -95],          // Hudson Bay area
-    [65, -75],          // Baffin Bay
-    [60, -60],          // Labrador Sea
-    [55, -50],          // North Atlantic approach
-    [50, -40],          // Mid North Atlantic
-    [45, -30]           // North Atlantic
-  ],
-  // Route 9: North Atlantic to Gulf of America
-  [
-    [45, -30],          // North Atlantic
-    [40, -35],          // Central Atlantic
-    [35, -45],          // Approaching Americas
-    [30, -60],          // Caribbean approach
-    [27, -75],          // Bahamas
-    [25, -82],          // Florida Straits
-    [25, -90]           // Gulf of America
-  ],
-  // Route 10: Gulf of America to South Atlantic
-  [
-    [25, -90],          // Gulf of America
-    [22, -85],          // Caribbean
-    [18, -75],          // Caribbean Sea
-    [12, -65],          // Lesser Antilles
-    [5, -50],           // North Brazil
-    [0, -45],           // Equator Atlantic
-    [-10, -38],         // South Atlantic approach
-    [-20, -30]          // South Atlantic
-  ],
-  // Route 11: South Atlantic to Return to Ostia
-  [
-    [-20, -30],         // South Atlantic
-    [-15, -20],         // East South Atlantic
-    [-10, -10],         // West Africa approach
-    [0, 0],             // Gulf of Guinea
-    [10, 5],            // West African coast
-    [20, 8],            // Approaching Gibraltar
-    [30, 10],           // Gibraltar area
-    [36, 10],           // Western Mediterranean
-    [39, 11],           // Tyrrhenian Sea
-    [41.73, 12.29]      // Return to Ostia
-  ]
+  [[41.73, 12.29], [40.5, 14], [37, 18], [35, 23], [33, 28], [30.0444, 31.2357]],
+  [[30.0444, 31.2357], [29, 33], [25, 36], [20, 40], [18, 50], [20, 60]],
+  [[20, 60], [15, 65], [10, 70], [0, 75], [-10, 80]],
+  [[-10, 80], [-8, 90], [-5, 100], [0, 110], [5, 120], [10, 125], [15, 130]],
+  [[15, 130], [10, 140], [5, 150], [0, 160], [-5, 165], [-10, 170], [-15, 175], [-18, -175], [-21.694129, -147.915508]],
+  [[-21.694129, -147.915508], [-15, -155], [-10, -160], [0, -165], [10, -165], [20, -162], [30, -158], [40, -150]],
+  [[40, -150], [45, -155], [50, -165], [55, -172], [58, -175]],
+  [[58, -175], [62, -170], [65, -160], [68, -145], [70, -120], [68, -95], [65, -75], [60, -60], [55, -50], [50, -40], [45, -30]],
+  [[45, -30], [40, -35], [35, -45], [30, -60], [27, -75], [25, -82], [25, -90]],
+  [[25, -90], [22, -85], [18, -75], [12, -65], [5, -50], [0, -45], [-10, -38], [-20, -30]],
+  [[-20, -30], [-15, -20], [-10, -10], [0, 0], [10, 5], [20, 8], [30, 10], [36, 10], [39, 11], [41.73, 12.29]]
 ];
 
 // Flatten all routes into one continuous path for ship animation
 const route = oceanRoutes.flat();
 
+// NO ROUTE LINES - Only chapter markers
 // Add chapter markers with custom styling
 chapters.forEach((chapter, index) => {
   const marker = L.circleMarker(chapter.coords, {
@@ -379,6 +276,36 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ============================================
+// TOKENOMICS MODAL
+// ============================================
+function openTokenomicsModal() {
+  const modal = document.getElementById('tokenomics-modal');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTokenomicsModal() {
+  const modal = document.getElementById('tokenomics-modal');
+  modal.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+// ============================================
+// WHITEPAPER MODAL
+// ============================================
+function openWhitepaperModal() {
+  const modal = document.getElementById('whitepaper-modal');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeWhitepaperModal() {
+  const modal = document.getElementById('whitepaper-modal');
+  modal.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+// ============================================
 // WALLET MODAL
 // ============================================
 function openWalletModal() {
@@ -393,9 +320,11 @@ function closeWalletModal() {
   document.body.style.overflow = 'auto';
 }
 
-// Close modal on escape key
+// Close modals on escape key
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
+    closeTokenomicsModal();
+    closeWhitepaperModal();
     closeWalletModal();
   }
 });
@@ -548,21 +477,26 @@ notificationStyle.textContent = `
 document.head.appendChild(notificationStyle);
 
 // ============================================
-// INTERSECTION OBSERVER (Scroll Animations)
+// ENHANCED SCROLL ANIMATIONS
 // ============================================
-const observerOptions = {
+const scrollObserverOptions = {
   threshold: 0.1,
   rootMargin: '0px 0px -100px 0px'
 };
 
-const observer = new IntersectionObserver((entries) => {
+const scrollObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
+      if (entry.target.classList.contains('chapter-card') || 
+          entry.target.classList.contains('impact-item')) {
+        entry.target.classList.add('visible');
+      } else {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
     }
   });
-}, observerOptions);
+}, scrollObserverOptions);
 
 // ============================================
 // CHAPTER CARD HOVER EFFECTS
@@ -590,13 +524,17 @@ function initChapterCards() {
 // STATS COUNTER ANIMATION
 // ============================================
 function animateCounter(element, target, duration = 2000) {
+  const originalText = element.textContent;
+  const hasPlus = originalText.includes('+');
+  const numTarget = parseInt(originalText.replace(/[^0-9]/g, ''));
+  
   let start = 0;
-  const increment = target / (duration / 16);
+  const increment = numTarget / (duration / 16);
   
   const timer = setInterval(() => {
     start += increment;
-    if (start >= target) {
-      element.textContent = target.toLocaleString();
+    if (start >= numTarget) {
+      element.textContent = numTarget.toLocaleString() + (hasPlus ? '+' : '');
       clearInterval(timer);
     } else {
       element.textContent = Math.floor(start).toLocaleString();
@@ -623,31 +561,72 @@ document.addEventListener('DOMContentLoaded', () => {
   // Create ocean particles
   createOceanParticles();
   
-  // Add event listener for enter button
+  // Entry button
   const enterButton = document.getElementById('enterButton');
   if (enterButton) {
     enterButton.addEventListener('click', enterSite);
   }
   
-  // Add event listener for wallet connect button
+  // Tokenomics modal buttons
+  const openTokenomicsBtn = document.getElementById('openTokenomics');
+  if (openTokenomicsBtn) {
+    openTokenomicsBtn.addEventListener('click', openTokenomicsModal);
+  }
+  
+  const closeTokenomicsBtn = document.getElementById('closeTokenomics');
+  if (closeTokenomicsBtn) {
+    closeTokenomicsBtn.addEventListener('click', closeTokenomicsModal);
+  }
+
+  const footerTokenomics = document.getElementById('footerTokenomics');
+  if (footerTokenomics) {
+    footerTokenomics.addEventListener('click', (e) => {
+      e.preventDefault();
+      openTokenomicsModal();
+    });
+  }
+  
+  // Whitepaper modal buttons
+  const openWhitepaperBtn = document.getElementById('openWhitepaper');
+  if (openWhitepaperBtn) {
+    openWhitepaperBtn.addEventListener('click', openWhitepaperModal);
+  }
+  
+  const closeWhitepaperBtn = document.getElementById('closeWhitepaper');
+  if (closeWhitepaperBtn) {
+    closeWhitepaperBtn.addEventListener('click', closeWhitepaperModal);
+  }
+
+  const footerWhitepaper = document.getElementById('footerWhitepaper');
+  if (footerWhitepaper) {
+    footerWhitepaper.addEventListener('click', (e) => {
+      e.preventDefault();
+      openWhitepaperModal();
+    });
+  }
+  
+  // Wallet connect button
   const walletConnectBtn = document.getElementById('walletConnectBtn');
   if (walletConnectBtn) {
     walletConnectBtn.addEventListener('click', openWalletModal);
   }
   
-  // Add event listener for modal close button
-  const closeModalBtn = document.getElementById('closeModal');
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', closeWalletModal);
+  // Close wallet modal button
+  const closeWalletBtn = document.getElementById('closeWalletModal');
+  if (closeWalletBtn) {
+    closeWalletBtn.addEventListener('click', closeWalletModal);
   }
   
-  // Add event listener for modal overlay
-  const modalOverlay = document.querySelector('.modal-overlay');
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', closeWalletModal);
-  }
+  // Modal overlays
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', () => {
+      closeTokenomicsModal();
+      closeWhitepaperModal();
+      closeWalletModal();
+    });
+  });
   
-  // Add event listeners for wallet options
+  // Wallet options
   const walletOptions = document.querySelectorAll('.wallet-option');
   walletOptions.forEach(option => {
     option.addEventListener('click', function() {
@@ -665,10 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
   );
   
   animatedElements.forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(50px)';
-    el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-    observer.observe(el);
+    scrollObserver.observe(el);
   });
 
   // Animate stats when they come into view
@@ -676,10 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const statValue = entry.target;
-        const targetValue = parseInt(statValue.textContent.replace(/[^0-9]/g, ''));
-        if (!isNaN(targetValue)) {
-          animateCounter(statValue, targetValue, 1500);
-        }
+        animateCounter(statValue);
         statsObserver.unobserve(entry.target);
       }
     });
@@ -691,7 +664,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// SMOOTH MAP ZOOM ON SCROLL
+// SMOOTH MAP FADE ON SCROLL
 // ============================================
 let ticking = false;
 
