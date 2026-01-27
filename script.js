@@ -222,25 +222,8 @@ const oceanRoutes = [
   ]
 ];
 
-// Flatten all routes into one continuous path
+// Flatten all routes into one continuous path for ship animation
 const route = oceanRoutes.flat();
-
-// Draw the glowing route line
-const routeLine = L.polyline(route, {
-  color: "#f4a836",
-  weight: 3,
-  opacity: 0.8,
-  dashArray: "10, 5",
-  className: "route-line"
-}).addTo(map);
-
-// Add glow effect to route
-const routeGlow = L.polyline(route, {
-  color: "#d97e3c",
-  weight: 6,
-  opacity: 0.3,
-  className: "route-glow"
-}).addTo(map);
 
 // Add chapter markers with custom styling
 chapters.forEach((chapter, index) => {
