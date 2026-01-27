@@ -35,16 +35,18 @@ function createOceanParticles() {
 }
 
 // ============================================
-// MAP SETUP - OCEANIC EARTH THEME
+// MAP SETUP - OCEANIC EARTH THEME WITH ZOOM
 // ============================================
 const map = L.map("map", {
   worldCopyJump: true,
-  zoomControl: false,
+  zoomControl: true,
   attributionControl: false,
   dragging: true,
-  scrollWheelZoom: false,
-  doubleClickZoom: false,
-  touchZoom: false
+  scrollWheelZoom: true,
+  doubleClickZoom: true,
+  touchZoom: true,
+  minZoom: 2,
+  maxZoom: 10
 }).setView([20, 0], 2);
 
 // Use Natural Earth tile layer for realistic Earth appearance
@@ -101,8 +103,127 @@ const chapters = [
   { name: "Return to Ostia", coords: [41.73, 12.29], unlocked: false }
 ];
 
-// Create route from chapter coordinates
-const route = chapters.map(chapter => chapter.coords);
+// Create realistic ocean routes that avoid land
+const oceanRoutes = [
+  // Route 1: Ostia to Cairo (through Mediterranean)
+  [
+    [41.73, 12.29],    // Port of Ostia
+    [40.5, 14],        // South of Italy
+    [37, 18],          // Ionian Sea
+    [35, 23],          // South of Greece
+    [33, 28],          // East Mediterranean
+    [30.0444, 31.2357] // Signals in Cairo
+  ],
+  // Route 2: Cairo to Arabian Sea (through Suez Canal/Red Sea)
+  [
+    [30.0444, 31.2357], // Signals in Cairo
+    [29, 33],           // Red Sea entrance
+    [25, 36],           // Mid Red Sea
+    [20, 40],           // Red Sea exit
+    [18, 50],           // Gulf of Aden
+    [20, 60]            // Arabian Tides
+  ],
+  // Route 3: Arabian Sea to Indian Ocean
+  [
+    [20, 60],           // Arabian Tides
+    [15, 65],           // Arabian Sea south
+    [10, 70],           // Indian Ocean
+    [0, 75],            // Equator crossing
+    [-10, 80]           // Indian Abyss
+  ],
+  // Route 4: Indian Ocean to Philippine Sea
+  [
+    [-10, 80],          // Indian Abyss
+    [-8, 90],           // East Indian Ocean
+    [-5, 100],          // Andaman Sea area
+    [0, 110],           // Equator crossing
+    [5, 120],           // South China Sea
+    [10, 125],          // Approaching Philippines
+    [15, 130]           // Philippine Sea
+  ],
+  // Route 5: Philippine Sea to South Pacific
+  [
+    [15, 130],          // Philippine Sea
+    [10, 140],          // East of Philippines
+    [5, 150],           // Micronesia
+    [0, 160],           // Equator Pacific
+    [-5, 165],          // Solomon Sea
+    [-10, 170],         // Coral Sea
+    [-15, 175],         // Fiji area
+    [-18, -175],        // Date line crossing
+    [-21.694129, -147.915508] // South Pacific
+  ],
+  // Route 6: South Pacific to North Pacific
+  [
+    [-21.694129, -147.915508], // South Pacific
+    [-15, -155],        // Central Pacific
+    [-10, -160],        // North of Tahiti
+    [0, -165],          // Equator crossing
+    [10, -165],         // North Pacific
+    [20, -162],         // Hawaii area
+    [30, -158],         // North of Hawaii
+    [40, -150]          // North Pacific
+  ],
+  // Route 7: North Pacific to Bering Sea
+  [
+    [40, -150],         // North Pacific
+    [45, -155],         // Aleutian approach
+    [50, -165],         // Aleutian Islands
+    [55, -172],         // Approaching Bering
+    [58, -175]          // Bering Sea
+  ],
+  // Route 8: Bering Sea to North Atlantic (through Arctic waters)
+  [
+    [58, -175],         // Bering Sea
+    [62, -170],         // North Bering
+    [65, -160],         // Arctic Alaska
+    [68, -145],         // Arctic Canada
+    [70, -120],         // Northwest Passage
+    [68, -95],          // Hudson Bay area
+    [65, -75],          // Baffin Bay
+    [60, -60],          // Labrador Sea
+    [55, -50],          // North Atlantic approach
+    [50, -40],          // Mid North Atlantic
+    [45, -30]           // North Atlantic
+  ],
+  // Route 9: North Atlantic to Gulf of America
+  [
+    [45, -30],          // North Atlantic
+    [40, -35],          // Central Atlantic
+    [35, -45],          // Approaching Americas
+    [30, -60],          // Caribbean approach
+    [27, -75],          // Bahamas
+    [25, -82],          // Florida Straits
+    [25, -90]           // Gulf of America
+  ],
+  // Route 10: Gulf of America to South Atlantic
+  [
+    [25, -90],          // Gulf of America
+    [22, -85],          // Caribbean
+    [18, -75],          // Caribbean Sea
+    [12, -65],          // Lesser Antilles
+    [5, -50],           // North Brazil
+    [0, -45],           // Equator Atlantic
+    [-10, -38],         // South Atlantic approach
+    [-20, -30]          // South Atlantic
+  ],
+  // Route 11: South Atlantic to Return to Ostia
+  [
+    [-20, -30],         // South Atlantic
+    [-15, -20],         // East South Atlantic
+    [-10, -10],         // West Africa approach
+    [0, 0],             // Gulf of Guinea
+    [10, 5],            // West African coast
+    [20, 8],            // Approaching Gibraltar
+    [30, 10],           // Gibraltar area
+    [36, 10],           // Western Mediterranean
+    [39, 11],           // Tyrrhenian Sea
+    [41.73, 12.29]      // Return to Ostia
+  ]
+];
+
+// Flatten all routes into one continuous path
+const route = oceanRoutes.flat();
 
 // Draw the glowing route line
 const routeLine = L.polyline(route, {
@@ -404,6 +525,41 @@ notificationStyle.textContent = `
 
   .leaflet-popup-tip {
     display: none !important;
+  }
+
+  /* Custom Zoom Control Styling */
+  .leaflet-control-zoom {
+    border: 2px solid rgba(244, 168, 54, 0.3) !important;
+    background: rgba(10, 37, 64, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .leaflet-control-zoom a {
+    background: transparent !important;
+    color: #f4a836 !important;
+    border: none !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    transition: all 0.3s ease !important;
+    width: 36px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+  }
+
+  .leaflet-control-zoom a:hover {
+    background: rgba(244, 168, 54, 0.2) !important;
+    color: #fff !important;
+    transform: scale(1.1);
+  }
+
+  .leaflet-control-zoom-in {
+    border-bottom: 1px solid rgba(244, 168, 54, 0.2) !important;
+  }
+
+  .leaflet-touch .leaflet-control-zoom {
+    border-radius: 8px !important;
   }
 `;
 document.head.appendChild(notificationStyle);
