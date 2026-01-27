@@ -1,1 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPTAIN GUIDO - Saving Our Oceans</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <!-- Entry Screen -->
+  <div id="entry-screen">
+    <div class="ocean-particles" id="oceanParticles"></div>
+    <div class="entry-content-wrapper">
+      <img src="captain-guido.png?v=5" alt="Captain Guido" class="entry-logo">
+      <h1 class="entry-title">CAPTAIN GUIDO</h1>
+      <p class="entry-subtitle">A VOYAGE TO CLEANER SEAS</p>
+      <button class="enter-btn" id="enterButton" type="button">
+        <span class="btn-text">ENTER THE VOYAGE</span>
+        <span class="btn-arrow">→</span>
+      </button>
+    </div>
+  </div>
 
+  <!-- Scrolling Marquee -->
+  <div class="marquee">
+    <div class="marquee-content">
+      <span>SAVING OUR OCEANS ✦ BLOCKCHAIN POWERED ✦ TRANSPARENT IMPACT ✦ SAVING OUR OCEANS ✦ BLOCKCHAIN POWERED ✦ TRANSPARENT IMPACT ✦ </span>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav id="main-nav">
+    <div class="nav-container">
+      <div class="nav-left">
+        <img src="captain-guido.png?v=5" alt="Captain Guido" class="nav-logo">
+        <span class="nav-brand">CAPTAIN GUIDO</span>
+      </div>
+      <div class="nav-right">
+        <a href="#about" class="nav-link">
+          <span class="nav-number">001</span>
+          <span class="nav-text">MISSION</span>
+        </a>
+        <a href="#journey" class="nav-link">
+          <span class="nav-number">002</span>
+          <span class="nav-text">VOYAGE</span>
+        </a>
+        <a href="#impact" class="nav-link">
+          <span class="nav-number">003</span>
+          <span class="nav-text">IMPACT</span>
+        </a>
+        <button class="wallet-connect-btn" id="walletConnectBtn">
+          <span class="nav-number">004</span>
+          <span class="nav-text">CONNECT WALLET</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section - Animated Map -->
+  <section id="hero-map">
+    <div class="map-overlay-top"></div>
+    <div id="map"></div>
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <div class="hero-number">001</div>
+        <h1 class="hero-title">THE VOYAGE BEGINS</h1>
+        <p class="hero-subtitle">Tracking Captain Guido's global mission to save our oceans</p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-value">12</div>
+            <div class="stat-label">CHAPTERS</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-value">8,500+</div>
+            <div class="stat-label">LBS REMOVED</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-value">62+</div>
+            <div class="stat-label">MILES CLEANED</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      <span>SCROLL</span>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="content-section">
+    <div class="section-lines"></div>
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">001</div>
+        <h2 class="section-title">THE MISSION</h2>
+      </div>
+      <div class="section-content">
+        <div class="content-left">
+          <div class="image-wrapper">
+            <img src="captain-guido.png?v=5" alt="Captain Guido" class="feature-image">
+            <div class="image-glow"></div>
+          </div>
+        </div>
+        <div class="content-right">
+          <h3 class="content-heading">CAPTAIN GUIDO COIN IS A BLOCKCHAIN-POWERED OCEAN CLEANUP INITIATIVE</h3>
+          <p class="content-text">
+            Join Captain Guido and his crew aboard the Hashwind as they voyage across the globe, 
+            fighting pollution and corruption with the power of blockchain technology. Each chapter 
+            unlocked means a real donation to ocean cleanup charities at that location.
+          </p>
+          <p class="content-text">
+            Armed with the Captain Guido Coin (CGC) and the Nautilus Ledger, we're building a 
+            decentralized network of ocean defenders. Every transaction, every token, every mission 
+            is verified on-chain—transparent, unstoppable, and making real impact.
+          </p>
+          <div class="cta-group">
+            <button class="btn-primary">
+              <span>BUY CGC</span>
+              <span class="btn-arrow">→</span>
+            </button>
+            <button class="btn-secondary">
+              <span>READ WHITEPAPER</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Journey/Story Section -->
+  <section id="journey" class="content-section dark">
+    <div class="section-lines"></div>
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">002</div>
+        <h2 class="section-title">THE CHAPTERS</h2>
+      </div>
+      <p class="section-intro">
+        Follow Captain Guido's voyage around the globe. Each chapter represents a battle 
+        against ocean pollution and a donation to local cleanup efforts.
+      </p>
+      
+      <div class="chapters-grid">
+        <div class="chapter-card" data-chapter="1">
+          <div class="chapter-number">CH. 01</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Port of Ostia</h4>
+            <p class="chapter-location">Mediterranean Sea, Italy</p>
+            <p class="chapter-desc">
+              Where it all began. The salt air and ghost-grey horizon. Captain Guido discovers 
+              the corruption poisoning the Mediterranean.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge unlocked">UNLOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="2">
+          <div class="chapter-number">CH. 02</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Signals in Cairo</h4>
+            <p class="chapter-location">Red Sea, Egypt</p>
+            <p class="chapter-desc">
+              Ghost ships and encrypted signals. The shadow fleet emerges from the data streams.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="3">
+          <div class="chapter-number">CH. 03</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Arabian Tides</h4>
+            <p class="chapter-location">Arabian Sea</p>
+            <p class="chapter-desc">
+              The CGC token becomes a weapon. Smart contracts disrupt corrupt fleets.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="4">
+          <div class="chapter-number">CH. 04</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">The Indian Abyss</h4>
+            <p class="chapter-location">Indian Ocean</p>
+            <p class="chapter-desc">
+              Digital justice meets rogue trawlers. The blockchain remembers what the ocean cannot forget.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="5">
+          <div class="chapter-number">CH. 05</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Philippine Sea Shadows</h4>
+            <p class="chapter-location">Philippine Sea</p>
+            <p class="chapter-desc">
+              Crypto sharks join the fight. Bio-tagged and armed, they restore what was lost.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="6">
+          <div class="chapter-number">CH. 06</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">South Pacific Reckoning</h4>
+            <p class="chapter-location">South Pacific Ocean</p>
+            <p class="chapter-desc">
+              Victory comes at a cost. The Hashwind takes damage, but the mission continues.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="7">
+          <div class="chapter-number">CH. 07</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">North Pacific Requiem</h4>
+            <p class="chapter-location">North Pacific Ocean</p>
+            <p class="chapter-desc">
+              Returning to the gyre. Cleanup protocols engage. Hope begins to float again.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="8">
+          <div class="chapter-number">CH. 08</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Bering Sea Crossfire</h4>
+            <p class="chapter-location">Bering Sea</p>
+            <p class="chapter-desc">
+              Malinov emerges. The Cold Wallet surfaces. War in the ice begins.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="9">
+          <div class="chapter-number">CH. 09</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Gyres of the Graveyard</h4>
+            <p class="chapter-location">North Atlantic Ocean</p>
+            <p class="chapter-desc">
+              The North Atlantic reveals its scars. Malinov's trail leads to hidden vaults.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="10">
+          <div class="chapter-number">CH. 10</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Gulf of America</h4>
+            <p class="chapter-location">Gulf of Mexico</p>
+            <p class="chapter-desc">
+              Dead zones and digital warfare. Exposing corruption beneath warm waters.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="11">
+          <div class="chapter-number">CH. 11</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Southern Cross</h4>
+            <p class="chapter-location">South Atlantic Ocean</p>
+            <p class="chapter-desc">
+              The Cold Wallet reappears. Silent. Shielded. Moving toward the final battleground.
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card" data-chapter="12">
+          <div class="chapter-number">CH. 12</div>
+          <div class="chapter-content">
+            <h4 class="chapter-title">Return to Ostia</h4>
+            <p class="chapter-location">Mediterranean Sea, Italy</p>
+            <p class="chapter-desc">
+              Full circle. The mission has grown. Book two awaits in colder waters...
+            </p>
+            <div class="chapter-status">
+              <span class="status-badge locked">LOCKED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact Section -->
+  <section id="impact" class="content-section">
+    <div class="section-lines"></div>
+    <div class="container">
+      <div class="section-header">
+        <div class="section-number">003</div>
+        <h2 class="section-title">REAL IMPACT</h2>
+      </div>
+      <p class="section-intro">
+        Every chapter unlocked triggers a donation to ocean cleanup efforts at that location. 
+        Transparent. Verified. Making waves.
+      </p>
+
+      <div class="impact-grid">
+        <div class="impact-item">
+          <div class="impact-number">01</div>
+          <div class="impact-header">
+            <span class="impact-location">MEDITERRANEAN SEA</span>
+            <span class="impact-chapter">Chapter 01</span>
+          </div>
+          <h4 class="impact-title">Port of Ostia Cleanup</h4>
+          <div class="impact-metrics">
+            <div class="metric">
+              <span class="metric-value">1,200</span>
+              <span class="metric-label">LBS PLASTIC REMOVED</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">5</span>
+              <span class="metric-label">MILES CLEANED</span>
+            </div>
+          </div>
+          <div class="impact-tx">
+            <span class="tx-label">TX HASH:</span>
+            <span class="tx-value">0x7f3a...c82d</span>
+          </div>
+          <div class="impact-charity">→ Ocean Conservancy</div>
+        </div>
+
+        <div class="impact-item">
+          <div class="impact-number">02</div>
+          <div class="impact-header">
+            <span class="impact-location">RED SEA</span>
+            <span class="impact-chapter">Chapter 02</span>
+          </div>
+          <h4 class="impact-title">Cairo Waterway Restoration</h4>
+          <div class="impact-metrics">
+            <div class="metric">
+              <span class="metric-value">8</span>
+              <span class="metric-label">MILES CLEANED</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">450</span>
+              <span class="metric-label">LBS DEBRIS</span>
+            </div>
+          </div>
+          <div class="impact-tx">
+            <span class="tx-label">TX HASH:</span>
+            <span class="tx-value">0x2b9c...4f1a</span>
+          </div>
+          <div class="impact-charity">→ Red Sea Project Foundation</div>
+        </div>
+
+        <div class="impact-item">
+          <div class="impact-number">03</div>
+          <div class="impact-header">
+            <span class="impact-location">ARABIAN SEA</span>
+            <span class="impact-chapter">Chapter 03</span>
+          </div>
+          <h4 class="impact-title">Marine Life Protection</h4>
+          <div class="impact-metrics">
+            <div class="metric">
+              <span class="metric-value">500+</span>
+              <span class="metric-label">ANIMALS RESCUED</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">12</span>
+              <span class="metric-label">MILES RESTORED</span>
+            </div>
+          </div>
+          <div class="impact-tx">
+            <span class="tx-label">TX HASH:</span>
+            <span class="tx-value">0x9e1f...b3c7</span>
+          </div>
+          <div class="impact-charity">→ Arabian Wildlife Foundation</div>
+        </div>
+
+        <div class="impact-item">
+          <div class="impact-number">04</div>
+          <div class="impact-header">
+            <span class="impact-location">INDIAN OCEAN</span>
+            <span class="impact-chapter">Chapter 04</span>
+          </div>
+          <h4 class="impact-title">Ghost Net Removal</h4>
+          <div class="impact-metrics">
+            <div class="metric">
+              <span class="metric-value">2,400</span>
+              <span class="metric-label">LBS NETS</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">300+</span>
+              <span class="metric-label">LIVES SAVED</span>
+            </div>
+          </div>
+          <div class="impact-tx">
+            <span class="tx-label">TX HASH:</span>
+            <span class="tx-value">0x4d2a...e9f2</span>
+          </div>
+          <div class="impact-charity">→ Indian Ocean Cleanup Initiative</div>
+        </div>
+
+        <div class="impact-item">
+          <div class="impact-number">05</div>
+          <div class="impact-header">
+            <span class="impact-location">PHILIPPINE SEA</span>
+            <span class="impact-chapter">Chapter 05</span>
+          </div>
+          <h4 class="impact-title">Coral Reef Restoration</h4>
+          <div class="impact-metrics">
+            <div class="metric">
+              <span class="metric-value">1,000</span>
+              <span class="metric-label">CORALS PLANTED</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">15</span>
+              <span class="metric-label">ACRES RESTORED</span>
+            </div>
+          </div>
+          <div class="impact-tx">
+            <span class="tx-label">TX HASH:</span>
+            <span class="tx-value">0x8c5b...d4e1</span>
+          </div>
+          <div class="impact-charity">→ Coral Triangle Initiative</div>
+        </div>
+
+        <div class="impact-item">
+          <div class="impact-number">06</div>
+          <div class="impact-header">
+            <span class="impact-location">SOUTH PACIFIC</span>
+            <span class="impact-chapter">Chapter 06</span>
+          </div>
+          <h4 class="impact-title">Island Communities Support</h4>
+          <div class="impact-metrics">
+            <div class="metric">
+              <span class="metric-value">12</span>
+              <span class="metric-label">MILES CLEANED</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">1,800</span>
+              <span class="metric-label">LBS REMOVED</span>
+            </div>
+          </div>
+          <div class="impact-tx">
+            <span class="tx-label">TX HASH:</span>
+            <span class="tx-value">0x6f7e...a2c9</span>
+          </div>
+          <div class="impact-charity">→ Pacific Islands Conservation</div>
+        </div>
+      </div>
+
+      <div class="blockchain-verified">
+        <div class="verify-icon">⛓️</div>
+        <p>ALL DONATIONS VERIFIED ON-CHAIN</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-marquee">
+      <div class="footer-marquee-content">
+        <span>SAVING OCEANS ✦ BLOCKCHAIN POWERED ✦ TRANSPARENT IMPACT ✦ SAVING OCEANS ✦ BLOCKCHAIN POWERED ✦ TRANSPARENT IMPACT ✦ </span>
+      </div>
+    </div>
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-left">
+          <img src="captain-guido.png?v=5" alt="Captain Guido" class="footer-logo">
+          <h3 class="footer-brand">CAPTAIN GUIDO</h3>
+          <p>Sailing toward cleaner oceans, one token at a time.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>NAVIGATE</h4>
+            <a href="#about">Mission</a>
+            <a href="#journey">Voyage</a>
+            <a href="#impact">Impact</a>
+          </div>
+          <div class="footer-col">
+            <h4>COMMUNITY</h4>
+            <a href="#">Twitter</a>
+            <a href="#">Discord</a>
+            <a href="#">Telegram</a>
+          </div>
+          <div class="footer-col">
+            <h4>RESOURCES</h4>
+            <a href="#">Whitepaper</a>
+            <a href="#">Tokenomics</a>
+            <a href="#">Audit</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Captain Guido Coin. Fighting for our oceans.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Wallet Modal -->
+  <div id="wallet-modal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" id="closeModal">×</button>
+      <h2>CONNECT WALLET</h2>
+      <p class="modal-subtitle">Choose your preferred wallet to connect</p>
+      <div class="wallet-options">
+        <button class="wallet-option" data-wallet="metamask">
+          <span class="wallet-icon">🦊</span>
+          <div class="wallet-info">
+            <span class="wallet-name">MetaMask</span>
+            <span class="wallet-desc">Connect using MetaMask</span>
+          </div>
+          <span class="wallet-arrow">→</span>
+        </button>
+        <button class="wallet-option" data-wallet="walletconnect">
+          <span class="wallet-icon">🔗</span>
+          <div class="wallet-info">
+            <span class="wallet-name">WalletConnect</span>
+            <span class="wallet-desc">Scan with mobile wallet</span>
+          </div>
+          <span class="wallet-arrow">→</span>
+        </button>
+        <button class="wallet-option" data-wallet="coinbase">
+          <span class="wallet-icon">💼</span>
+          <div class="wallet-info">
+            <span class="wallet-name">Coinbase Wallet</span>
+            <span class="wallet-desc">Connect via Coinbase</span>
+          </div>
+          <span class="wallet-arrow">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
