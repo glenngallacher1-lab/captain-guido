@@ -784,6 +784,223 @@ body.entry-active {
 }
 
 /* ============================================
+   TOKENOMICS SECTION
+   ============================================ */
+.tokenomics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+.token-info-card {
+  background: var(--ocean-gradient);
+  border: 2px solid var(--gold-accent);
+  padding: 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.token-info-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(244, 168, 54, 0.1) 0%, transparent 70%);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.token-symbol {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--gold-accent);
+  margin-bottom: 1rem;
+  text-shadow: 0 0 30px rgba(244, 168, 54, 0.5);
+}
+
+.token-info-card h3 {
+  font-size: 1.5rem;
+  color: var(--sand-cream);
+  margin-bottom: 2rem;
+  letter-spacing: 2px;
+}
+
+.token-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.token-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 3px solid var(--aqua);
+}
+
+.detail-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 1.1rem;
+  color: var(--gold-accent);
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
+.token-distribution {
+  background: rgba(30, 95, 140, 0.1);
+  border: 1px solid var(--border-light);
+  padding: 3rem;
+  backdrop-filter: blur(10px);
+}
+
+.token-distribution h3 {
+  font-size: 1.8rem;
+  color: var(--sand-cream);
+  margin-bottom: 2rem;
+  letter-spacing: 2px;
+}
+
+.distribution-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.distribution-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dist-bar {
+  height: 40px;
+  background: var(--sunset-gradient);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(244, 168, 54, 0.3);
+  animation: fillBar 1.5s ease-out;
+}
+
+@keyframes fillBar {
+  from { width: 0 !important; }
+}
+
+.dist-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.dist-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dist-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.dist-percent {
+  font-size: 1.2rem;
+  color: var(--gold-accent);
+  font-weight: 900;
+}
+
+.transaction-fees {
+  margin-top: 4rem;
+}
+
+.transaction-fees h3 {
+  font-size: 2rem;
+  color: var(--sand-cream);
+  margin-bottom: 2rem;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.fees-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.fee-card {
+  background: var(--ocean-gradient);
+  border: 1px solid var(--border-accent);
+  padding: 2.5rem;
+  text-align: center;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.fee-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--sunset-gradient);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.fee-card:hover::before {
+  transform: scaleX(1);
+}
+
+.fee-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(78, 196, 196, 0.3);
+  border-color: var(--aqua);
+}
+
+.fee-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.fee-card h4 {
+  font-size: 1.4rem;
+  color: var(--gold-accent);
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+.fee-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* ============================================
    IMPACT GRID
    ============================================ */
 .impact-grid {
@@ -1196,6 +1413,10 @@ footer {
   }
 
   .impact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tokenomics-grid {
     grid-template-columns: 1fr;
   }
 }
