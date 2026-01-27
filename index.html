@@ -46,16 +46,12 @@
           <span class="nav-number">002</span>
           <span class="nav-text">VOYAGE</span>
         </a>
-        <a href="#tokenomics" class="nav-link">
-          <span class="nav-number">003</span>
-          <span class="nav-text">TOKENOMICS</span>
-        </a>
         <a href="#impact" class="nav-link">
-          <span class="nav-number">004</span>
+          <span class="nav-number">003</span>
           <span class="nav-text">IMPACT</span>
         </a>
         <button class="wallet-connect-btn" id="walletConnectBtn">
-          <span class="nav-number">005</span>
+          <span class="nav-number">004</span>
           <span class="nav-text">CONNECT WALLET</span>
         </button>
       </div>
@@ -78,12 +74,12 @@
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <div class="stat-value">8,500+</div>
+            <div class="stat-value">8500</div>
             <div class="stat-label">LBS REMOVED</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <div class="stat-value">62+</div>
+            <div class="stat-value">62</div>
             <div class="stat-label">MILES CLEANED</div>
           </div>
         </div>
@@ -127,8 +123,12 @@
               <span>BUY CGC</span>
               <span class="btn-arrow">→</span>
             </button>
-            <button class="btn-secondary">
-              <span>READ WHITEPAPER</span>
+            <button class="btn-secondary" id="openTokenomics">
+              <span>TOKENOMICS</span>
+              <span class="btn-arrow">→</span>
+            </button>
+            <button class="btn-secondary" id="openWhitepaper">
+              <span>WHITEPAPER</span>
               <span class="btn-arrow">→</span>
             </button>
           </div>
@@ -323,113 +323,12 @@
     </div>
   </section>
 
-  <!-- Tokenomics Section -->
-  <section id="tokenomics" class="content-section">
+  <!-- Impact Section -->
+  <section id="impact" class="content-section">
     <div class="section-lines"></div>
     <div class="container">
       <div class="section-header">
         <div class="section-number">003</div>
-        <h2 class="section-title">TOKENOMICS</h2>
-      </div>
-      <p class="section-intro">
-        Captain Guido Coin (CGC) is designed for sustainable growth and maximum impact. 
-        Built on transparency and ocean conservation.
-      </p>
-
-      <div class="tokenomics-grid">
-        <!-- Token Info Card -->
-        <div class="token-info-card">
-          <div class="token-symbol">CGC</div>
-          <h3>Captain Guido Coin</h3>
-          <div class="token-details">
-            <div class="token-detail-item">
-              <span class="detail-label">Total Supply</span>
-              <span class="detail-value">1,000,000,000</span>
-            </div>
-            <div class="token-detail-item">
-              <span class="detail-label">Network</span>
-              <span class="detail-value">Ethereum</span>
-            </div>
-            <div class="token-detail-item">
-              <span class="detail-label">Contract</span>
-              <span class="detail-value">0x1234...5678</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Distribution Chart Placeholder -->
-        <div class="token-distribution">
-          <h3>Token Distribution</h3>
-          <div class="distribution-items">
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 40%;" data-percent="40"></div>
-              <div class="dist-info">
-                <span class="dist-label">Ocean Cleanup Fund</span>
-                <span class="dist-percent">40%</span>
-              </div>
-            </div>
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 30%;" data-percent="30"></div>
-              <div class="dist-info">
-                <span class="dist-label">Liquidity Pool</span>
-                <span class="dist-percent">30%</span>
-              </div>
-            </div>
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 15%;" data-percent="15"></div>
-              <div class="dist-info">
-                <span class="dist-label">Team & Development</span>
-                <span class="dist-percent">15%</span>
-              </div>
-            </div>
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 10%;" data-percent="10"></div>
-              <div class="dist-info">
-                <span class="dist-label">Marketing</span>
-                <span class="dist-percent">10%</span>
-              </div>
-            </div>
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 5%;" data-percent="5"></div>
-              <div class="dist-info">
-                <span class="dist-label">Airdrops</span>
-                <span class="dist-percent">5%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Transaction Fees -->
-      <div class="transaction-fees">
-        <h3>Transaction Fees</h3>
-        <div class="fees-grid">
-          <div class="fee-card">
-            <div class="fee-icon">💰</div>
-            <h4>3% Buy Tax</h4>
-            <p>1.5% to Ocean Fund<br>1.5% to Liquidity</p>
-          </div>
-          <div class="fee-card">
-            <div class="fee-icon">📊</div>
-            <h4>3% Sell Tax</h4>
-            <p>1.5% to Ocean Fund<br>1.5% to Liquidity</p>
-          </div>
-          <div class="fee-card">
-            <div class="fee-icon">🔄</div>
-            <h4>0% Transfer Tax</h4>
-            <p>Free transfers between wallets</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Impact Section -->
-  <section id="impact" class="content-section dark">
-    <div class="section-lines"></div>
-    <div class="container">
-      <div class="section-header">
-        <div class="section-number">004</div>
         <h2 class="section-title">REAL IMPACT</h2>
       </div>
       <p class="section-intro">
@@ -447,7 +346,7 @@
           <h4 class="impact-title">Port of Ostia Cleanup</h4>
           <div class="impact-metrics">
             <div class="metric">
-              <span class="metric-value">1,200</span>
+              <span class="metric-value">1200</span>
               <span class="metric-label">LBS PLASTIC REMOVED</span>
             </div>
             <div class="metric">
@@ -495,7 +394,7 @@
           <h4 class="impact-title">Marine Life Protection</h4>
           <div class="impact-metrics">
             <div class="metric">
-              <span class="metric-value">500+</span>
+              <span class="metric-value">500</span>
               <span class="metric-label">ANIMALS RESCUED</span>
             </div>
             <div class="metric">
@@ -519,11 +418,11 @@
           <h4 class="impact-title">Ghost Net Removal</h4>
           <div class="impact-metrics">
             <div class="metric">
-              <span class="metric-value">2,400</span>
+              <span class="metric-value">2400</span>
               <span class="metric-label">LBS NETS</span>
             </div>
             <div class="metric">
-              <span class="metric-value">300+</span>
+              <span class="metric-value">300</span>
               <span class="metric-label">LIVES SAVED</span>
             </div>
           </div>
@@ -543,7 +442,7 @@
           <h4 class="impact-title">Coral Reef Restoration</h4>
           <div class="impact-metrics">
             <div class="metric">
-              <span class="metric-value">1,000</span>
+              <span class="metric-value">1000</span>
               <span class="metric-label">CORALS PLANTED</span>
             </div>
             <div class="metric">
@@ -571,7 +470,7 @@
               <span class="metric-label">MILES CLEANED</span>
             </div>
             <div class="metric">
-              <span class="metric-value">1,800</span>
+              <span class="metric-value">1800</span>
               <span class="metric-label">LBS REMOVED</span>
             </div>
           </div>
@@ -604,7 +503,6 @@
             <h4>NAVIGATE</h4>
             <a href="#about">Mission</a>
             <a href="#journey">Voyage</a>
-            <a href="#tokenomics">Tokenomics</a>
             <a href="#impact">Impact</a>
           </div>
           <div class="footer-col">
@@ -615,8 +513,8 @@
           </div>
           <div class="footer-col">
             <h4>RESOURCES</h4>
-            <a href="#">Whitepaper</a>
-            <a href="#">Tokenomics</a>
+            <a href="#" id="footerTokenomics">Tokenomics</a>
+            <a href="#" id="footerWhitepaper">Whitepaper</a>
             <a href="#">Audit</a>
           </div>
         </div>
@@ -627,11 +525,153 @@
     </div>
   </footer>
 
+  <!-- Tokenomics Modal -->
+  <div id="tokenomics-modal" class="info-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content-large">
+      <button class="modal-close" id="closeTokenomics">×</button>
+      <h2>TOKENOMICS</h2>
+      <p class="modal-subtitle">Captain Guido Coin Distribution & Economics</p>
+      
+      <div class="tokenomics-grid">
+        <div class="token-info-card">
+          <div class="token-symbol">CGC</div>
+          <h3>Captain Guido Coin</h3>
+          <div class="token-details">
+            <div class="token-detail-item">
+              <span class="detail-label">Total Supply</span>
+              <span class="detail-value">1,000,000,000</span>
+            </div>
+            <div class="token-detail-item">
+              <span class="detail-label">Network</span>
+              <span class="detail-value">Ethereum</span>
+            </div>
+            <div class="token-detail-item">
+              <span class="detail-label">Contract</span>
+              <span class="detail-value">0x1234...5678</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="token-distribution">
+          <h3>Token Distribution</h3>
+          <div class="distribution-items">
+            <div class="distribution-item">
+              <div class="dist-bar" style="width: 40%;" data-percent="40"></div>
+              <div class="dist-info">
+                <span class="dist-label">Ocean Cleanup Fund</span>
+                <span class="dist-percent">40%</span>
+              </div>
+            </div>
+            <div class="distribution-item">
+              <div class="dist-bar" style="width: 30%;" data-percent="30"></div>
+              <div class="dist-info">
+                <span class="dist-label">Liquidity Pool</span>
+                <span class="dist-percent">30%</span>
+              </div>
+            </div>
+            <div class="distribution-item">
+              <div class="dist-bar" style="width: 15%;" data-percent="15"></div>
+              <div class="dist-info">
+                <span class="dist-label">Team & Development</span>
+                <span class="dist-percent">15%</span>
+              </div>
+            </div>
+            <div class="distribution-item">
+              <div class="dist-bar" style="width: 10%;" data-percent="10"></div>
+              <div class="dist-info">
+                <span class="dist-label">Marketing</span>
+                <span class="dist-percent">10%</span>
+              </div>
+            </div>
+            <div class="distribution-item">
+              <div class="dist-bar" style="width: 5%;" data-percent="5"></div>
+              <div class="dist-info">
+                <span class="dist-label">Airdrops</span>
+                <span class="dist-percent">5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="transaction-fees">
+        <h3>Transaction Fees</h3>
+        <div class="fees-grid">
+          <div class="fee-card">
+            <div class="fee-icon">💰</div>
+            <h4>3% Buy Tax</h4>
+            <p>1.5% to Ocean Fund<br>1.5% to Liquidity</p>
+          </div>
+          <div class="fee-card">
+            <div class="fee-icon">📊</div>
+            <h4>3% Sell Tax</h4>
+            <p>1.5% to Ocean Fund<br>1.5% to Liquidity</p>
+          </div>
+          <div class="fee-card">
+            <div class="fee-icon">🔄</div>
+            <h4>0% Transfer Tax</h4>
+            <p>Free transfers between wallets</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Whitepaper Modal -->
+  <div id="whitepaper-modal" class="info-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content-large">
+      <button class="modal-close" id="closeWhitepaper">×</button>
+      <h2>WHITEPAPER</h2>
+      <p class="modal-subtitle">The Complete Captain Guido Vision</p>
+      
+      <div class="whitepaper-content">
+        <div class="wp-section">
+          <h3>Executive Summary</h3>
+          <p>Captain Guido Coin (CGC) represents a revolutionary approach to ocean conservation through blockchain technology. By combining transparent cryptocurrency transactions with verifiable charitable donations, we're creating a sustainable ecosystem where every trade contributes to cleaning our oceans.</p>
+        </div>
+
+        <div class="wp-section">
+          <h3>The Problem</h3>
+          <p>Our oceans face unprecedented pollution challenges. Over 8 million tons of plastic enter our oceans annually, threatening marine ecosystems and human health. Traditional fundraising lacks transparency and struggles to engage younger, tech-savvy audiences.</p>
+        </div>
+
+        <div class="wp-section">
+          <h3>The Solution</h3>
+          <p>CGC leverages blockchain technology to create a transparent, community-driven ocean cleanup initiative. Every transaction is recorded on-chain, donations are verifiable, and holders become active participants in global environmental action.</p>
+        </div>
+
+        <div class="wp-section">
+          <h3>Technology</h3>
+          <p>Built on Ethereum, CGC utilizes smart contracts for automated fee distribution, ensuring 40% of all transaction fees flow directly to verified ocean cleanup organizations. Our Nautilus Ledger provides complete transparency for all charitable contributions.</p>
+        </div>
+
+        <div class="wp-section">
+          <h3>Roadmap</h3>
+          <ul>
+            <li><strong>Q1 2025:</strong> Token Launch & Initial Cleanup Partnerships</li>
+            <li><strong>Q2 2025:</strong> Chapter 1-4 Unlocks & Mediterranean Operations</li>
+            <li><strong>Q3 2025:</strong> Expansion to Asian & Pacific Regions</li>
+            <li><strong>Q4 2025:</strong> Global Coverage & Annual Impact Report</li>
+          </ul>
+        </div>
+
+        <div class="wp-download">
+          <button class="btn-primary">
+            <span>DOWNLOAD FULL WHITEPAPER (PDF)</span>
+            <span class="btn-arrow">↓</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Wallet Modal -->
   <div id="wallet-modal" class="modal">
     <div class="modal-overlay"></div>
     <div class="modal-content">
-      <button class="modal-close" id="closeModal">×</button>
+      <button class="modal-close" id="closeWalletModal">×</button>
       <h2>CONNECT WALLET</h2>
       <p class="modal-subtitle">Choose your preferred wallet to connect</p>
       <div class="wallet-options">
