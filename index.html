@@ -7,13 +7,13 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="entry-active">
   
   <!-- Entry Screen -->
   <div id="entry-screen">
     <div class="ocean-particles" id="oceanParticles"></div>
     <div class="entry-content-wrapper">
-      <img src="captain-guido.png?v=5" alt="Captain Guido" class="entry-logo">
+      <img src="captain-guido.png" alt="Captain Guido" class="entry-logo">
       <h1 class="entry-title">CAPTAIN GUIDO</h1>
       <p class="entry-subtitle">A VOYAGE TO CLEANER SEAS</p>
       <button class="enter-btn" id="enterButton" type="button">
@@ -26,7 +26,7 @@
   <!-- Scrolling Marquee -->
   <div class="marquee">
     <div class="marquee-content">
-      <span>A VOYAGE TO CLEANER SEAS ✦ A VOYAGE TO CLEANER SEAS ✦ A VOYAGE TO CLEANER SEAS ✦ A VOYAGE TO CLEANER SEAS ✦ </span>
+      <span>A VOYAGE TO CLEANER SEAS • A VOYAGE TO CLEANER SEAS • A VOYAGE TO CLEANER SEAS • A VOYAGE TO CLEANER SEAS • </span>
     </div>
   </div>
 
@@ -34,7 +34,7 @@
   <nav id="main-nav">
     <div class="nav-container">
       <div class="nav-left">
-        <img src="captain-guido.png?v=5" alt="Captain Guido" class="nav-logo">
+        <img src="captain-guido.png" alt="Captain Guido" class="nav-logo">
         <span class="nav-brand">CAPTAIN GUIDO</span>
       </div>
       <div class="nav-right">
@@ -102,7 +102,7 @@
       <div class="section-content">
         <div class="content-left">
           <div class="image-wrapper">
-            <img src="captain-guido.png?v=5" alt="Captain Guido" class="feature-image">
+            <img src="captain-guido.png" alt="Captain Guido" class="feature-image">
             <div class="image-glow"></div>
           </div>
         </div>
@@ -137,7 +137,7 @@
     </div>
   </section>
 
-  <!-- Journey/Story Section -->
+  <!-- Journey Section -->
   <section id="journey" class="content-section dark">
     <div class="section-lines"></div>
     <div class="container">
@@ -151,14 +151,13 @@
       </p>
       
       <div class="chapters-grid">
-        <div class="chapter-card" data-chapter="1">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 01</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Port of Ostia</h4>
             <p class="chapter-location">Mediterranean Sea, Italy</p>
             <p class="chapter-desc">
-              Where it all began. The salt air and ghost-grey horizon. Captain Guido discovers 
-              the corruption poisoning the Mediterranean.
+              Where it all began. The salt air and ghost-grey horizon.
             </p>
             <div class="chapter-status">
               <span class="status-badge unlocked">UNLOCKED</span>
@@ -166,13 +165,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="2">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 02</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Signals in Cairo</h4>
             <p class="chapter-location">Red Sea, Egypt</p>
             <p class="chapter-desc">
-              Ghost ships and encrypted signals. The shadow fleet emerges from the data streams.
+              Ghost ships and encrypted signals.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -180,13 +179,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="3">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 03</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Arabian Tides</h4>
             <p class="chapter-location">Arabian Sea</p>
             <p class="chapter-desc">
-              The CGC token becomes a weapon. Smart contracts disrupt corrupt fleets.
+              The CGC token becomes a weapon.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -194,13 +193,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="4">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 04</div>
           <div class="chapter-content">
             <h4 class="chapter-title">The Indian Abyss</h4>
             <p class="chapter-location">Indian Ocean</p>
             <p class="chapter-desc">
-              Digital justice meets rogue trawlers. The blockchain remembers what the ocean cannot forget.
+              Digital justice meets rogue trawlers.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -208,13 +207,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="5">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 05</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Philippine Sea Shadows</h4>
             <p class="chapter-location">Philippine Sea</p>
             <p class="chapter-desc">
-              Crypto sharks join the fight. Bio-tagged and armed, they restore what was lost.
+              Crypto sharks join the fight.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -222,13 +221,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="6">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 06</div>
           <div class="chapter-content">
             <h4 class="chapter-title">South Pacific Reckoning</h4>
             <p class="chapter-location">South Pacific Ocean</p>
             <p class="chapter-desc">
-              Victory comes at a cost. The Hashwind takes damage, but the mission continues.
+              Victory comes at a cost.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -236,13 +235,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="7">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 07</div>
           <div class="chapter-content">
             <h4 class="chapter-title">North Pacific Requiem</h4>
             <p class="chapter-location">North Pacific Ocean</p>
             <p class="chapter-desc">
-              Returning to the gyre. Cleanup protocols engage. Hope begins to float again.
+              Returning to the gyre.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -250,13 +249,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="8">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 08</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Bering Sea Crossfire</h4>
             <p class="chapter-location">Bering Sea</p>
             <p class="chapter-desc">
-              Malinov emerges. The Cold Wallet surfaces. War in the ice begins.
+              The Cold Wallet surfaces.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -264,13 +263,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="9">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 09</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Gyres of the Graveyard</h4>
             <p class="chapter-location">North Atlantic Ocean</p>
             <p class="chapter-desc">
-              The North Atlantic reveals its scars. Malinov's trail leads to hidden vaults.
+              The North Atlantic reveals its scars.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -278,13 +277,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="10">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 10</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Gulf of America</h4>
             <p class="chapter-location">Gulf of Mexico</p>
             <p class="chapter-desc">
-              Dead zones and digital warfare. Exposing corruption beneath warm waters.
+              Dead zones and digital warfare.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -292,13 +291,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="11">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 11</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Southern Cross</h4>
             <p class="chapter-location">South Atlantic Ocean</p>
             <p class="chapter-desc">
-              The Cold Wallet reappears. Silent. Shielded. Moving toward the final battleground.
+              The Cold Wallet reappears.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -306,13 +305,13 @@
           </div>
         </div>
 
-        <div class="chapter-card" data-chapter="12">
+        <div class="chapter-card">
           <div class="chapter-number">CH. 12</div>
           <div class="chapter-content">
             <h4 class="chapter-title">Return to Ostia</h4>
             <p class="chapter-location">Mediterranean Sea, Italy</p>
             <p class="chapter-desc">
-              Full circle. The mission has grown. Book two awaits in colder waters...
+              Full circle. Book two awaits.
             </p>
             <div class="chapter-status">
               <span class="status-badge locked">LOCKED</span>
@@ -332,8 +331,7 @@
         <h2 class="section-title">REAL IMPACT</h2>
       </div>
       <p class="section-intro">
-        Every chapter unlocked triggers a donation to ocean cleanup efforts at that location. 
-        Transparent. Verified. Making waves.
+        Every chapter unlocked triggers a donation to ocean cleanup efforts at that location.
       </p>
 
       <div class="impact-grid">
@@ -347,7 +345,7 @@
           <div class="impact-metrics">
             <div class="metric">
               <span class="metric-value">1200</span>
-              <span class="metric-label">LBS PLASTIC REMOVED</span>
+              <span class="metric-label">LBS REMOVED</span>
             </div>
             <div class="metric">
               <span class="metric-value">5</span>
@@ -355,7 +353,7 @@
             </div>
           </div>
           <div class="impact-tx">
-            <span class="tx-label">TX HASH:</span>
+            <span class="tx-label">TX:</span>
             <span class="tx-value">0x7f3a...c82d</span>
           </div>
           <div class="impact-charity">→ Ocean Conservancy</div>
@@ -379,10 +377,10 @@
             </div>
           </div>
           <div class="impact-tx">
-            <span class="tx-label">TX HASH:</span>
+            <span class="tx-label">TX:</span>
             <span class="tx-value">0x2b9c...4f1a</span>
           </div>
-          <div class="impact-charity">→ Red Sea Project Foundation</div>
+          <div class="impact-charity">→ Red Sea Foundation</div>
         </div>
 
         <div class="impact-item">
@@ -403,82 +401,10 @@
             </div>
           </div>
           <div class="impact-tx">
-            <span class="tx-label">TX HASH:</span>
+            <span class="tx-label">TX:</span>
             <span class="tx-value">0x9e1f...b3c7</span>
           </div>
-          <div class="impact-charity">→ Arabian Wildlife Foundation</div>
-        </div>
-
-        <div class="impact-item">
-          <div class="impact-number">04</div>
-          <div class="impact-header">
-            <span class="impact-location">INDIAN OCEAN</span>
-            <span class="impact-chapter">Chapter 04</span>
-          </div>
-          <h4 class="impact-title">Ghost Net Removal</h4>
-          <div class="impact-metrics">
-            <div class="metric">
-              <span class="metric-value">2400</span>
-              <span class="metric-label">LBS NETS</span>
-            </div>
-            <div class="metric">
-              <span class="metric-value">300</span>
-              <span class="metric-label">LIVES SAVED</span>
-            </div>
-          </div>
-          <div class="impact-tx">
-            <span class="tx-label">TX HASH:</span>
-            <span class="tx-value">0x4d2a...e9f2</span>
-          </div>
-          <div class="impact-charity">→ Indian Ocean Cleanup Initiative</div>
-        </div>
-
-        <div class="impact-item">
-          <div class="impact-number">05</div>
-          <div class="impact-header">
-            <span class="impact-location">PHILIPPINE SEA</span>
-            <span class="impact-chapter">Chapter 05</span>
-          </div>
-          <h4 class="impact-title">Coral Reef Restoration</h4>
-          <div class="impact-metrics">
-            <div class="metric">
-              <span class="metric-value">1000</span>
-              <span class="metric-label">CORALS PLANTED</span>
-            </div>
-            <div class="metric">
-              <span class="metric-value">15</span>
-              <span class="metric-label">ACRES RESTORED</span>
-            </div>
-          </div>
-          <div class="impact-tx">
-            <span class="tx-label">TX HASH:</span>
-            <span class="tx-value">0x8c5b...d4e1</span>
-          </div>
-          <div class="impact-charity">→ Coral Triangle Initiative</div>
-        </div>
-
-        <div class="impact-item">
-          <div class="impact-number">06</div>
-          <div class="impact-header">
-            <span class="impact-location">SOUTH PACIFIC</span>
-            <span class="impact-chapter">Chapter 06</span>
-          </div>
-          <h4 class="impact-title">Island Communities Support</h4>
-          <div class="impact-metrics">
-            <div class="metric">
-              <span class="metric-value">12</span>
-              <span class="metric-label">MILES CLEANED</span>
-            </div>
-            <div class="metric">
-              <span class="metric-value">1800</span>
-              <span class="metric-label">LBS REMOVED</span>
-            </div>
-          </div>
-          <div class="impact-tx">
-            <span class="tx-label">TX HASH:</span>
-            <span class="tx-value">0x6f7e...a2c9</span>
-          </div>
-          <div class="impact-charity">→ Pacific Islands Conservation</div>
+          <div class="impact-charity">→ Arabian Wildlife</div>
         </div>
       </div>
 
@@ -494,9 +420,9 @@
     <div class="container">
       <div class="footer-main">
         <div class="footer-left">
-          <img src="captain-guido.png?v=5" alt="Captain Guido" class="footer-logo">
+          <img src="captain-guido.png" alt="Captain Guido" class="footer-logo">
           <h3 class="footer-brand">CAPTAIN GUIDO</h3>
-          <p>Sailing toward cleaner oceans, one token at a time.</p>
+          <p>Sailing toward cleaner oceans.</p>
         </div>
         <div class="footer-links">
           <div class="footer-col">
@@ -515,12 +441,11 @@
             <h4>RESOURCES</h4>
             <a href="#" id="footerTokenomics">Tokenomics</a>
             <a href="#" id="footerWhitepaper">Whitepaper</a>
-            <a href="#">Audit</a>
           </div>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Captain Guido Coin. Fighting for our oceans.</p>
+        <p>&copy; 2025 Captain Guido Coin</p>
       </div>
     </div>
   </footer>
@@ -529,89 +454,80 @@
   <div id="tokenomics-modal" class="info-modal">
     <div class="modal-overlay"></div>
     <div class="modal-content-large">
-      <button class="modal-close" id="closeTokenomics">×</button>
+      <button class="modal-close">×</button>
       <h2>TOKENOMICS</h2>
-      <p class="modal-subtitle">Captain Guido Coin Distribution & Economics</p>
+      <p class="modal-subtitle">Captain Guido Coin Distribution</p>
       
-      <div class="tokenomics-grid">
-        <div class="token-info-card">
+      <div class="tokenomics-content">
+        <div class="token-info">
           <div class="token-symbol">CGC</div>
           <h3>Captain Guido Coin</h3>
-          <div class="token-details">
-            <div class="token-detail-item">
-              <span class="detail-label">Total Supply</span>
-              <span class="detail-value">1,000,000,000</span>
+          <div class="token-stats">
+            <div class="token-stat">
+              <span class="stat-label">Supply</span>
+              <span class="stat-value">1B</span>
             </div>
-            <div class="token-detail-item">
-              <span class="detail-label">Network</span>
-              <span class="detail-value">Ethereum</span>
-            </div>
-            <div class="token-detail-item">
-              <span class="detail-label">Contract</span>
-              <span class="detail-value">0x1234...5678</span>
+            <div class="token-stat">
+              <span class="stat-label">Network</span>
+              <span class="stat-value">Ethereum</span>
             </div>
           </div>
         </div>
 
-        <div class="token-distribution">
-          <h3>Token Distribution</h3>
-          <div class="distribution-items">
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 40%;" data-percent="40"></div>
-              <div class="dist-info">
-                <span class="dist-label">Ocean Cleanup Fund</span>
-                <span class="dist-percent">40%</span>
-              </div>
+        <div class="distribution">
+          <h3>Distribution</h3>
+          <div class="dist-item">
+            <div class="dist-bar" style="width: 40%;"></div>
+            <div class="dist-info">
+              <span>Ocean Fund</span>
+              <span>40%</span>
             </div>
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 30%;" data-percent="30"></div>
-              <div class="dist-info">
-                <span class="dist-label">Liquidity Pool</span>
-                <span class="dist-percent">30%</span>
-              </div>
+          </div>
+          <div class="dist-item">
+            <div class="dist-bar" style="width: 30%;"></div>
+            <div class="dist-info">
+              <span>Liquidity</span>
+              <span>30%</span>
             </div>
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 15%;" data-percent="15"></div>
-              <div class="dist-info">
-                <span class="dist-label">Team & Development</span>
-                <span class="dist-percent">15%</span>
-              </div>
+          </div>
+          <div class="dist-item">
+            <div class="dist-bar" style="width: 15%;"></div>
+            <div class="dist-info">
+              <span>Team</span>
+              <span>15%</span>
             </div>
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 10%;" data-percent="10"></div>
-              <div class="dist-info">
-                <span class="dist-label">Marketing</span>
-                <span class="dist-percent">10%</span>
-              </div>
+          </div>
+          <div class="dist-item">
+            <div class="dist-bar" style="width: 10%;"></div>
+            <div class="dist-info">
+              <span>Marketing</span>
+              <span>10%</span>
             </div>
-            <div class="distribution-item">
-              <div class="dist-bar" style="width: 5%;" data-percent="5"></div>
-              <div class="dist-info">
-                <span class="dist-label">Airdrops</span>
-                <span class="dist-percent">5%</span>
-              </div>
+          </div>
+          <div class="dist-item">
+            <div class="dist-bar" style="width: 5%;"></div>
+            <div class="dist-info">
+              <span>Airdrops</span>
+              <span>5%</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="transaction-fees">
-        <h3>Transaction Fees</h3>
-        <div class="fees-grid">
-          <div class="fee-card">
-            <div class="fee-icon">💰</div>
-            <h4>3% Buy Tax</h4>
-            <p>1.5% to Ocean Fund<br>1.5% to Liquidity</p>
-          </div>
-          <div class="fee-card">
-            <div class="fee-icon">📊</div>
-            <h4>3% Sell Tax</h4>
-            <p>1.5% to Ocean Fund<br>1.5% to Liquidity</p>
-          </div>
-          <div class="fee-card">
-            <div class="fee-icon">🔄</div>
-            <h4>0% Transfer Tax</h4>
-            <p>Free transfers between wallets</p>
+        <div class="fees">
+          <h3>Fees</h3>
+          <div class="fee-items">
+            <div class="fee-item">
+              <h4>3% Buy</h4>
+              <p>1.5% Ocean + 1.5% LP</p>
+            </div>
+            <div class="fee-item">
+              <h4>3% Sell</h4>
+              <p>1.5% Ocean + 1.5% LP</p>
+            </div>
+            <div class="fee-item">
+              <h4>0% Transfer</h4>
+              <p>Free between wallets</p>
+            </div>
           </div>
         </div>
       </div>
@@ -622,47 +538,27 @@
   <div id="whitepaper-modal" class="info-modal">
     <div class="modal-overlay"></div>
     <div class="modal-content-large">
-      <button class="modal-close" id="closeWhitepaper">×</button>
+      <button class="modal-close">×</button>
       <h2>WHITEPAPER</h2>
-      <p class="modal-subtitle">The Complete Captain Guido Vision</p>
+      <p class="modal-subtitle">The Complete Vision</p>
       
-      <div class="whitepaper-content">
+      <div class="wp-content">
         <div class="wp-section">
           <h3>Executive Summary</h3>
-          <p>Captain Guido Coin (CGC) represents a revolutionary approach to ocean conservation through blockchain technology. By combining transparent cryptocurrency transactions with verifiable charitable donations, we're creating a sustainable ecosystem where every trade contributes to cleaning our oceans.</p>
+          <p>Captain Guido Coin leverages blockchain for ocean conservation.</p>
         </div>
-
         <div class="wp-section">
           <h3>The Problem</h3>
-          <p>Our oceans face unprecedented pollution challenges. Over 8 million tons of plastic enter our oceans annually, threatening marine ecosystems and human health. Traditional fundraising lacks transparency and struggles to engage younger, tech-savvy audiences.</p>
+          <p>8 million tons of plastic enter our oceans annually.</p>
         </div>
-
         <div class="wp-section">
           <h3>The Solution</h3>
-          <p>CGC leverages blockchain technology to create a transparent, community-driven ocean cleanup initiative. Every transaction is recorded on-chain, donations are verifiable, and holders become active participants in global environmental action.</p>
+          <p>Transparent, community-driven cleanup through CGC.</p>
         </div>
-
-        <div class="wp-section">
-          <h3>Technology</h3>
-          <p>Built on Ethereum, CGC utilizes smart contracts for automated fee distribution, ensuring 40% of all transaction fees flow directly to verified ocean cleanup organizations. Our Nautilus Ledger provides complete transparency for all charitable contributions.</p>
-        </div>
-
-        <div class="wp-section">
-          <h3>Roadmap</h3>
-          <ul>
-            <li><strong>Q1 2025:</strong> Token Launch & Initial Cleanup Partnerships</li>
-            <li><strong>Q2 2025:</strong> Chapter 1-4 Unlocks & Mediterranean Operations</li>
-            <li><strong>Q3 2025:</strong> Expansion to Asian & Pacific Regions</li>
-            <li><strong>Q4 2025:</strong> Global Coverage & Annual Impact Report</li>
-          </ul>
-        </div>
-
-        <div class="wp-download">
-          <button class="btn-primary">
-            <span>DOWNLOAD FULL WHITEPAPER (PDF)</span>
-            <span class="btn-arrow">↓</span>
-          </button>
-        </div>
+        <button class="btn-primary">
+          <span>DOWNLOAD PDF</span>
+          <span class="btn-arrow">↓</span>
+        </button>
       </div>
     </div>
   </div>
@@ -671,15 +567,15 @@
   <div id="wallet-modal" class="modal">
     <div class="modal-overlay"></div>
     <div class="modal-content">
-      <button class="modal-close" id="closeWalletModal">×</button>
+      <button class="modal-close">×</button>
       <h2>CONNECT WALLET</h2>
-      <p class="modal-subtitle">Choose your preferred wallet to connect</p>
+      <p class="modal-subtitle">Choose your wallet</p>
       <div class="wallet-options">
         <button class="wallet-option" data-wallet="metamask">
           <span class="wallet-icon">🦊</span>
           <div class="wallet-info">
             <span class="wallet-name">MetaMask</span>
-            <span class="wallet-desc">Connect using MetaMask</span>
+            <span class="wallet-desc">Browser extension</span>
           </div>
           <span class="wallet-arrow">→</span>
         </button>
@@ -687,7 +583,7 @@
           <span class="wallet-icon">🔗</span>
           <div class="wallet-info">
             <span class="wallet-name">WalletConnect</span>
-            <span class="wallet-desc">Scan with mobile wallet</span>
+            <span class="wallet-desc">Mobile wallet</span>
           </div>
           <span class="wallet-arrow">→</span>
         </button>
@@ -695,7 +591,7 @@
           <span class="wallet-icon">💼</span>
           <div class="wallet-info">
             <span class="wallet-name">Coinbase Wallet</span>
-            <span class="wallet-desc">Connect via Coinbase</span>
+            <span class="wallet-desc">Coinbase users</span>
           </div>
           <span class="wallet-arrow">→</span>
         </button>
