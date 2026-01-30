@@ -28,6 +28,35 @@ function createOceanParticles() {
   }
 }
 
+// Shuffle Text Animation
+function shuffleText(element) {
+  const originalText = element.textContent;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+  const length = originalText.length;
+  let iteration = 0;
+  
+  const interval = setInterval(function() {
+    element.textContent = originalText
+      .split('')
+      .map(function(char, index) {
+        if (index < iteration) {
+          return originalText[index];
+        }
+        if (char === ' ') return ' ';
+        return chars[Math.floor(Math.random() * chars.length)];
+      })
+      .join('');
+    
+    if (iteration >= length) {
+      clearInterval(interval);
+      element.textContent = originalText;
+    }
+    
+    iteration += 1 / 3;
+  }, 30);
+}
+
+
 // Map Setup
 const map = L.map("map", {
   worldCopyJump: true,
@@ -216,6 +245,14 @@ document.addEventListener('DOMContentLoaded', function() {
   
   document.body.classList.add('entry-active');
   createOceanParticles();
+  
+  // Shuffle text animation
+  const shuffleTitle = document.getElementById('shuffleTitle');
+  if (shuffleTitle) {
+    setTimeout(function() {
+      shuffleText(shuffleTitle);
+    }, 500);
+  }
   
   // Entry button
   const enterButton = document.getElementById('enterButton');
