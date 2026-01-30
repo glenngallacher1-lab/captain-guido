@@ -52,8 +52,7 @@ function shuffleText(element) {
       element.textContent = originalText;
     }
     
-    iteration += 1 / 3;
-  }, 30);
+    iteration += 1 / 3;  }, 30);
 }
 
 
