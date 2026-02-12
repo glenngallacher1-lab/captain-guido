@@ -144,7 +144,7 @@ body.entry-active {
   }
 }
 
-/* Marquee */
+/* Infinite Scrolling Marquee - SLOW */
 .marquee {
   position: fixed;
   top: 0;
@@ -162,17 +162,28 @@ body.entry-active {
 
 .marquee-content {
   display: flex;
-  animation: scroll 40s linear infinite;
+  animation: marqueeScroll 60s linear infinite;
   white-space: nowrap;
+  will-change: transform;
 }
 
-.marquee-content span {
-  padding-right: 100%;
+.marquee-text {
+  padding: 0 2rem;
 }
 
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+.marquee-text::after {
+  content: '•';
+  margin-left: 2rem;
+  opacity: 0.5;
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 /* Navigation */
@@ -262,7 +273,7 @@ body.entry-active {
   letter-spacing: 1.5px;
 }
 
-/* Hero Map */
+/* Hero Map - FIXED (No Zoom/Drag) */
 #hero-map {
   position: relative;
   width: 100vw;
@@ -322,12 +333,14 @@ body.entry-active {
   margin-bottom: 1.5rem;
 }
 
+/* Updated Subtitle - Same Color as Title, Bigger Font */
 .hero-subtitle {
-  font-size: 1.4rem;
-  color: var(--aqua);
+  font-size: 2.1rem;
+  color: var(--sand-cream);
   letter-spacing: 3px;
   text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
   margin-bottom: 3rem;
+  font-weight: 600;
 }
 
 .hero-stats {
@@ -1061,7 +1074,7 @@ footer {
   line-height: 1.8;
 }
 
-/* Wallet Modal */
+/* Wallet Modal - NO EMOJIS */
 .wallet-options {
   display: flex;
   flex-direction: column;
@@ -1074,7 +1087,7 @@ footer {
   padding: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: space-between;
   cursor: pointer;
   transition: all 0.3s ease;
   color: var(--sand-cream);
@@ -1085,10 +1098,6 @@ footer {
   background: rgba(30, 95, 140, 0.2);
   border-color: var(--gold-accent);
   transform: translateX(10px);
-}
-
-.wallet-icon {
-  font-size: 2.5rem;
 }
 
 .wallet-info {
@@ -1133,6 +1142,10 @@ footer {
   .hero-title {
     font-size: 2.5rem;
     letter-spacing: 5px;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.2rem;
   }
   
   .section-title {
