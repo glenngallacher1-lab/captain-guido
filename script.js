@@ -92,7 +92,7 @@
       zoomSnap: 0,
       zoomDelta: 0,
       trackResize: true
-    }).setView([20, 0], 2);
+    }).setView([20, 0], 2.5);
 
     L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
