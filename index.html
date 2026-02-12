@@ -4,7 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CAPTAIN GUIDO - Saving Our Oceans</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  
+  <!-- Security Headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Prevent external script injection -->
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https:; connect-src 'self' https:;">
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="entry-active">
@@ -23,10 +34,15 @@
     </div>
   </div>
 
-  <!-- Scrolling Marquee -->
+  <!-- Infinite Scrolling Marquee -->
   <div class="marquee">
     <div class="marquee-content">
-      <span>A VOYAGE TO CLEANER SEAS • A VOYAGE TO CLEANER SEAS • A VOYAGE TO CLEANER SEAS • A VOYAGE TO CLEANER SEAS • </span>
+      <span class="marquee-text">A VOYAGE TO CLEANER SEAS</span>
+      <span class="marquee-text">A VOYAGE TO CLEANER SEAS</span>
+      <span class="marquee-text">A VOYAGE TO CLEANER SEAS</span>
+      <span class="marquee-text">A VOYAGE TO CLEANER SEAS</span>
+      <span class="marquee-text">A VOYAGE TO CLEANER SEAS</span>
+      <span class="marquee-text">A VOYAGE TO CLEANER SEAS</span>
     </div>
   </div>
 
@@ -58,7 +74,7 @@
     </div>
   </nav>
 
-  <!-- Hero Section - Animated Map -->
+  <!-- Hero Section - Fixed Map (No Scrolling) -->
   <section id="hero-map">
     <div class="map-overlay-top"></div>
     <div id="map"></div>
@@ -563,32 +579,29 @@
     </div>
   </div>
 
-  <!-- Wallet Modal -->
+  <!-- Wallet Modal (NO EMOJIS) -->
   <div id="wallet-modal" class="modal">
     <div class="modal-overlay"></div>
     <div class="modal-content">
       <button class="modal-close">×</button>
       <h2>CONNECT WALLET</h2>
-      <p class="modal-subtitle">Choose your wallet</p>
+      <p class="modal-subtitle">Choose your preferred wallet</p>
       <div class="wallet-options">
         <button class="wallet-option" data-wallet="metamask">
-          <span class="wallet-icon">🦊</span>
           <div class="wallet-info">
             <span class="wallet-name">MetaMask</span>
-            <span class="wallet-desc">Browser extension</span>
+            <span class="wallet-desc">Browser extension wallet</span>
           </div>
           <span class="wallet-arrow">→</span>
         </button>
         <button class="wallet-option" data-wallet="walletconnect">
-          <span class="wallet-icon">🔗</span>
           <div class="wallet-info">
             <span class="wallet-name">WalletConnect</span>
-            <span class="wallet-desc">Mobile wallet</span>
+            <span class="wallet-desc">Mobile wallet connection</span>
           </div>
           <span class="wallet-arrow">→</span>
         </button>
         <button class="wallet-option" data-wallet="coinbase">
-          <span class="wallet-icon">💼</span>
           <div class="wallet-info">
             <span class="wallet-name">Coinbase Wallet</span>
             <span class="wallet-desc">Coinbase users</span>
@@ -599,7 +612,7 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="script.js"></script>
 </body>
 </html>
