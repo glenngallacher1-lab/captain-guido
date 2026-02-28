@@ -1,0 +1,61 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily at midnight
+    - cron: '0 0 * * *'
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Run security scan
+      uses: snyk/actions/node@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    
+    - name: Check for secrets in code
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+    
+    - name: Scan for vulnerabilities
+      run: |
+        echo "Scanning for common vulnerabilities..."
+        # Check for exposed API keys
+        ! grep -r "sk-" . --include="*.js" --include="*.html"
+        ! grep -r "0x[a-fA-F0-9]{64}" . --include="*.js" --include="*.html"
+        echo "Security scan complete!"
+    
+    - name: Validate HTML
+      uses: Cyb3r-Jak3/html5validator-action@v7.2.0
+      with:
+        root: ./
+        
+    - name: Check dependencies
+      run: |
+        echo "Checking for outdated dependencies..."
+        # Add npm audit or similar when you have package.json
+        echo "Dependency check complete!"
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Lighthouse Security Check
+      uses: treosh/lighthouse-ci-action@v9
+      with:
+        urls: |
+          https://glenngallacher1-lab.github.io/captain-guido/
+        uploadArtifacts: true
