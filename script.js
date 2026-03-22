@@ -71,44 +71,6 @@
     }, 30);
   }
 
-  // NEW: Animate map tiles with randomized flip effect
-  function animateMapTiles() {
-    // Wait for map tiles to load
-    setTimeout(function() {
-      const tiles = document.querySelectorAll('.leaflet-tile');
-      
-      if (tiles.length === 0) {
-        // If tiles haven't loaded yet, try again
-        animateMapTiles();
-        return;
-      }
-
-      // Create array of tiles and shuffle it for random order
-      const tilesArray = Array.from(tiles);
-      
-      // Fisher-Yates shuffle for true randomization
-      for (let i = tilesArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [tilesArray[i], tilesArray[j]] = [tilesArray[j], tilesArray[i]];
-      }
-
-      // Animate each tile with a slight delay
-      tilesArray.forEach(function(tile, index) {
-        const delay = index * 15; // 15ms between each tile
-        
-        tile.style.opacity = '0';
-        tile.style.transform = 'rotateY(90deg) scale(0.8)';
-        tile.style.transformOrigin = 'center';
-        tile.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-        
-        setTimeout(function() {
-          tile.style.opacity = '1';
-          tile.style.transform = 'rotateY(0deg) scale(1)';
-        }, delay);
-      });
-    }, 100);
-  }
-
   // Map Setup
   function initializeMap() {
     if (typeof L === 'undefined') {
@@ -132,25 +94,70 @@
       trackResize: true
     }).setView([20, 0], 2.5);
 
-    L.tileLayer(
+    // Base ocean layer
+    const oceanLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
       { attribution: "", maxZoom: 10 }
     ).addTo(map);
 
-    L.tileLayer(
+    // Imagery overlay
+    const imageryLayer = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       { attribution: "", maxZoom: 10, opacity: 0.6 }
     ).addTo(map);
 
-    // NEW: Trigger tile animation when tiles finish loading
-    map.on('load', function() {
-      animateMapTiles();
+    // Track tile loading
+    let tilesLoaded = 0;
+    let totalTiles = 0;
+    let tilesAnimated = false;
+
+    function checkAndAnimateTiles() {
+      if (tilesAnimated) return;
+      
+      const tiles = document.querySelectorAll('.leaflet-tile');
+      
+      if (tiles.length > 0) {
+        tilesAnimated = true;
+        
+        // Create array of tiles and shuffle it for random order
+        const tilesArray = Array.from(tiles);
+        
+        // Fisher-Yates shuffle for true randomization
+        for (let i = tilesArray.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [tilesArray[i], tilesArray[j]] = [tilesArray[j], tilesArray[i]];
+        }
+
+        // Animate each tile with a slight delay
+        tilesArray.forEach(function(tile, index) {
+          const delay = index * 20; // 20ms between each tile
+          
+          // Set initial state
+          tile.style.opacity = '0';
+          tile.style.transform = 'rotateY(90deg) scale(0.8)';
+          tile.style.transformOrigin = 'center';
+          tile.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+          
+          setTimeout(function() {
+            tile.style.opacity = '1';
+            tile.style.transform = 'rotateY(0deg) scale(1)';
+          }, delay);
+        });
+      }
+    }
+
+    // Listen for tile load events
+    oceanLayer.on('load', function() {
+      setTimeout(checkAndAnimateTiles, 100);
     });
 
-    // Also trigger after a short delay in case 'load' event already fired
-    setTimeout(function() {
-      animateMapTiles();
-    }, 500);
+    imageryLayer.on('load', function() {
+      setTimeout(checkAndAnimateTiles, 100);
+    });
+
+    // Also try after a delay as backup
+    setTimeout(checkAndAnimateTiles, 1000);
+    setTimeout(checkAndAnimateTiles, 2000);
 
     const shipIcon = L.divIcon({
       className: "ship",
