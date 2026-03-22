@@ -1234,3 +1234,204 @@ footer {
     flex-direction: column;
   }
 }
+
+/* Animated Shark Swimming Behind Chapter Cards */
+.shark-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shark {
+  position: absolute;
+  width: 150px;
+  height: 80px;
+  animation: sharkSwim 30s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(78, 196, 196, 0.4));
+}
+
+@keyframes sharkSwim {
+  0% {
+    left: -200px;
+    top: 20%;
+  }
+  25% {
+    left: 50%;
+    top: 40%;
+  }
+  50% {
+    left: 100%;
+    top: 60%;
+  }
+  51% {
+    left: 100%;
+    top: 60%;
+    transform: scaleX(-1);
+  }
+  75% {
+    left: 30%;
+    top: 30%;
+    transform: scaleX(-1);
+  }
+  100% {
+    left: -200px;
+    top: 20%;
+    transform: scaleX(-1);
+  }
+}
+
+.shark-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Main shark body shape */
+.shark-body::before {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 50px;
+  background: linear-gradient(135deg, #1a5f7a 0%, #2d8ca8 50%, #1a5f7a 100%);
+  border-radius: 50px 10px 50px 10px;
+  top: 15px;
+  left: 20px;
+  box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Shark head */
+.shark-body::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #2d8ca8 0%, #1a5f7a 100%);
+  border-radius: 50% 50% 50% 0;
+  top: 20px;
+  left: 0;
+  transform: rotate(-45deg);
+  box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Dorsal fin */
+.shark-fin {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 35px solid #1a5f7a;
+  top: -10px;
+  left: 50px;
+  animation: finWave 2s ease-in-out infinite;
+}
+
+@keyframes finWave {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+/* Tail */
+.shark-tail {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 40px solid #2d8ca8;
+  right: -20px;
+  top: 25px;
+  animation: tailSwim 1.5s ease-in-out infinite;
+}
+
+@keyframes tailSwim {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* Glowing green eye */
+.shark-eye {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, #00ff88 0%, #00cc66 50%, #004422 100%);
+  border-radius: 50%;
+  top: 28px;
+  left: 15px;
+  box-shadow: 
+    0 0 10px #00ff88,
+    0 0 20px #00ff88,
+    0 0 30px rgba(0, 255, 136, 0.5),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.5);
+  animation: eyeGlow 2s ease-in-out infinite;
+}
+
+/* Eye glow pulse */
+@keyframes eyeGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 10px #00ff88,
+      0 0 20px #00ff88,
+      0 0 30px rgba(0, 255, 136, 0.5),
+      inset -2px -2px 4px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 
+      0 0 15px #00ff88,
+      0 0 30px #00ff88,
+      0 0 45px rgba(0, 255, 136, 0.8),
+      inset -2px -2px 4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Make sure chapter cards are above the shark */
+.chapters-grid {
+  position: relative;
+  z-index: 2;
+}
+
+/* Responsive shark size */
+@media (max-width: 768px) {
+  .shark {
+    width: 100px;
+    height: 50px;
+    animation: sharkSwimMobile 25s linear infinite;
+  }
+  
+  @keyframes sharkSwimMobile {
+    0% {
+      left: -150px;
+      top: 15%;
+    }
+    50% {
+      left: 100%;
+      top: 50%;
+    }
+    51% {
+      left: 100%;
+      top: 50%;
+      transform: scaleX(-1);
+    }
+    100% {
+      left: -150px;
+      top: 15%;
+      transform: scaleX(-1);
+    }
+  }
+}
