@@ -1,5 +1,4 @@
 # Captain Guido Coin - Robots Configuration
-
 # Allow all good bots
 User-agent: *
 Allow: /
@@ -24,4 +23,4 @@ User-agent: DataForSeoBot
 Disallow: /
 
 # Sitemap
-Sitemap: https://captainguido.com/sitemap.xml
+Sitemap: https://glenngallacher1-lab.github.io/captain-guido/sitemap.xml
