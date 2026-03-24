@@ -471,9 +471,38 @@ body.entry-active {
   z-index: 1;
 }
 
-/* Enrich the ESRI ocean map colours */
+/* Darken and desaturate map tiles so the iridescent overlay provides the colour */
 .leaflet-tile-pane {
-  filter: saturate(1.15) brightness(0.88) contrast(1.05);
+  filter: brightness(0.38) saturate(0.3) contrast(1.15);
+}
+
+/* Wave wash-away — triggered once when map scrolls past the top of viewport */
+@keyframes waveWashAway {
+  0%   {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 85% 96%, 70% 100%, 55% 96%, 40% 100%, 25% 96%, 10% 100%, 0% 96%);
+    opacity: 1;
+  }
+  25%  {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 72%, 85% 68%, 70% 72%, 55% 68%, 40% 72%, 25% 68%, 10% 72%, 0% 68%);
+    opacity: 1;
+  }
+  55%  {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 38%, 85% 34%, 70% 38%, 55% 34%, 40% 38%, 25% 34%, 10% 38%, 0% 34%);
+    opacity: 0.7;
+  }
+  80%  {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 10%, 85% 6%, 70% 10%, 55% 6%, 40% 10%, 25% 6%, 10% 10%, 0% 6%);
+    opacity: 0.2;
+  }
+  100% {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 85% 0%, 70% 0%, 55% 0%, 40% 0%, 25% 0%, 10% 0%, 0% 0%);
+    opacity: 0;
+  }
+}
+
+#hero-map.map-washed-away {
+  animation: waveWashAway 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
 }
 
 /* Perspective context for the 3D tile flip animation */

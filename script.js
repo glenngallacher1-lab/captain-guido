@@ -477,6 +477,23 @@
         closeAllModals();
       }
     });
+
+    // Wave wash-away: fires once when the map section scrolls fully above the viewport.
+    // Adds .map-washed-away which plays the CSS clip-path wave animation and never reverses.
+    var mapWaved = false;
+    var mapSection = document.getElementById('hero-map');
+    if (mapSection) {
+      var waveObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!mapWaved && !entry.isIntersecting && entry.boundingClientRect.top < 0) {
+            mapWaved = true;
+            mapSection.classList.add('map-washed-away');
+            waveObserver.disconnect();
+          }
+        });
+      }, { threshold: 0 });
+      waveObserver.observe(mapSection);
+    }
   });
 
 })();
