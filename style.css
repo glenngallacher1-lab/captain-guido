@@ -422,8 +422,43 @@ body.entry-active {
   left: 0;
   width: 100%;
   height: 30%;
-  background: linear-gradient(180deg, var(--deep-ocean) 0%, transparent 100%);
+  background: linear-gradient(180deg, var(--midnight) 0%, transparent 100%);
   z-index: 5;
+  pointer-events: none;
+}
+
+/* Iridescent colour tint — matches the white→ice-blue→teal heading gradient */
+.map-iridescent-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 80, 200, 0.30) 0%,
+    rgba(0, 180, 255, 0.18) 35%,
+    rgba(0, 212, 255, 0.22) 65%,
+    rgba(80, 210, 240, 0.18) 100%
+  );
+  background-size: 260% 260%;
+  mix-blend-mode: screen;
+  animation: iridShift 16s ease-in-out infinite alternate;
+}
+
+@keyframes iridShift {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* Bottom fade — map dissolves seamlessly into the dark section below */
+.map-overlay-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 42%;
+  background: linear-gradient(0deg, var(--midnight) 0%, rgba(1, 6, 13, 0.6) 50%, transparent 100%);
+  z-index: 6;
   pointer-events: none;
 }
 
