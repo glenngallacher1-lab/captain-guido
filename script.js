@@ -111,10 +111,16 @@
       trackResize: true
     }).setView([20, 0], 2.5);
 
-    // Ocean base map — CartoDB Voyager (blue oceans, no API key needed)
+    // ESRI Ocean Base — beautiful blue/teal ocean map
     L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
-      { attribution: "", maxZoom: 10, subdomains: 'abcd' }
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
+      { attribution: "", maxZoom: 10 }
+    ).addTo(map);
+
+    // Ocean reference labels overlay
+    L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}",
+      { attribution: "", maxZoom: 10, opacity: 0.8 }
     ).addTo(map);
 
     const shipIcon = L.divIcon({
