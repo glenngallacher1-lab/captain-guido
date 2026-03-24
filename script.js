@@ -112,7 +112,7 @@
     }).setView([20, 0], 2.5);
 
     // ESRI Ocean Base — beautiful blue/teal ocean map
-    var baseLayer = L.tileLayer(
+    L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
       { attribution: "", maxZoom: 10 }
     ).addTo(map);
@@ -123,42 +123,43 @@
       { attribution: "", maxZoom: 10, opacity: 0.8 }
     ).addTo(map);
 
-    // Tile fly-in animation — tiles arrive from random directions and settle into place
-    var flyInDone = false;
-    function flyInTiles() {
-      if (flyInDone) return;
-      var tiles = document.querySelectorAll('#map .leaflet-tile');
-      if (tiles.length < 4) return;
-      flyInDone = true;
+    // Tile card-flip animation — MutationObserver catches every tile the instant
+    // Leaflet adds it to the DOM, flips it in from edge-on at a random delay.
+    // This guarantees the FULL map gets the effect, not just the first batch.
+    var animatedTiles = new WeakSet();
 
-      var directions = [
-        'translateX(-120px) translateY(-80px) rotate(-8deg)',
-        'translateX(120px) translateY(-80px) rotate(8deg)',
-        'translateX(-120px) translateY(80px) rotate(6deg)',
-        'translateX(120px) translateY(80px) rotate(-6deg)',
-        'translateY(-140px) rotate(4deg)',
-        'translateY(140px) rotate(-4deg)',
-        'translateX(-160px) rotate(-5deg)',
-        'translateX(160px) rotate(5deg)'
-      ];
+    function flipTileIn(tile) {
+      if (animatedTiles.has(tile)) return;
+      animatedTiles.add(tile);
 
-      Array.from(tiles).forEach(function(tile, i) {
-        var from = directions[i % directions.length];
-        tile.style.opacity = '0';
-        tile.style.transform = from + ' scale(0.7)';
-        tile.style.transition = 'none';
+      tile.style.opacity = '0';
+      tile.style.transform = 'rotateY(90deg) scale(0.9)';
+      tile.style.transformOrigin = 'center center';
+      tile.style.transition = 'none';
 
-        var delay = 80 + (i * 28) + (Math.random() * 60);
-        setTimeout(function() {
-          tile.style.transition = 'opacity 0.55s cubic-bezier(0.2,0.8,0.3,1), transform 0.6s cubic-bezier(0.2,0.8,0.3,1)';
-          tile.style.opacity = '1';
-          tile.style.transform = 'translateX(0) translateY(0) rotate(0deg) scale(1)';
-        }, delay);
-      });
+      var delay = Math.random() * 900 + 80;
+      setTimeout(function() {
+        tile.style.transition =
+          'opacity 0.45s cubic-bezier(0.2,0.8,0.3,1), transform 0.5s cubic-bezier(0.2,0.8,0.3,1)';
+        tile.style.opacity = '1';
+        tile.style.transform = 'rotateY(0deg) scale(1)';
+      }, delay);
     }
 
-    baseLayer.on('load', function() { setTimeout(flyInTiles, 200); });
-    setTimeout(flyInTiles, 1800);
+    var tileObserver = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1 && node.classList.contains('leaflet-tile')) {
+            flipTileIn(node);
+          }
+        });
+      });
+    });
+
+    tileObserver.observe(document.getElementById('map'), {
+      childList: true,
+      subtree: true
+    });
 
     const shipIcon = L.divIcon({
       className: "ship",
