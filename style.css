@@ -376,9 +376,9 @@ body.entry-active {
   z-index: 1;
 }
 
-/* Tint the CartoDB tiles toward deep ocean blue */
+/* Deepen ocean colours slightly */
 .leaflet-tile-pane {
-  filter: hue-rotate(190deg) saturate(1.3) brightness(0.85);
+  filter: saturate(1.4) brightness(0.9);
 }
 
 .hero-overlay {

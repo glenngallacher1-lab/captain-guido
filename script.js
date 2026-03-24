@@ -111,9 +111,9 @@
       trackResize: true
     }).setView([20, 0], 2.5);
 
-    // Dark ocean base — CartoDB Dark Matter (reliable, no API key needed)
+    // Ocean base map — CartoDB Voyager (blue oceans, no API key needed)
     L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
       { attribution: "", maxZoom: 10, subdomains: 'abcd' }
     ).addTo(map);
 
