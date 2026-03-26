@@ -74,7 +74,7 @@ img {
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  transition: opacity 1s ease;
+  transition: opacity 0.35s ease;
 }
 
 body.entry-active {

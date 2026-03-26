@@ -33,7 +33,7 @@
     
     setTimeout(function() {
       entryScreen.style.display = 'none';
-    }, 1000);
+    }, 350);
   }
 
   // Create ocean particles
