@@ -343,6 +343,59 @@
     }
   }
 
+  // ── MAP BOOT SEQUENCE ─────────────────────────────────────────────────────
+  function runMapBootSequence() {
+    var overlay  = document.getElementById('mapBootOverlay');
+    var bootText = document.getElementById('mapBootText');
+    var scanLine = document.getElementById('mapScanLine');
+    var hudCorners = document.querySelector('.map-hud-corners');
+    if (!overlay || !bootText || !scanLine) return;
+
+    var lines = [
+      'NAUTILUS LEDGER v1.0',
+      'INITIALIZING OCEAN GRID...',
+      'SYNCING CHAPTER NODES...',
+      'TRACKING HASHWIND COORDINATES...',
+      'SYSTEM ONLINE'
+    ];
+
+    var lineIndex = 0;
+    var charIndex = 0;
+    var currentLine = '';
+
+    function typeLine() {
+      if (lineIndex >= lines.length) {
+        // All lines typed — trigger scan
+        setTimeout(function() {
+          scanLine.classList.add('scanning');
+          if (hudCorners) hudCorners.classList.add('hud-visible');
+        }, 300);
+        setTimeout(function() {
+          overlay.classList.add('boot-done');
+        }, 2000);
+        return;
+      }
+
+      var target = lines[lineIndex];
+      if (charIndex < target.length) {
+        currentLine += target[charIndex];
+        bootText.textContent = currentLine;
+        charIndex++;
+        setTimeout(typeLine, 28);
+      } else {
+        // Line done — pause then start new line
+        currentLine += '\n';
+        bootText.textContent = currentLine;
+        lineIndex++;
+        charIndex = 0;
+        setTimeout(typeLine, lineIndex === lines.length - 1 ? 600 : 180);
+      }
+    }
+
+    // Start after a short delay so map tiles begin loading first
+    setTimeout(typeLine, 600);
+  }
+
   // Render Impact section based on IMPACT_DATA config
   function renderImpact() {
     const prelaunch = document.getElementById('impactPrelaunch');
@@ -412,6 +465,7 @@
     createOceanParticles();
     renderImpact();
     initializeMap();
+    runMapBootSequence();
     initNavigation();
     initSmoothScroll();
     

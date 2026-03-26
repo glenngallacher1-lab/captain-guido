@@ -560,6 +560,112 @@ body.entry-active {
   opacity: 0.85;
 }
 
+/* ── MAP BOOT SEQUENCE ────────────────────────────────────────────────────── */
+
+.map-boot-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  background: rgba(1, 6, 13, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.map-boot-overlay.boot-done {
+  opacity: 0;
+}
+
+.map-boot-text {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--aqua);
+  letter-spacing: 3px;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+  line-height: 2;
+}
+
+/* Scan line */
+.map-scan-line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 212, 255, 0.3) 20%,
+    rgba(0, 212, 255, 0.9) 50%,
+    rgba(0, 212, 255, 0.3) 80%,
+    transparent 100%);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.3);
+  z-index: 9;
+  top: -4px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.map-scan-line.scanning {
+  opacity: 1;
+  animation: mapScanDown 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes mapScanDown {
+  0%   { top: 0%; opacity: 1; }
+  85%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* HUD corners */
+.map-hud-corners {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.hud-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.map-hud-corners.hud-visible .hud-corner {
+  opacity: 1;
+}
+
+.hud-corner--tl {
+  top: 12px; left: 12px;
+  border-top: 2px solid var(--aqua);
+  border-left: 2px solid var(--aqua);
+  box-shadow: -4px -4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.hud-corner--tr {
+  top: 12px; right: 12px;
+  border-top: 2px solid var(--aqua);
+  border-right: 2px solid var(--aqua);
+  box-shadow: 4px -4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.hud-corner--bl {
+  bottom: 12px; left: 12px;
+  border-bottom: 2px solid var(--aqua);
+  border-left: 2px solid var(--aqua);
+  box-shadow: -4px 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.hud-corner--br {
+  bottom: 12px; right: 12px;
+  border-bottom: 2px solid var(--aqua);
+  border-right: 2px solid var(--aqua);
+  box-shadow: 4px 4px 12px rgba(0, 212, 255, 0.3);
+}
+
 /* Presale countdown */
 .presale-countdown {
   margin-bottom: 2rem;
