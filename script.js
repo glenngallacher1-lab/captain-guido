@@ -369,7 +369,7 @@
         setTimeout(function() {
           scanLine.classList.add('scanning');
           if (hudCorners) hudCorners.classList.add('hud-visible');
-        }, 300);
+        }, 150);
         // Dissolve overlay
         setTimeout(function() {
           overlay.classList.add('boot-done');
@@ -378,7 +378,7 @@
             var heroContent = document.querySelector('.hero-content');
             if (heroContent) heroContent.classList.add('hero-revealed');
           }, 1050);
-        }, 2000);
+        }, 1000);
         return;
       }
 
@@ -387,19 +387,19 @@
         currentLine += target[charIndex];
         bootText.textContent = currentLine;
         charIndex++;
-        setTimeout(typeLine, 28);
+        setTimeout(typeLine, 14);
       } else {
         // Line done — pause then start new line
         currentLine += '\n';
         bootText.textContent = currentLine;
         lineIndex++;
         charIndex = 0;
-        setTimeout(typeLine, lineIndex === lines.length - 1 ? 600 : 180);
+        setTimeout(typeLine, lineIndex === lines.length - 1 ? 250 : 80);
       }
     }
 
-    // Start after a short delay so map tiles begin loading first
-    setTimeout(typeLine, 600);
+    // Start quickly — map tiles are already loading in the background
+    setTimeout(typeLine, 200);
   }
 
   // Render Impact section based on IMPACT_DATA config
