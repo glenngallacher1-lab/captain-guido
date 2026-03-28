@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGC Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #01060d;
+      --navy:     #020c1b;
+      --card:     #0a1929;
+      --border:   rgba(0,212,255,0.12);
+      --aqua:     #00d4ff;
+      --aqua-dim: #0891b2;
+      --gold:     #f4a836;
+      --green:    #22c55e;
+      --red:      #ef4444;
+      --text:     #eef6ff;
+      --muted:    rgba(238,246,255,0.45);
+      --mono:     'JetBrains Mono', monospace;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Login screen ─────────────────────────────────────────── */
+    #login-screen {
+      width: 100%;
+      max-width: 400px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .login-logo {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: var(--aqua);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      margin-bottom: 2rem;
+    }
+
+    .login-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      font-family: var(--mono);
+    }
+
+    input[type="password"], input[type="text"], input[type="number"] {
+      width: 100%;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: var(--aqua); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.85; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-primary  { background: var(--aqua);  color: #01060d; width: 100%; }
+    .btn-gold     { background: var(--gold);  color: #01060d; }
+    .btn-green    { background: var(--green); color: #01060d; }
+    .btn-red      { background: var(--red);   color: #fff; }
+    .btn-outline  { background: transparent; border: 1px solid var(--border); color: var(--text); }
+
+    .error-msg {
+      color: var(--red);
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+      font-family: var(--mono);
+      min-height: 1.2rem;
+    }
+
+    /* ── Dashboard ────────────────────────────────────────────── */
+    #dashboard {
+      display: none;
+      width: 100%;
+      max-width: 860px;
+      padding: 1.5rem 1rem;
+    }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dash-title {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: var(--aqua);
+    }
+
+    .dash-subtitle {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: var(--aqua);
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+
+    /* Status grid */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+
+    .status-item {
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .status-val {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+    }
+
+    .status-key {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .badge-live    { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .badge-pre     { background: rgba(113,128,150,0.15); color: #718096; border: 1px solid rgba(113,128,150,0.3); }
+
+    /* Chapter grid */
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .chapter-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 400;
+      transition: border-color 0.2s, background 0.2s;
+      text-align: left;
+    }
+
+    .chapter-btn:hover:not(.ch-locked-disabled) { border-color: var(--aqua); background: rgba(0,212,255,0.05); }
+    .chapter-btn.ch-unlocked { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.05); cursor: default; }
+    .chapter-btn.ch-locked-disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .ch-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .ch-dot-green { background: var(--green); box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+    .ch-dot-grey  { background: #444; }
+
+    .ch-num {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    /* Stats form */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Milestone form */
+    .milestone-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 540px) {
+      .milestone-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.toast-ok  { border-color: rgba(34,197,94,0.4); color: var(--green); }
+    #toast.toast-err { border-color: rgba(239,68,68,0.4);  color: var(--red); }
+
+    /* Launch section */
+    .launch-warning {
+      background: rgba(239,68,68,0.07);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: #fca5a5;
+      line-height: 1.6;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ── Login ──────────────────────────────────────────────────────────────── -->
+<div id="login-screen">
+  <p class="login-logo">NAUTILUS LEDGER v1.0</p>
+  <h1 class="login-title">CGC ADMIN</h1>
+  <div class="login-card">
+    <div class="form-group">
+      <label>WORKER URL</label>
+      <input type="text" id="workerUrl" placeholder="https://cgc-admin.yourname.workers.dev">
+    </div>
+    <div class="form-group">
+      <label>PASSWORD</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" id="loginBtn" onclick="login()">ENTER</button>
+    <p class="error-msg" id="loginError"></p>
+  </div>
+</div>
+
+<!-- ── Dashboard ──────────────────────────────────────────────────────────── -->
+<div id="dashboard">
+  <div class="dash-header">
+    <div>
+      <p class="dash-title">CAPTAIN GUIDO COIN</p>
+      <h2 class="dash-subtitle">ADMIN PANEL</h2>
+    </div>
+    <button class="btn btn-outline" onclick="logout()">LOG OUT</button>
+  </div>
+
+  <!-- Status -->
+  <div class="section">
+    <p class="section-label">CURRENT STATUS</p>
+    <div class="status-grid" id="statusGrid">
+      <div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:0.8rem">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Chapters -->
+  <div class="section">
+    <p class="section-label">CHAPTER UNLOCK</p>
+    <div class="chapter-grid" id="chapterGrid">
+      <div style="color:var(--muted);font-size:0.8rem">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="section">
+    <p class="section-label">UPDATE IMPACT STATS</p>
+    <div class="stats-grid">
+      <div class="form-group">
+        <label>LBS REMOVED</label>
+        <input type="number" id="s_lbs" placeholder="0" min="0">
+      </div>
+      <div class="form-group">
+        <label>MILES CLEANED</label>
+        <input type="number" id="s_miles" placeholder="0" min="0">
+      </div>
+      <div class="form-group">
+        <label>DONATIONS VERIFIED</label>
+        <input type="number" id="s_donations" placeholder="0" min="0">
+      </div>
+      <div class="form-group">
+        <label>DONATION USD</label>
+        <input type="number" id="s_usd" placeholder="0" min="0">
+      </div>
+    </div>
+    <button class="btn btn-gold" id="statsBtn" onclick="updateStats()">SAVE STATS</button>
+  </div>
+
+  <!-- Milestone -->
+  <div class="section">
+    <p class="section-label">ADD CLEANUP MILESTONE</p>
+    <div class="milestone-grid">
+      <div class="form-group">
+        <label>DATE / PERIOD</label>
+        <input type="text" id="m_date" placeholder="e.g. 2026-Q3">
+      </div>
+      <div class="form-group">
+        <label>TITLE</label>
+        <input type="text" id="m_title" placeholder="e.g. Chapter 1 Unlocked">
+      </div>
+      <div class="form-group">
+        <label>LOCATION</label>
+        <input type="text" id="m_location" placeholder="e.g. Mediterranean Sea, Italy">
+      </div>
+      <div class="form-group">
+        <label>IMPACT</label>
+        <input type="text" id="m_impact" placeholder="e.g. 500 lbs removed">
+      </div>
+    </div>
+    <button class="btn btn-green" id="milestoneBtn" onclick="addMilestone()">ADD MILESTONE</button>
+  </div>
+
+  <!-- Launch -->
+  <div class="section">
+    <p class="section-label">LAUNCH MODE</p>
+    <div class="launch-warning">
+      ⚠️ This flips the site from pre-launch to <strong>LIVE mode</strong>. The Impact section will switch to showing real stats. Make sure your stats are filled in above first. This action can't be undone from this panel.
+    </div>
+    <button class="btn btn-red" id="launchBtn" onclick="goLive()">🚀 GO LIVE</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  const CHAPTER_NAMES = [
+    'Port of Ostia', 'Signals in Cairo', 'Arabian Tides',
+    'Indian Abyss', 'Philippine Sea', 'South Pacific',
+    'North Pacific', 'Bering Sea', 'North Atlantic',
+    'Gulf of America', 'South Atlantic', 'Return to Ostia',
+  ];
+
+  let workerUrl = '';
+  let password  = '';
+
+  // ── Persist session in sessionStorage ─────────────────────────────────────
+  function loadSession() {
+    workerUrl = sessionStorage.getItem('cgc_worker') || '';
+    password  = sessionStorage.getItem('cgc_pass')   || '';
+    if (workerUrl) document.getElementById('workerUrl').value = workerUrl;
+  }
+
+  // ── API call ───────────────────────────────────────────────────────────────
+  async function api(action, extra = {}) {
+    const res = await fetch(workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action, ...extra }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  }
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  let toastTimer;
+  function toast(msg, type = 'ok') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `show toast-${type}`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.className = ''; }, 3000);
+  }
+
+  // ── Login ──────────────────────────────────────────────────────────────────
+  async function login() {
+    const urlInput  = document.getElementById('workerUrl').value.trim();
+    const passInput = document.getElementById('password').value;
+    const errEl     = document.getElementById('loginError');
+    const btn       = document.getElementById('loginBtn');
+
+    if (!urlInput) { errEl.textContent = 'Enter your Worker URL.'; return; }
+    if (!passInput) { errEl.textContent = 'Enter a password.'; return; }
+
+    workerUrl = urlInput;
+    password  = passInput;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> CONNECTING...';
+    errEl.textContent = '';
+
+    try {
+      const data = await api('status');
+      sessionStorage.setItem('cgc_worker', workerUrl);
+      sessionStorage.setItem('cgc_pass',   password);
+      document.getElementById('login-screen').style.display = 'none';
+      document.body.style.alignItems = 'flex-start';
+      document.getElementById('dashboard').style.display = 'block';
+      renderDashboard(data);
+    } catch (e) {
+      errEl.textContent = e.message === 'Incorrect password'
+        ? '⛔ Incorrect password.'
+        : `⛔ ${e.message}`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'ENTER';
+    }
+  }
+
+  function logout() {
+    sessionStorage.clear();
+    password = workerUrl = '';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'block';
+    document.body.style.alignItems = 'center';
+    document.getElementById('password').value = '';
+    document.getElementById('loginError').textContent = '';
+  }
+
+  // ── Render dashboard ───────────────────────────────────────────────────────
+  function renderDashboard(data) {
+    renderStatus(data.impact);
+    renderChapters(data.chapters);
+    // Pre-fill stat inputs
+    const i = data.impact;
+    document.getElementById('s_lbs').value       = i.lbsRemoved       || 0;
+    document.getElementById('s_miles').value     = i.milesCleaned     || 0;
+    document.getElementById('s_donations').value = i.donationsVerified || 0;
+    document.getElementById('s_usd').value       = i.donationUSD      || 0;
+    // Hide launch button if already live
+    if (i.launched) {
+      document.getElementById('launchBtn').disabled = true;
+      document.getElementById('launchBtn').textContent = '✅ ALREADY LIVE';
+    }
+  }
+
+  function renderStatus(impact) {
+    const grid = document.getElementById('statusGrid');
+    const mode = impact.launched
+      ? '<span class="badge badge-live">🟢 LIVE</span>'
+      : '<span class="badge badge-pre">⚫ PRE-LAUNCH</span>';
+    grid.innerHTML = `
+      <div class="status-item" style="grid-column:1/-1;background:none;padding:0">${mode}</div>
+      <div class="status-item"><span class="status-val">${(impact.chaptersUnlocked||0)}</span><span class="status-key">CHAPTERS UNLOCKED</span></div>
+      <div class="status-item"><span class="status-val">${(impact.lbsRemoved||0).toLocaleString()}</span><span class="status-key">LBS REMOVED</span></div>
+      <div class="status-item"><span class="status-val">${(impact.milesCleaned||0).toLocaleString()}</span><span class="status-key">MILES CLEANED</span></div>
+      <div class="status-item"><span class="status-val">${(impact.donationsVerified||0)}</span><span class="status-key">DONATIONS</span></div>
+      <div class="status-item"><span class="status-val">$${(impact.donationUSD||0).toLocaleString()}</span><span class="status-key">DONATED USD</span></div>
+    `;
+  }
+
+  function renderChapters(chapters) {
+    const grid = document.getElementById('chapterGrid');
+    grid.innerHTML = chapters.map((ch, i) => {
+      const num = i + 1;
+      if (ch.unlocked) {
+        return `<div class="chapter-btn ch-unlocked">
+          <div class="ch-dot ch-dot-green"></div>
+          <span class="ch-num">${String(num).padStart(2,'0')}</span>
+          <span>${ch.name}</span>
+        </div>`;
+      }
+      return `<button class="chapter-btn" onclick="unlockChapter(${num}, this)">
+        <div class="ch-dot ch-dot-grey"></div>
+        <span class="ch-num">${String(num).padStart(2,'0')}</span>
+        <span>${ch.name}</span>
+      </button>`;
+    }).join('');
+  }
+
+  // ── Actions ────────────────────────────────────────────────────────────────
+  async function unlockChapter(num, btn) {
+    if (!confirm(`Unlock Chapter ${num}: ${CHAPTER_NAMES[num-1]}?\n\nThis will update the live website.`)) return;
+    btn.disabled = true;
+    btn.classList.add('ch-locked-disabled');
+    const orig = btn.innerHTML;
+    btn.innerHTML = `<span class="spinner"></span> Unlocking...`;
+    try {
+      await api('unlock_chapter', { chapter: num });
+      btn.innerHTML = `<div class="ch-dot ch-dot-green"></div><span class="ch-num">${String(num).padStart(2,'0')}</span><span>${CHAPTER_NAMES[num-1]}</span>`;
+      btn.classList.remove('ch-locked-disabled');
+      btn.classList.add('ch-unlocked');
+      btn.onclick = null;
+      toast(`✅ Chapter ${num} unlocked — live in ~2 min`);
+      refreshStatus();
+    } catch (e) {
+      btn.innerHTML = orig;
+      btn.disabled = false;
+      btn.classList.remove('ch-locked-disabled');
+      toast(`❌ ${e.message}`, 'err');
+    }
+  }
+
+  async function updateStats() {
+    const btn = document.getElementById('statsBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> SAVING...';
+    try {
+      const data = await api('update_stats', {
+        lbsRemoved:        parseInt(document.getElementById('s_lbs').value)       || 0,
+        milesCleaned:      parseInt(document.getElementById('s_miles').value)     || 0,
+        donationsVerified: parseInt(document.getElementById('s_donations').value) || 0,
+        donationUSD:       parseInt(document.getElementById('s_usd').value)       || 0,
+      });
+      toast('✅ Stats saved — live in ~2 min');
+      renderStatus(data.impact);
+    } catch (e) {
+      toast(`❌ ${e.message}`, 'err');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'SAVE STATS';
+    }
+  }
+
+  async function addMilestone() {
+    const btn  = document.getElementById('milestoneBtn');
+    const date = document.getElementById('m_date').value.trim();
+    const title = document.getElementById('m_title').value.trim();
+    const loc  = document.getElementById('m_location').value.trim();
+    const imp  = document.getElementById('m_impact').value.trim();
+    if (!date || !title || !loc || !imp) { toast('❌ Fill in all milestone fields', 'err'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> ADDING...';
+    try {
+      await api('add_milestone', { date, title, location: loc, impact: imp });
+      toast('✅ Milestone added — live in ~2 min');
+      ['m_date','m_title','m_location','m_impact'].forEach(id => document.getElementById(id).value = '');
+    } catch (e) {
+      toast(`❌ ${e.message}`, 'err');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'ADD MILESTONE';
+    }
+  }
+
+  async function goLive() {
+    if (!confirm('⚠️ CONFIRM: Flip the site to LIVE mode?\n\nThe Impact section will show real stats immediately. This cannot be undone from this panel.')) return;
+    const btn = document.getElementById('launchBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> LAUNCHING...';
+    try {
+      await api('launch');
+      btn.textContent = '✅ ALREADY LIVE';
+      toast('🚀 Site is LIVE — live in ~2 min');
+      refreshStatus();
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = '🚀 GO LIVE';
+      toast(`❌ ${e.message}`, 'err');
+    }
+  }
+
+  async function refreshStatus() {
+    try {
+      const data = await api('status');
+      renderStatus(data.impact);
+    } catch (_) {}
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  loadSession();
+  document.getElementById('password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') login();
+  });
+</script>
+</body>
+</html>
