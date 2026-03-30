@@ -88,10 +88,10 @@
     }, 30);
   }
 
-  // Map Setup — 3D Globe (cobe WebGL)
+  // Map Setup — 3D Globe (globe.gl)
   function initializeMap() {
-    if (typeof createGlobe === 'undefined') {
-      originalError('cobe not loaded');
+    if (typeof Globe === 'undefined') {
+      originalError('Globe.gl not loaded');
       return;
     }
 
@@ -112,23 +112,6 @@
       { name: 'South Atlantic',   lat: -20,           lng: -30,           unlocked: false, num: 11 },
       { name: 'Return to Ostia',  lat: 41.73,         lng: 12.29,         unlocked: false, num: 12 }
     ];
-
-    // ── Rotation state ───────────────────────────────────────────────────────
-    var phi        = 0.3;     // horizontal rotation (auto-increments)
-    var theta      = 0.15;    // vertical tilt
-    var dragging   = false;
-    var autoRotate = true;
-    var lastX = 0, lastY = 0;
-    var activeArcs = [];
-    var arcTimer   = null;
-
-    // ── Canvas ───────────────────────────────────────────────────────────────
-    var canvas = document.createElement('canvas');
-    canvas.style.cssText = 'display:block;width:100%;height:100%;cursor:grab;touch-action:none;opacity:0;transition:opacity 1.2s ease;';
-    mapEl.appendChild(canvas);
-
-    var w = mapEl.offsetWidth;
-    var h = mapEl.offsetHeight;
 
     // ── Popup ────────────────────────────────────────────────────────────────
     var popup = document.createElement('div');
@@ -170,154 +153,83 @@
       if (!e.target.closest('#map')) hidePopup();
     });
 
-    // ── Project lat/lng → screen coords given current rotation ───────────────
-    function latLngToScreen(lat, lng) {
-      var latR = lat * Math.PI / 180;
-      var lngR = lng * Math.PI / 180;
+    // ── Globe ────────────────────────────────────────────────────────────────
+    var globe = Globe()
+      // Dark dramatic night texture — deep ocean navy look
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+      .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+      .backgroundColor('rgba(0,0,0,0)')
+      .showAtmosphere(true)
+      .atmosphereColor('#00aaff')
+      .atmosphereAltitude(0.22)
+      // Chapter markers
+      .pointsData(chapters)
+      .pointLat('lat')
+      .pointLng('lng')
+      .pointColor(function(d) { return d.unlocked ? '#f4a836' : '#00d4ff'; })
+      .pointRadius(function(d) { return d.unlocked ? 0.7 : 0.45; })
+      .pointAltitude(0.02)
+      .pointResolution(16)
+      // Pulsing rings on locked chapters
+      .ringsData(chapters.filter(function(c) { return !c.unlocked; }))
+      .ringLat('lat')
+      .ringLng('lng')
+      .ringColor(function() {
+        return function(t) { return 'rgba(74,222,128,' + Math.max(0, 0.85 - t * 0.85) + ')'; };
+      })
+      .ringMaxRadius(4)
+      .ringPropagationSpeed(1.5)
+      .ringRepeatPeriod(2000)
+      // Arcs — empty until a dot is clicked
+      .arcsData([])
+      .arcStartLat('startLat')
+      .arcStartLng('startLng')
+      .arcEndLat('endLat')
+      .arcEndLng('endLng')
+      .arcColor(function() { return ['rgba(74,222,128,0.95)', 'rgba(74,222,128,0.0)']; })
+      .arcStroke(0.7)
+      .arcDashLength(0.5)
+      .arcDashGap(0.3)
+      .arcDashAnimateTime(800)
+      (mapEl);
 
-      var x0 =  Math.cos(latR) * Math.cos(lngR);
-      var y0 =  Math.sin(latR);
-      var z0 =  Math.cos(latR) * Math.sin(lngR);
+    globe.pointOfView({ lat: 20, lng: 10, altitude: 2.0 });
 
-      // Rotate around Y by phi
-      var cp = Math.cos(phi), sp = Math.sin(phi);
-      var x1 =  x0 * cp + z0 * sp;
-      var z1 = -x0 * sp + z0 * cp;
+    // Slow auto-rotate, stops on first interaction
+    var controls = globe.controls();
+    controls.autoRotate      = true;
+    controls.autoRotateSpeed = 0.35;
+    controls.enableZoom      = true;
+    controls.zoomSpeed       = 0.6;
+    controls.rotateSpeed     = 0.6;
 
-      // Rotate around X by theta
-      var ct = Math.cos(theta), st = Math.sin(theta);
-      var y2 =  y0 * ct - z1 * st;
-      var z2 =  y0 * st + z1 * ct;
+    mapEl.addEventListener('pointerdown', function() {
+      controls.autoRotate = false;
+    }, { once: true });
 
-      if (z2 < 0) return null; // behind the globe
+    // ── Click → arcs + popup ─────────────────────────────────────────────────
+    var arcTimer = null;
+    globe.onPointClick(function(point, event) {
+      if (arcTimer) clearTimeout(arcTimer);
 
-      var cw = canvas.clientWidth  || w;
-      var ch = canvas.clientHeight || h;
-      var r  = Math.min(cw, ch) * 0.5;
-      return { x: cw * 0.5 + x1 * r, y: ch * 0.5 - y2 * r };
-    }
+      var idx = chapters.findIndex(function(c) { return c.num === point.num; });
+      var arcs = [];
+      if (idx > 0)
+        arcs.push({ startLat: point.lat, startLng: point.lng,
+                    endLat: chapters[idx - 1].lat, endLng: chapters[idx - 1].lng });
+      if (idx < chapters.length - 1)
+        arcs.push({ startLat: point.lat, startLng: point.lng,
+                    endLat: chapters[idx + 1].lat, endLng: chapters[idx + 1].lng });
 
-    // ── Pulsing CSS rings on locked chapter markers ──────────────────────────
-    var ringEls = chapters
-      .filter(function(c) { return !c.unlocked; })
-      .map(function(c) {
-        var el = document.createElement('div');
-        el.className = 'cobe-ring';
-        mapEl.appendChild(el);
-        return { el: el, lat: c.lat, lng: c.lng };
-      });
+      globe.arcsData(arcs);
+      arcTimer = setTimeout(function() { globe.arcsData([]); }, 1200);
 
-    var rafId;
-    function updateRings() {
-      for (var i = 0; i < ringEls.length; i++) {
-        var r = ringEls[i];
-        var s = latLngToScreen(r.lat, r.lng);
-        if (s) {
-          r.el.style.display = 'block';
-          r.el.style.left = s.x + 'px';
-          r.el.style.top  = s.y + 'px';
-        } else {
-          r.el.style.display = 'none';
-        }
-      }
-      rafId = requestAnimationFrame(updateRings);
-    }
-    updateRings();
-
-    // ── Create cobe globe ────────────────────────────────────────────────────
-    var globe = createGlobe(canvas, {
-      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-      width:  w,
-      height: h,
-      phi:    phi,
-      theta:  theta,
-      dark:   1,
-      diffuse: 1.4,
-      mapSamples:    16000,
-      mapBrightness: 6,
-      baseColor:   [0.05, 0.12, 0.25],  // deep ocean navy
-      markerColor: [0.0,  0.83,  1.0],  // bright aqua #00d4ff
-      glowColor:   [0.0,  0.4,   0.7],  // ocean blue glow
-      markers: chapters.map(function(c) {
-        return { location: [c.lat, c.lng], size: c.unlocked ? 0.1 : 0.045 };
-      }),
-      arcs: [],
-      arcColor: [0.27, 0.87, 0.5],
-      arcWidth: 0.5,
-      arcHeight: 0.3,
-      opacity: 0.85,
-      onRender: function(state) {
-        if (autoRotate && !dragging) phi += 0.003;
-        state.phi   = phi;
-        state.theta = theta;
-        state.arcs  = activeArcs;
-      }
-    });
-
-    // Fade canvas in once globe is ready
-    setTimeout(function() { canvas.style.opacity = '1'; }, 100);
-
-    // ── Drag to rotate ───────────────────────────────────────────────────────
-    canvas.addEventListener('pointerdown', function(e) {
-      dragging   = true;
-      autoRotate = false;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      canvas.style.cursor = 'grabbing';
-      e.preventDefault();
-    });
-
-    window.addEventListener('pointermove', function(e) {
-      if (!dragging) return;
-      phi   += (e.clientX - lastX) * 0.005;
-      theta -= (e.clientY - lastY) * 0.005;
-      theta  = Math.max(-1.2, Math.min(1.2, theta));
-      lastX  = e.clientX;
-      lastY  = e.clientY;
-    }, { passive: true });
-
-    window.addEventListener('pointerup', function() {
-      dragging = false;
-      canvas.style.cursor = 'grab';
-    });
-
-    // ── Click → arc + popup ──────────────────────────────────────────────────
-    canvas.addEventListener('click', function(e) {
-      var rect = canvas.getBoundingClientRect();
-      var cx = e.clientX - rect.left;
-      var cy = e.clientY - rect.top;
-
-      var best = -1, bestDist = Infinity;
-      chapters.forEach(function(c, i) {
-        var s = latLngToScreen(c.lat, c.lng);
-        if (!s) return;
-        var d = Math.sqrt((cx - s.x) * (cx - s.x) + (cy - s.y) * (cy - s.y));
-        if (d < bestDist) { bestDist = d; best = i; }
-      });
-
-      if (best >= 0 && bestDist < 44) {
-        var ch = chapters[best];
-        if (arcTimer) clearTimeout(arcTimer);
-
-        var arcs = [];
-        if (best > 0)
-          arcs.push({ startLat: ch.lat, startLng: ch.lng, endLat: chapters[best - 1].lat, endLng: chapters[best - 1].lng });
-        if (best < chapters.length - 1)
-          arcs.push({ startLat: ch.lat, startLng: ch.lng, endLat: chapters[best + 1].lat, endLng: chapters[best + 1].lng });
-        activeArcs = arcs;
-        arcTimer = setTimeout(function() { activeArcs = []; }, 1200);
-
-        showPopup(ch, e.clientX, e.clientY);
-      } else {
-        hidePopup();
-      }
+      showPopup(point, event.clientX, event.clientY);
     });
 
     // ── Resize ───────────────────────────────────────────────────────────────
     window.addEventListener('resize', function() {
-      w = mapEl.offsetWidth;
-      h = mapEl.offsetHeight;
-      globe.destroy();
+      globe.width(mapEl.offsetWidth).height(mapEl.offsetHeight);
     });
   }
 

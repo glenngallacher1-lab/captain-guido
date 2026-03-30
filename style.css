@@ -475,22 +475,6 @@ body.entry-active {
   overflow: hidden;
 }
 
-/* Pulsing rings on locked chapter markers (positioned by JS) */
-@keyframes cobeRingPulse {
-  0%   { width: 12px; height: 12px; opacity: 0.9; }
-  70%  { width: 36px; height: 36px; opacity: 0.15; }
-  100% { width: 36px; height: 36px; opacity: 0; }
-}
-
-.cobe-ring {
-  position: absolute;
-  border: 2px solid rgba(74, 222, 128, 0.85);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 2;
-  animation: cobeRingPulse 2s ease-out infinite;
-}
 
 /* Wave wash-away — triggered once when map scrolls past the top of viewport */
 @keyframes waveWashAway {
