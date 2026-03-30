@@ -88,168 +88,159 @@
     }, 30);
   }
 
-  // Map Setup
+  // Map Setup — 3D Globe (globe.gl)
   function initializeMap() {
-    if (typeof L === 'undefined') {
-      originalError('Leaflet not loaded');
+    if (typeof Globe === 'undefined') {
+      originalError('Globe.gl not loaded');
       return;
     }
 
-    const map = L.map("map", {
-      worldCopyJump: true,
-      zoomControl: true,
-      attributionControl: false,
-      dragging: true,
-      scrollWheelZoom: false,
-      doubleClickZoom: true,
-      touchZoom: true,
-      boxZoom: false,
-      keyboard: true,
-      tap: true,
-      zoomSnap: 0.5,
-      zoomDelta: 0.5,
-      trackResize: true
-    }).setView([20, 0], 2.5);
+    var mapEl = document.getElementById('map');
+    if (!mapEl) return;
 
-    // ESRI Ocean Base — beautiful blue/teal ocean map
-    L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
-      { attribution: "", maxZoom: 10 }
-    ).addTo(map);
-
-    // Ocean reference layer removed — eliminated grid lines from map
-
-    // Tile card-flip animation — uses Leaflet's tileload event so every tile
-    // is fully loaded and positioned before we animate it. Each tile flips in
-    // from edge-on (rotateY 90deg) after a random delay for a scattered reveal.
-    map.on('tileload', function(e) {
-      var tile = e.tile;
-      if (tile.dataset.cgcFlip) return;
-      tile.dataset.cgcFlip = '1';
-
-      tile.style.opacity = '0';
-      tile.style.transform = 'rotateY(90deg)';
-      tile.style.transformOrigin = 'center center';
-      tile.style.transition = 'none';
-
-      setTimeout(function() {
-        tile.style.transition =
-          'opacity 0.4s cubic-bezier(0.2,0.8,0.3,1),' +
-          'transform 0.45s cubic-bezier(0.2,0.8,0.3,1)';
-        tile.style.opacity = '1';
-        tile.style.transform = 'rotateY(0deg)';
-      }, Math.random() * 900 + 80);
-    });
-
-    const shipIcon = L.divIcon({
-      className: "ship",
-      html: "🚢",
-      iconSize: [32, 32]
-    });
-
-    const chapters = [
-      { name: "Port of Ostia", coords: [41.73, 12.29], unlocked: true },
-      { name: "Signals in Cairo", coords: [30.0444, 31.2357], unlocked: false },
-      { name: "Arabian Tides", coords: [20, 60], unlocked: false },
-      { name: "Indian Abyss", coords: [-10, 80], unlocked: false },
-      { name: "Philippine Sea", coords: [15, 130], unlocked: false },
-      { name: "South Pacific", coords: [-21.694129, -147.915508], unlocked: false },
-      { name: "North Pacific", coords: [40, -150], unlocked: false },
-      { name: "Bering Sea", coords: [58, -175], unlocked: false },
-      { name: "North Atlantic", coords: [45, -30], unlocked: false },
-      { name: "Gulf of America", coords: [25, -90], unlocked: false },
-      { name: "South Atlantic", coords: [-20, -30], unlocked: false },
-      { name: "Return to Ostia", coords: [41.73, 12.29], unlocked: false }
+    var chapters = [
+      { name: 'Port of Ostia',    lat: 41.73,        lng: 12.29,         unlocked: true,  num: 1  },
+      { name: 'Signals in Cairo', lat: 30.0444,       lng: 31.2357,       unlocked: false, num: 2  },
+      { name: 'Arabian Tides',    lat: 20,            lng: 60,            unlocked: false, num: 3  },
+      { name: 'Indian Abyss',     lat: -10,           lng: 80,            unlocked: false, num: 4  },
+      { name: 'Philippine Sea',   lat: 15,            lng: 130,           unlocked: false, num: 5  },
+      { name: 'South Pacific',    lat: -21.694129,    lng: -147.915508,   unlocked: false, num: 6  },
+      { name: 'North Pacific',    lat: 40,            lng: -150,          unlocked: false, num: 7  },
+      { name: 'Bering Sea',       lat: 58,            lng: -175,          unlocked: false, num: 8  },
+      { name: 'North Atlantic',   lat: 45,            lng: -30,           unlocked: false, num: 9  },
+      { name: 'Gulf of America',  lat: 25,            lng: -90,           unlocked: false, num: 10 },
+      { name: 'South Atlantic',   lat: -20,           lng: -30,           unlocked: false, num: 11 },
+      { name: 'Return to Ostia',  lat: 41.73,         lng: 12.29,         unlocked: false, num: 12 }
     ];
 
-    const oceanRoutes = [
-      [[41.73, 12.29], [40.5, 14], [37, 18], [35, 23], [33, 28], [30.0444, 31.2357]],
-      [[30.0444, 31.2357], [29, 33], [25, 36], [20, 40], [18, 50], [20, 60]],
-      [[20, 60], [15, 65], [10, 70], [0, 75], [-10, 80]],
-      [[-10, 80], [-8, 90], [-5, 100], [0, 110], [5, 120], [10, 125], [15, 130]],
-      [[15, 130], [10, 140], [5, 150], [0, 160], [-5, 165], [-10, 170], [-15, 175], [-18, -175], [-21.694129, -147.915508]],
-      [[-21.694129, -147.915508], [-15, -155], [-10, -160], [0, -165], [10, -165], [20, -162], [30, -158], [40, -150]],
-      [[40, -150], [45, -155], [50, -165], [55, -172], [58, -175]],
-      [[58, -175], [62, -170], [65, -160], [68, -145], [70, -120], [68, -95], [65, -75], [60, -60], [55, -50], [50, -40], [45, -30]],
-      [[45, -30], [40, -35], [35, -45], [30, -60], [27, -75], [25, -82], [25, -90]],
-      [[25, -90], [22, -85], [18, -75], [12, -65], [5, -50], [0, -45], [-10, -38], [-20, -30]],
-      [[-20, -30], [-15, -20], [-10, -10], [0, 0], [10, 5], [20, 8], [30, 10], [36, 10], [39, 11], [41.73, 12.29]]
-    ];
+    // Popup element
+    var popup = document.createElement('div');
+    popup.id = 'globe-popup';
+    popup.style.cssText = [
+      'position:fixed',
+      'display:none',
+      'z-index:20',
+      'pointer-events:none',
+      'text-align:center',
+      'padding:1rem 1.4rem',
+      'background:linear-gradient(135deg,rgba(10,37,64,0.96) 0%,rgba(30,95,140,0.96) 100%)',
+      'border:2px solid #f4a836',
+      'border-radius:10px',
+      'color:#e8d4b8',
+      'min-width:200px',
+      'box-shadow:0 0 24px rgba(0,212,255,0.25)',
+      'transform:translate(-50%,-110%)',
+      'transition:opacity 0.2s'
+    ].join(';');
+    document.body.appendChild(popup);
 
-    const route = oceanRoutes.flat();
-
-    // Add chapter markers
-    chapters.forEach(function(chapter, index) {
-      var marker;
-      if (chapter.unlocked) {
-        marker = L.circleMarker(chapter.coords, {
-          radius: 12,
-          fillColor: '#f4a836',
-          color: '#fff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.9
-        }).addTo(map);
-      } else {
-        marker = L.marker(chapter.coords, {
-          icon: L.divIcon({
-            className: '',
-            html: '<div class="locked-marker"><div class="locked-dot"></div><div class="pulse-ring"></div></div>',
-            iconSize: [24, 24],
-            iconAnchor: [12, 12]
-          })
-        }).addTo(map);
-      }
-
-      const tempDiv = document.createElement('div');
-      tempDiv.textContent = chapter.name;
-      const safeName = tempDiv.innerHTML;
-
-      marker.bindPopup(
-        '<div style="text-align:center;padding:1rem;background:linear-gradient(135deg,#0a2540 0%,#1e5f8c 100%);border:2px solid #f4a836;color:#e8d4b8;min-width:220px;border-radius:8px;">' +
-        '<strong style="color:#f4a836;font-size:0.85rem;letter-spacing:2px;display:block;margin-bottom:0.5rem;">CHAPTER ' + String(index + 1).padStart(2, '0') + '</strong>' +
-        '<span style="color:#e8d4b8;font-size:1.2rem;font-weight:bold;display:block;margin-bottom:0.8rem;">' + safeName + '</span>' +
-        '<span style="font-size:0.8rem;color:' + (chapter.unlocked ? '#4ec4c4' : '#999') + ';font-weight:700;letter-spacing:1px;padding:0.4rem 0.8rem;border-radius:12px;background:' + (chapter.unlocked ? 'rgba(78,196,196,0.2)' : 'rgba(100,100,100,0.2)') + ';border:1px solid ' + (chapter.unlocked ? '#4ec4c4' : '#666') + ';display:inline-block;">' +
-        (chapter.unlocked ? '✓ UNLOCKED' : '🔒 LOCKED') +
-        '</span></div>',
-        { closeButton: false, className: 'custom-popup' }
-      );
-    });
-
-    // Animate ship
-    const ship = L.marker(route[0], { icon: shipIcon }).addTo(map);
-
-    let currentSegment = 0;
-    let progress = 0;
-    const speed = 0.0003;
-
-    function animateShip() {
-      const start = route[currentSegment];
-      const end = route[currentSegment + 1];
-
-      if (!end) {
-        currentSegment = 0;
-        progress = 0;
-        requestAnimationFrame(animateShip);
-        return;
-      }
-
-      const lat = start[0] + (end[0] - start[0]) * progress;
-      const lng = start[1] + (end[1] - start[1]) * progress;
-
-      ship.setLatLng([lat, lng]);
-
-      progress += speed;
-
-      if (progress >= 1) {
-        progress = 0;
-        currentSegment++;
-      }
-
-      requestAnimationFrame(animateShip);
+    function showPopup(chapter, x, y) {
+      var statusColor = chapter.unlocked ? '#4ec4c4' : '#999';
+      var statusBg    = chapter.unlocked ? 'rgba(78,196,196,0.2)' : 'rgba(100,100,100,0.2)';
+      var statusBdr   = chapter.unlocked ? '#4ec4c4' : '#666';
+      var statusText  = chapter.unlocked ? '✓ UNLOCKED' : '🔒 LOCKED';
+      popup.innerHTML =
+        '<strong style="color:#f4a836;font-size:0.8rem;letter-spacing:2px;display:block;margin-bottom:0.4rem;">CHAPTER ' + String(chapter.num).padStart(2,'0') + '</strong>' +
+        '<span style="font-size:1.1rem;font-weight:bold;display:block;margin-bottom:0.6rem;">' + chapter.name + '</span>' +
+        '<span style="font-size:0.75rem;color:' + statusColor + ';font-weight:700;letter-spacing:1px;padding:0.3rem 0.7rem;border-radius:10px;background:' + statusBg + ';border:1px solid ' + statusBdr + ';display:inline-block;">' + statusText + '</span>';
+      popup.style.left = x + 'px';
+      popup.style.top  = y + 'px';
+      popup.style.display = 'block';
+      popup.style.opacity = '1';
     }
 
-    animateShip();
+    function hidePopup() {
+      popup.style.display = 'none';
+    }
+
+    // Close popup on click outside globe
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('#map') === null) hidePopup();
+    });
+
+    var globe = Globe()
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+      .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+      .backgroundColor('rgba(0,0,0,0)')
+      .showAtmosphere(true)
+      .atmosphereColor('#0088cc')
+      .atmosphereAltitude(0.18)
+      // Chapter dots
+      .pointsData(chapters)
+      .pointLat('lat')
+      .pointLng('lng')
+      .pointColor(function(d) { return d.unlocked ? '#f4a836' : '#4ade80'; })
+      .pointRadius(function(d) { return d.unlocked ? 0.65 : 0.45; })
+      .pointAltitude(0.015)
+      .pointResolution(12)
+      // Pulsing rings on locked chapters
+      .ringsData(chapters.filter(function(c) { return !c.unlocked; }))
+      .ringLat('lat')
+      .ringLng('lng')
+      .ringColor(function() { return function(t) { return 'rgba(74,222,128,' + Math.max(0, 0.9 - t * 0.9) + ')'; }; })
+      .ringMaxRadius(3.5)
+      .ringPropagationSpeed(1.5)
+      .ringRepeatPeriod(2000)
+      // Arcs (empty until a dot is clicked)
+      .arcsData([])
+      .arcStartLat('startLat')
+      .arcStartLng('startLng')
+      .arcEndLat('endLat')
+      .arcEndLng('endLng')
+      .arcColor(function() { return ['rgba(74,222,128,0.9)', 'rgba(74,222,128,0.0)']; })
+      .arcStroke(0.6)
+      .arcDashLength(0.5)
+      .arcDashGap(0.3)
+      .arcDashAnimateTime(800)
+      (mapEl);
+
+    // Initial camera position
+    globe.pointOfView({ lat: 20, lng: 10, altitude: 2.2 });
+
+    // Enable user interaction
+    var controls = globe.controls();
+    controls.autoRotate = false;
+    controls.enableZoom = true;
+    controls.zoomSpeed = 0.8;
+    controls.rotateSpeed = 0.5;
+
+    // Slow auto-rotate until the user touches the globe
+    var autoRotating = true;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.4;
+
+    mapEl.addEventListener('pointerdown', function() {
+      if (autoRotating) {
+        controls.autoRotate = false;
+        autoRotating = false;
+      }
+    });
+
+    // Click a chapter dot → show arc to adjacent chapters + popup
+    var arcTimer = null;
+    globe.onPointClick(function(point, event) {
+      // Cancel any running arc timer
+      if (arcTimer) clearTimeout(arcTimer);
+
+      var idx = chapters.findIndex(function(c) { return c.num === point.num; });
+      var arcs = [];
+      if (idx > 0) {
+        arcs.push({ startLat: point.lat, startLng: point.lng, endLat: chapters[idx - 1].lat, endLng: chapters[idx - 1].lng });
+      }
+      if (idx < chapters.length - 1) {
+        arcs.push({ startLat: point.lat, startLng: point.lng, endLat: chapters[idx + 1].lat, endLng: chapters[idx + 1].lng });
+      }
+      globe.arcsData(arcs);
+      arcTimer = setTimeout(function() { globe.arcsData([]); }, 1200);
+
+      // Show popup at click position
+      showPopup(point, event.clientX, event.clientY);
+    });
+
+    // Resize globe with window
+    window.addEventListener('resize', function() {
+      globe.width(mapEl.offsetWidth).height(mapEl.offsetHeight);
+    });
   }
 
   // Navigation scroll effect
