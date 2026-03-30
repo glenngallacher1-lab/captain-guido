@@ -547,12 +547,31 @@ body.entry-active {
   letter-spacing: clamp(3px, 1vw, 10px);
   margin-bottom: 1.5rem;
   white-space: nowrap;
-  background: linear-gradient(135deg, #ffffff 0%, #c8e8ff 50%, #00aadd 100%);
+  background: linear-gradient(
+    120deg,
+    #ffffff 0%,
+    #c8e8ff 20%,
+    #00d4ff 35%,
+    #ffffff 50%,
+    #c8e8ff 65%,
+    #00aadd 80%,
+    #ffffff 100%
+  );
+  background-size: 250% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.2));
+  filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.35));
   opacity: 0;
+}
+
+.hero-content.hero-revealed .hero-title {
+  animation: slideInLeft 0.9s ease 0.2s both, heroShimmer 4s linear 1.2s infinite;
+}
+
+@keyframes heroShimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
 }
 
 .hero-subtitle {
@@ -574,9 +593,7 @@ body.entry-active {
   animation: fadeIn 0.6s ease 0s both;
 }
 
-.hero-content.hero-revealed .hero-title {
-  animation: slideInLeft 0.9s ease 0.2s both;
-}
+/* hero-title animation handled above with shimmer */
 
 .hero-content.hero-revealed .hero-subtitle {
   animation: slideInRight 0.8s ease 0.45s both;
