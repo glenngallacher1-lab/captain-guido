@@ -3,387 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CGC Admin Panel</title>
-
+  <title>CGC Admin</title>
   <style>
     :root {
       --gold: #f4a836;
       --navy: #01080f;
-      --dark: #060f1a;
       --card: rgba(255,255,255,0.04);
-      --border: rgba(244,168,54,0.25);
+      --border: rgba(244,168,54,0.22);
       --teal: #4ec4c4;
       --text: #eef6ff;
       --muted: rgba(238,246,255,0.45);
       --red: #ff5f5f;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--navy); color: var(--text); font-family: 'Courier New', monospace; min-height: 100vh; }
 
-    body {
-      background: var(--navy);
-      color: var(--text);
-      font-family: 'Courier New', monospace;
-      min-height: 100vh;
-    }
-
-    /* ── Login Screen ─────────────────────────────────────── */
+    /* ── Login ──────────────────────────────────────────────── */
     #login-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      gap: 1.5rem;
-      padding: 2rem;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100vh; gap: 1.5rem; padding: 2rem;
       background: radial-gradient(ellipse at center, #0a1f35 0%, var(--navy) 70%);
     }
-
-    .login-logo {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      border: 3px solid var(--gold);
-      box-shadow: 0 0 40px rgba(244,168,54,0.3);
-    }
-
-    .login-title {
-      color: var(--gold);
-      font-size: 1.3rem;
-      letter-spacing: 4px;
-    }
-
-    .login-sub {
-      color: var(--muted);
-      font-size: 0.75rem;
-      letter-spacing: 2px;
-      margin-top: -0.8rem;
-    }
-
-    .login-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem;
-      width: 100%;
-      max-width: 360px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .login-box label {
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 2px;
-    }
-
-    .pw-row {
-      display: flex;
-      gap: 0.6rem;
-    }
-
-    .pw-row input {
-      flex: 1;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 0.75rem 1rem;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      transition: border-color 0.2s;
-    }
-
+    .login-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--gold); box-shadow: 0 0 40px rgba(244,168,54,0.3); }
+    .login-title { color: var(--gold); font-size: 1.2rem; letter-spacing: 4px; }
+    .login-sub { color: var(--muted); font-size: 0.72rem; letter-spacing: 2px; margin-top: -0.8rem; }
+    .login-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 0.9rem; }
+    .login-box label { color: var(--muted); font-size: 0.68rem; letter-spacing: 2px; }
+    .pw-row { display: flex; gap: 0.6rem; }
+    .pw-row input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 0.7rem 0.9rem; font-family: 'Courier New', monospace; font-size: 0.9rem; }
     .pw-row input:focus { outline: none; border-color: var(--gold); }
-
-    .login-btn {
-      background: var(--gold);
-      color: var(--navy);
-      border: none;
-      border-radius: 8px;
-      padding: 0.75rem 1.4rem;
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 2px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-      white-space: nowrap;
-    }
-
+    .login-btn { background: var(--gold); color: var(--navy); border: none; border-radius: 8px; padding: 0.7rem 1.2rem; font-family: 'Courier New', monospace; font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; cursor: pointer; white-space: nowrap; }
     .login-btn:hover { opacity: 0.85; }
+    #login-error { display: none; color: var(--red); font-size: 0.75rem; padding: 0.6rem 0.9rem; border: 1px solid rgba(255,95,95,0.3); border-radius: 8px; background: rgba(255,95,95,0.08); text-align: center; }
 
-    #login-error {
-      display: none;
-      color: var(--red);
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      padding: 0.7rem 1rem;
-      border: 1px solid rgba(255,95,95,0.3);
-      border-radius: 8px;
-      background: rgba(255,95,95,0.08);
-      text-align: center;
-    }
-
-    /* ── Admin Panel ──────────────────────────────────────── */
+    /* ── Admin shell ────────────────────────────────────────── */
     #admin-panel { display: none; }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.8rem; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+    .header-left { display: flex; align-items: center; gap: 0.8rem; }
+    .header-left img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--gold); }
+    .header-title { color: var(--gold); font-size: 0.8rem; letter-spacing: 3px; }
+    .logout-btn { background: transparent; border: 1px solid rgba(255,95,95,0.35); color: var(--red); border-radius: 7px; padding: 0.35rem 0.8rem; font-family: 'Courier New', monospace; font-size: 0.7rem; letter-spacing: 1px; cursor: pointer; }
+    .logout-btn:hover { background: rgba(255,95,95,0.08); }
 
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(0,0,0,0.4);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(10px);
-    }
+    main { max-width: 860px; margin: 0 auto; padding: 1.8rem; display: flex; flex-direction: column; gap: 1.5rem; }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+    /* ── Cards ──────────────────────────────────────────────── */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .card-label { color: var(--gold); font-size: 0.62rem; letter-spacing: 4px; margin-bottom: 1.1rem; text-transform: uppercase; }
 
-    .header-left img {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: 2px solid var(--gold);
-    }
+    /* ── Maintenance toggle ─────────────────────────────────── */
+    .maintenance-row { display: flex; align-items: center; justify-content: space-between; }
+    .maintenance-row p { color: var(--muted); font-size: 0.78rem; line-height: 1.6; max-width: 500px; }
+    .big-toggle { position: relative; width: 64px; height: 34px; flex-shrink: 0; }
+    .big-toggle input { opacity: 0; width: 0; height: 0; }
+    .big-slider { position: absolute; inset: 0; background: rgba(255,255,255,0.08); border-radius: 20px; cursor: pointer; transition: background 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+    .big-slider::before { content: ''; position: absolute; width: 24px; height: 24px; left: 4px; top: 4px; background: #fff; border-radius: 50%; transition: transform 0.3s; }
+    .big-toggle input:checked + .big-slider { background: var(--red); border-color: var(--red); }
+    .big-toggle input:checked + .big-slider::before { transform: translateX(30px); }
+    .maintenance-label { font-size: 0.72rem; letter-spacing: 1px; margin-top: 0.3rem; }
+    .m-off { color: var(--teal); } .m-on { color: var(--red); }
 
-    .header-title {
-      color: var(--gold);
-      font-size: 0.85rem;
-      letter-spacing: 3px;
-    }
-
-    .logout-btn {
-      background: transparent;
-      border: 1px solid rgba(255,95,95,0.4);
-      color: var(--red);
-      border-radius: 8px;
-      padding: 0.4rem 0.9rem;
-      font-family: 'Courier New', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .logout-btn:hover { background: rgba(255,95,95,0.1); }
-
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .section-label {
-      color: var(--gold);
-      font-size: 0.65rem;
-      letter-spacing: 4px;
-      margin-bottom: 1rem;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.8rem;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 1rem;
-    }
-
-    .stat-field label {
-      display: block;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 2px;
-      margin-bottom: 0.4rem;
-    }
-
-    .stat-field input {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 0.6rem 0.9rem;
-      font-family: 'Courier New', monospace;
-      font-size: 1rem;
-      transition: border-color 0.2s;
-    }
-
+    /* ── Stats ──────────────────────────────────────────────── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.9rem; }
+    .stat-field label { display: block; color: var(--muted); font-size: 0.65rem; letter-spacing: 2px; margin-bottom: 0.35rem; }
+    .stat-field input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 7px; color: var(--text); padding: 0.55rem 0.8rem; font-family: 'Courier New', monospace; font-size: 0.95rem; }
     .stat-field input:focus { outline: none; border-color: var(--gold); }
 
-    .chapters-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .chapter-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.05);
-      background: rgba(255,255,255,0.02);
-      transition: border-color 0.2s;
-    }
-
-    .chapter-row:hover { border-color: var(--border); }
-    .chapter-info { display: flex; flex-direction: column; gap: 2px; }
-    .chapter-name { font-size: 0.85rem; }
-    .chapter-loc { color: var(--muted); font-size: 0.7rem; }
-
-    .toggle {
-      position: relative;
-      width: 48px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-
+    /* ── Chapters ───────────────────────────────────────────── */
+    .chapter-row { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: start; padding: 0.9rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02); margin-bottom: 0.5rem; }
+    .chapter-row:last-child { margin-bottom: 0; }
+    .ch-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+    .ch-name { font-size: 0.82rem; }
+    .ch-loc { color: var(--muted); font-size: 0.68rem; margin-left: 0.5rem; }
+    .ch-desc { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 0.5rem 0.7rem; font-family: 'Courier New', monospace; font-size: 0.75rem; resize: vertical; min-height: 60px; line-height: 1.6; }
+    .ch-desc:focus { outline: none; border-color: var(--gold); }
+    .ch-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
+    .ch-status { font-size: 0.65rem; letter-spacing: 1px; }
+    .s-unlocked { color: var(--teal); } .s-locked { color: var(--muted); }
+    .toggle { position: relative; width: 46px; height: 25px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-
-    .toggle-slider {
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0.1);
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background 0.3s;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .toggle-slider::before {
-      content: '';
-      position: absolute;
-      width: 18px; height: 18px;
-      left: 3px; top: 3px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform 0.3s;
-    }
-
+    .toggle-slider { position: absolute; inset: 0; background: rgba(255,255,255,0.08); border-radius: 20px; cursor: pointer; transition: background 0.3s; border: 1px solid rgba(255,255,255,0.08); }
+    .toggle-slider::before { content: ''; position: absolute; width: 17px; height: 17px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.3s; }
     .toggle input:checked + .toggle-slider { background: var(--teal); border-color: var(--teal); }
-    .toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(21px); }
 
-    .chapter-status {
-      font-size: 0.68rem;
-      letter-spacing: 1px;
-      width: 70px;
-      text-align: right;
-    }
+    /* ── Socials ────────────────────────────────────────────── */
+    .social-grid { display: flex; flex-direction: column; gap: 0.7rem; }
+    .social-row { display: flex; align-items: center; gap: 0.8rem; }
+    .social-row label { color: var(--muted); font-size: 0.68rem; letter-spacing: 1px; width: 80px; flex-shrink: 0; }
+    .social-row input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 7px; color: var(--text); padding: 0.5rem 0.8rem; font-family: 'Courier New', monospace; font-size: 0.8rem; }
+    .social-row input:focus { outline: none; border-color: var(--gold); }
 
-    .status-unlocked { color: var(--teal); }
-    .status-locked { color: var(--muted); }
-
-    .save-btn {
-      background: var(--gold);
-      color: var(--navy);
-      border: none;
-      border-radius: 10px;
-      padding: 0.9rem 2.5rem;
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 3px;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .save-btn:hover { opacity: 0.88; }
-    .save-btn:active { transform: scale(0.98); }
-    .save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    #config-warning {
-      background: rgba(244,168,54,0.06);
-      border: 1px solid rgba(244,168,54,0.4);
-      border-radius: 14px;
-      padding: 1.5rem;
-      font-size: 0.8rem;
-      line-height: 1.8;
-      color: var(--muted);
-    }
-
+    /* ── GitHub token ───────────────────────────────────────── */
+    #config-warning { background: rgba(244,168,54,0.05); border: 1px solid rgba(244,168,54,0.35); border-radius: 12px; padding: 1.2rem 1.5rem; font-size: 0.78rem; line-height: 1.8; color: var(--muted); }
     #config-warning strong { color: var(--gold); }
-
-    code {
-      background: rgba(255,255,255,0.07);
-      border-radius: 4px;
-      padding: 1px 6px;
-      color: var(--teal);
-    }
-
-    .token-row {
-      display: flex;
-      gap: 0.8rem;
-      margin-top: 1rem;
-    }
-
-    .token-row input {
-      flex: 1;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 0.6rem 0.9rem;
-      font-family: 'Courier New', monospace;
-      font-size: 0.82rem;
-    }
-
+    code { background: rgba(255,255,255,0.07); border-radius: 4px; padding: 1px 5px; color: var(--teal); }
+    .token-row { display: flex; gap: 0.7rem; margin-top: 0.8rem; }
+    .token-row input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 7px; color: var(--text); padding: 0.55rem 0.8rem; font-family: 'Courier New', monospace; font-size: 0.8rem; }
     .token-row input:focus { outline: none; border-color: var(--gold); }
+    .token-save-btn { background: var(--gold); color: var(--navy); border: none; border-radius: 7px; padding: 0.55rem 1.1rem; font-family: 'Courier New', monospace; font-weight: 700; font-size: 0.72rem; letter-spacing: 1px; cursor: pointer; white-space: nowrap; }
 
-    .token-save-btn {
-      background: var(--gold);
-      color: var(--navy);
-      border: none;
-      border-radius: 8px;
-      padding: 0.6rem 1.2rem;
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
-      font-size: 0.75rem;
-      letter-spacing: 2px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
+    /* ── Publish ────────────────────────────────────────────── */
+    .publish-row { display: flex; justify-content: flex-end; }
+    .save-btn { background: var(--gold); color: var(--navy); border: none; border-radius: 10px; padding: 0.85rem 2.2rem; font-family: 'Courier New', monospace; font-weight: 700; font-size: 0.82rem; letter-spacing: 3px; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; transition: opacity 0.2s; }
+    .save-btn:hover { opacity: 0.87; }
+    .save-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    #toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--teal);
-      color: var(--navy);
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
-      font-size: 0.82rem;
-      letter-spacing: 2px;
-      padding: 1rem 1.8rem;
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      transform: translateY(80px);
-      opacity: 0;
-      transition: all 0.4s ease;
-      z-index: 9999;
-      pointer-events: none;
-    }
-
+    /* ── Toast ──────────────────────────────────────────────── */
+    #toast { position: fixed; bottom: 1.8rem; right: 1.8rem; background: var(--teal); color: var(--navy); font-family: 'Courier New', monospace; font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; padding: 0.9rem 1.6rem; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); transform: translateY(70px); opacity: 0; transition: all 0.35s ease; z-index: 9999; pointer-events: none; }
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.error { background: var(--red); color: #fff; }
   </style>
@@ -393,9 +120,8 @@
 <!-- ── LOGIN ─────────────────────────────────────────────────────────────── -->
 <div id="login-screen">
   <img src="captain-character.png" alt="Captain Guido" class="login-logo">
-  <div class="login-title">CGC ADMIN PANEL</div>
-  <div class="login-sub">CAPTAIN GUIDO COIN — SITE MANAGEMENT</div>
-
+  <div class="login-title">CGC ADMIN</div>
+  <div class="login-sub">CAPTAIN GUIDO COIN</div>
   <div class="login-box">
     <label>PASSWORD</label>
     <div class="pw-row">
@@ -406,7 +132,7 @@
   </div>
 </div>
 
-<!-- ── ADMIN PANEL ────────────────────────────────────────────────────────── -->
+<!-- ── ADMIN ──────────────────────────────────────────────────────────────── -->
 <div id="admin-panel">
 
   <header>
@@ -419,44 +145,64 @@
 
   <main>
 
-    <!-- GitHub Token (one-time) -->
+    <!-- GitHub token -->
     <div id="config-warning">
-      <strong>One-time setup:</strong> Enter your GitHub token to publish changes live.<br>
-      Get one at <strong>github.com → Settings → Developer settings → Personal access tokens → Fine-grained</strong><br>
-      Give it <code>Contents: Read &amp; Write</code> on the <code>captain-guido-map</code> repo.
+      <strong>One-time setup:</strong> Paste your GitHub token to enable publishing.<br>
+      <strong>github.com → Settings → Developer settings → Fine-grained tokens</strong> → give <code>Contents: Read &amp; Write</code> on <code>captain-guido</code>.
       <div class="token-row">
         <input type="password" id="gh-token-input" placeholder="github_pat_...">
         <button class="token-save-btn" onclick="saveToken()">SAVE TOKEN</button>
       </div>
     </div>
 
-    <!-- Stats -->
+    <!-- Maintenance mode -->
     <div class="card">
-      <div class="section-label">Hero Stats</div>
+      <div class="card-label">Site Status</div>
+      <div class="maintenance-row">
+        <div>
+          <p>Turn on maintenance mode to show visitors a holding page while you make updates. Turn it off when you're done.</p>
+          <div class="maintenance-label" id="maintenance-label">
+            <span class="m-off">● SITE IS LIVE</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.4rem;">
+          <label class="big-toggle">
+            <input type="checkbox" id="maintenance-toggle" onchange="updateMaintenanceLabel()">
+            <span class="big-slider"></span>
+          </label>
+          <span style="color:var(--muted);font-size:0.62rem;letter-spacing:1px;">MAINTENANCE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero stats -->
+    <div class="card">
+      <div class="card-label">Hero Stats</div>
       <div class="stats-grid">
-        <div class="stat-field">
-          <label>CHAPTERS</label>
-          <input type="number" id="stat-chapters" value="12">
-        </div>
-        <div class="stat-field">
-          <label>LBS REMOVED</label>
-          <input type="number" id="stat-lbs" value="8500">
-        </div>
-        <div class="stat-field">
-          <label>MILES CLEANED</label>
-          <input type="number" id="stat-miles" value="62">
-        </div>
+        <div class="stat-field"><label>CHAPTERS</label><input type="number" id="stat-chapters" value="12"></div>
+        <div class="stat-field"><label>LBS REMOVED</label><input type="number" id="stat-lbs" value="8500"></div>
+        <div class="stat-field"><label>MILES CLEANED</label><input type="number" id="stat-miles" value="62"></div>
       </div>
     </div>
 
     <!-- Chapters -->
     <div class="card">
-      <div class="section-label">Chapters — Toggle to unlock</div>
-      <div class="chapters-list" id="chapters-list"></div>
+      <div class="card-label">Chapters</div>
+      <div id="chapters-list"></div>
     </div>
 
-    <!-- Save -->
-    <div style="display:flex;justify-content:flex-end;">
+    <!-- Social links -->
+    <div class="card">
+      <div class="card-label">Social Links</div>
+      <div class="social-grid">
+        <div class="social-row"><label>TWITTER</label><input type="text" id="link-twitter" value="https://twitter.com/CaptainGuido"></div>
+        <div class="social-row"><label>DISCORD</label><input type="text" id="link-discord" value="#"></div>
+        <div class="social-row"><label>TELEGRAM</label><input type="text" id="link-telegram" value="#"></div>
+      </div>
+    </div>
+
+    <!-- Publish -->
+    <div class="publish-row">
       <button class="save-btn" id="save-btn" onclick="saveChanges()">
         <span id="save-label">PUBLISH CHANGES</span>
         <span>→</span>
@@ -469,19 +215,35 @@
 <div id="toast"></div>
 
 <script>
-  // ── Password (SHA-256 hash — never stored in plain text) ──────────────────
-  const PW_HASH = '6c30a00ea8714f8f0f8de7d70f3ac80a763ea77d1547ce41db7ecd4383619af1';
+  const PW_HASH    = '6c30a00ea8714f8f0f8de7d70f3ac80a763ea77d1547ce41db7ecd4383619af1';
+  const REPO_OWNER = 'captainguidotoken-ops';
+  const REPO_NAME  = 'captain-guido';
 
-  async function hash(str) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  const CHAPTERS = [
+    { num:'01', name:'Port of Ostia',          loc:'Mediterranean Sea, Italy', unlocked:false, desc:'The salt air hit like memory. The Hashwind leaves port as the Nautilus Ledger pulses with a burn notice — encrypted coordinates pinging from just north of Cairo. Someone is poisoning the trade lanes, and they wanted to see if Guido would respond.' },
+    { num:'02', name:'Signals in Cairo',        loc:'Red Sea, Egypt',           unlocked:false, desc:'The Red Sea has become a nexus — ghost manifests bouncing between vessels and unregistered satellites. The same shadow fleet from the Atlantic, the same scrubber hacks. Kins says: cut ahead. Next time, we don\'t follow. We tag.' },
+    { num:'03', name:'Arabian Tides',           loc:'Arabian Sea',              unlocked:false, desc:'The CGC token becomes a weapon. Embedded with cutting-edge smart contracts, it can disrupt corrupt fleets — making vessels vanish from every port, every ledger, every network. The sea needs them more than ever.' },
+    { num:'04', name:'The Indian Abyss',        loc:'Indian Ocean',             unlocked:false, desc:'Digital justice meets rogue trawlers. A salvo of CGCs strikes the first illegal vessel — smart contracts cascade through its systems, navigation crippled. The blockchain remembers what the sea tries to forget.' },
+    { num:'05', name:'Philippine Sea Shadows',  loc:'Philippine Sea',           unlocked:false, desc:'Bio-tagged crypto sharks armed with subdermal CGCs enter the fight. They dart beneath the ghost fleet, triggering contracts that lock coordinates and force vessels into digital obsolescence. One by one, the dark pings fade.' },
+    { num:'06', name:'South Pacific Reckoning', loc:'South Pacific Ocean',      unlocked:false, desc:'Victory comes at a cost. The enemy fights back harder. A crypto shark is lost to the depths — its bio-tag sending a final distress pulse. The Hashwind takes damage. But the mission doesn\'t stop.' },
+    { num:'07', name:'North Pacific Requiem',   loc:'North Pacific Ocean',      unlocked:false, desc:'They return to the gyre — bigger than before. Dolphin drones scoop microplastics. Humpbacks surface alongside. But CGC reserves are draining fast. "We lit the spark," Guido says. "Others will carry it." They turn north.' },
+    { num:'08', name:'Bering Sea Crossfire',    loc:'Bering Sea',               unlocked:false, desc:'From the fog, a black submarine surfaces — the snowflake emblem glowing cold. Victor Malinov. The ghost behind the mission that nearly ended them. A siphon tether rips his stolen mint-core from his systems. Malinov dives. But not before Guido takes what he came for.' },
+    { num:'09', name:'Gyres of the Graveyard',  loc:'North Atlantic Ocean',     unlocked:false, desc:'Malinov didn\'t fight here — he shed weight. A decoy sub, deliberately abandoned. Inside, a corrupted data core burned too fast. Coordinates spill across the interface. Not ports. Not cities. Vaults.' },
+    { num:'10', name:'Gulf of America',         loc:'Gulf of Mexico',           unlocked:false, desc:'Warm water. Quiet violence. Dead zones stretch for miles beneath the calm surface. Malinov\'s offshore rig is exposed without a shot fired — CGCs deployed to reveal, not attack. Within hours, the ledger lights up.' },
+    { num:'11', name:'Southern Cross',          loc:'South Atlantic Ocean',     unlocked:false, desc:'At twilight, Malinov\'s true ship surfaces — the Cold Wallet. Sleek, shielded, glowing faint green beneath the waterline. They don\'t engage. They follow. "We don\'t chase ghosts anymore," Guido says. "We finish stories."' },
+    { num:'12', name:'Return to Ostia',         loc:'Mediterranean Sea, Italy', unlocked:false, desc:'The water smells the same. Salt. Stone. Memory. CGC adoption has spread — cleanup nodes active across every ocean they touched. But Malinov is still out there. Still burning. "This was never the end." Kins smiles. "Book one, then." Guido turns to sea. "Book two is colder."' }
+  ];
+
+  // ── Auth ───────────────────────────────────────────────────────────────────
+  async function hash(s) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
 
   async function checkPassword() {
-    const val = document.getElementById('pw-input').value;
-    const h   = await hash(val);
+    const h = await hash(document.getElementById('pw-input').value);
     if (h === PW_HASH) {
-      sessionStorage.setItem('cgc_auth', '1');
+      sessionStorage.setItem('cgc_auth','1');
       showAdmin();
     } else {
       document.getElementById('login-error').style.display = 'block';
@@ -490,55 +252,36 @@
     }
   }
 
-  // Allow Enter key on password field
-  document.getElementById('pw-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkPassword();
-  });
+  document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key==='Enter') checkPassword(); });
 
-  // ── Chapter data ──────────────────────────────────────────────────────────
-  const CHAPTERS = [
-    { num: '01', name: 'Port of Ostia',          loc: 'Mediterranean Sea, Italy', unlocked: true  },
-    { num: '02', name: 'Signals in Cairo',        loc: 'Red Sea, Egypt',           unlocked: false },
-    { num: '03', name: 'Arabian Tides',           loc: 'Arabian Sea',              unlocked: false },
-    { num: '04', name: 'The Indian Abyss',        loc: 'Indian Ocean',             unlocked: false },
-    { num: '05', name: 'Philippine Sea Shadows',  loc: 'Philippine Sea',           unlocked: false },
-    { num: '06', name: 'South Pacific Reckoning', loc: 'South Pacific Ocean',      unlocked: false },
-    { num: '07', name: 'North Pacific Requiem',   loc: 'North Pacific Ocean',      unlocked: false },
-    { num: '08', name: 'Bering Sea Crossfire',    loc: 'Bering Sea',               unlocked: false },
-    { num: '09', name: 'Gyres of the Graveyard',  loc: 'North Atlantic Ocean',     unlocked: false },
-    { num: '10', name: 'Gulf of America',         loc: 'Gulf of Mexico',           unlocked: false },
-    { num: '11', name: 'Southern Cross',          loc: 'South Atlantic Ocean',     unlocked: false },
-    { num: '12', name: 'Return to Ostia',         loc: 'Mediterranean Sea, Italy', unlocked: false }
-  ];
-
-  const REPO_OWNER = 'captainguidotoken-ops';
-  const REPO_NAME  = 'captain-guido';
-
-  // ── Show admin ────────────────────────────────────────────────────────────
   function showAdmin() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-panel').style.display  = 'block';
     renderChapters();
-    if (localStorage.getItem('cgc_gh_token')) {
-      document.getElementById('config-warning').style.display = 'none';
-    }
+    if (localStorage.getItem('cgc_gh_token')) document.getElementById('config-warning').style.display = 'none';
   }
 
-  function logout() {
-    sessionStorage.removeItem('cgc_auth');
-    location.reload();
-  }
+  function logout() { sessionStorage.removeItem('cgc_auth'); location.reload(); }
 
-  // ── GitHub token ──────────────────────────────────────────────────────────
+  // ── Token ──────────────────────────────────────────────────────────────────
   function saveToken() {
-    const val = document.getElementById('gh-token-input').value.trim();
-    if (!val) return;
-    localStorage.setItem('cgc_gh_token', val);
+    const v = document.getElementById('gh-token-input').value.trim();
+    if (!v) return;
+    localStorage.setItem('cgc_gh_token', v);
     document.getElementById('config-warning').style.display = 'none';
     toast('Token saved');
   }
 
-  // ── Chapters ──────────────────────────────────────────────────────────────
+  // ── Maintenance ────────────────────────────────────────────────────────────
+  function updateMaintenanceLabel() {
+    const on  = document.getElementById('maintenance-toggle').checked;
+    const lbl = document.getElementById('maintenance-label');
+    lbl.innerHTML = on
+      ? '<span class="m-on">● MAINTENANCE MODE ON</span>'
+      : '<span class="m-off">● SITE IS LIVE</span>';
+  }
+
+  // ── Chapters ───────────────────────────────────────────────────────────────
   function renderChapters() {
     const list = document.getElementById('chapters-list');
     list.innerHTML = '';
@@ -546,16 +289,17 @@
       const row = document.createElement('div');
       row.className = 'chapter-row';
       row.innerHTML = `
-        <div class="chapter-info">
-          <span class="chapter-name">CH.${ch.num} — ${ch.name}</span>
-          <span class="chapter-loc">${ch.loc}</span>
+        <div>
+          <div class="ch-header">
+            <span class="ch-name">CH.${ch.num} — ${ch.name}</span>
+            <span class="ch-loc">${ch.loc}</span>
+          </div>
+          <textarea class="ch-desc" id="desc-${i}">${ch.desc}</textarea>
         </div>
-        <div style="display:flex;align-items:center;gap:1rem;">
-          <span class="chapter-status ${ch.unlocked ? 'status-unlocked' : 'status-locked'}" id="lbl-${i}">
-            ${ch.unlocked ? 'UNLOCKED' : 'LOCKED'}
-          </span>
+        <div class="ch-right">
+          <span class="ch-status ${ch.unlocked?'s-unlocked':'s-locked'}" id="lbl-${i}">${ch.unlocked?'UNLOCKED':'LOCKED'}</span>
           <label class="toggle">
-            <input type="checkbox" ${ch.unlocked ? 'checked' : ''} onchange="updateChapter(${i}, this.checked)">
+            <input type="checkbox" ${ch.unlocked?'checked':''} onchange="toggleChapter(${i}, this.checked)">
             <span class="toggle-slider"></span>
           </label>
         </div>`;
@@ -563,79 +307,121 @@
     });
   }
 
-  function updateChapter(i, unlocked) {
+  function toggleChapter(i, unlocked) {
     CHAPTERS[i].unlocked = unlocked;
     const lbl = document.getElementById(`lbl-${i}`);
     lbl.textContent = unlocked ? 'UNLOCKED' : 'LOCKED';
-    lbl.className = `chapter-status ${unlocked ? 'status-unlocked' : 'status-locked'}`;
+    lbl.className = `ch-status ${unlocked ? 's-unlocked' : 's-locked'}`;
   }
 
-  // ── Publish ───────────────────────────────────────────────────────────────
+  // ── Publish ────────────────────────────────────────────────────────────────
   async function saveChanges() {
     const token = localStorage.getItem('cgc_gh_token');
-    if (!token) {
-      document.getElementById('config-warning').style.display = 'block';
-      toast('Enter your GitHub token first', true);
-      return;
-    }
+    if (!token) { document.getElementById('config-warning').style.display='block'; toast('Enter GitHub token first',true); return; }
 
     const btn = document.getElementById('save-btn');
     btn.disabled = true;
     document.getElementById('save-label').textContent = 'PUBLISHING...';
 
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    };
+    const H = { Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json' };
+    const base = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
 
     try {
-      // Fetch + patch script.js
-      const sRes  = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/script.js`, { headers });
-      const sData = await sRes.json();
-      let script  = atob(sData.content.replace(/\n/g,''));
-
-      CHAPTERS.forEach(ch => {
-        const re = new RegExp(
-          `(\\{[^}]*name:\\s*"${ch.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}"[^}]*unlocked:\\s*)(true|false)`, 'g'
-        );
-        script = script.replace(re, `$1${ch.unlocked}`);
-      });
-
-      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/script.js`, {
-        method: 'PUT', headers,
-        body: JSON.stringify({
-          message: 'admin: update chapter statuses',
-          content: btoa(unescape(encodeURIComponent(script))),
-          sha: sData.sha
-        })
-      });
-
-      // Fetch + patch index.html stats
-      const iRes  = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/index.html`, { headers });
+      // ── index.html ──────────────────────────────────────────
+      const iRes  = await fetch(base+'index.html', { headers: H });
       const iData = await iRes.json();
       let html    = atob(iData.content.replace(/\n/g,''));
+
+      // Stats
       const ch    = document.getElementById('stat-chapters').value;
       const lbs   = document.getElementById('stat-lbs').value;
       const miles = document.getElementById('stat-miles').value;
-
       html = html
-        .replace(/(data-count=")\d+("\s*>\s*)\d+(<\/div>\s*<div class="stat-label">CHAPTERS)/, `$1${ch}$2${ch}$3`)
+        .replace(/(data-count=")\d+("\s*>\s*)\d+(<\/div>\s*<div class="stat-label">CHAPTERS)/,   `$1${ch}$2${ch}$3`)
         .replace(/(data-count=")\d+("\s*>\s*)\d+(<\/div>\s*<div class="stat-label">LBS REMOVED)/, `$1${lbs}$2${lbs}$3`)
-        .replace(/(data-count=")\d+("\s*>\s*)\d+(<\/div>\s*<div class="stat-label">MILES CLEANED)/, `$1${miles}$2${miles}$3`);
+        .replace(/(data-count=")\d+("\s*>\s*)\d+(<\/div>\s*<div class="stat-label">MILES CLEANED)/,`$1${miles}$2${miles}$3`);
 
-      await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/index.html`, {
-        method: 'PUT', headers,
+      // Chapter descriptions
+      CHAPTERS.forEach((c, i) => {
+        const newDesc = document.getElementById(`desc-${i}`).value.trim();
+        const re = new RegExp(
+          `(<h3 class="chapter-title">${c.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}<\\/h3>[\\s\\S]*?<p class="chapter-desc">)[\\s\\S]*?(<\\/p>)`,'m'
+        );
+        html = html.replace(re, `$1\n              ${newDesc}\n            $2`);
+      });
+
+      // Chapter unlock status
+      CHAPTERS.forEach(c => {
+        const badge = c.unlocked ? 'unlocked' : 'locked';
+        const label = c.unlocked ? 'UNLOCKED' : 'LOCKED';
+        const re = new RegExp(
+          `(<h3 class="chapter-title">${c.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}<\\/h3>[\\s\\S]*?<span class="status-badge )(unlocked|locked)(">)(UNLOCKED|LOCKED)(<\\/span>)`,'m'
+        );
+        html = html.replace(re, `$1${badge}$3${label}$5`);
+      });
+
+      // Social links
+      const tw = document.getElementById('link-twitter').value.trim();
+      const dc = document.getElementById('link-discord').value.trim();
+      const tg = document.getElementById('link-telegram').value.trim();
+      html = html.replace(/href="https?:\/\/twitter\.com\/[^"]*"/g, `href="${tw}"`);
+
+      // Maintenance: swap index.html with maintenance.html or restore
+      const maintenance = document.getElementById('maintenance-toggle').checked;
+
+      await fetch(base+'index.html', {
+        method:'PUT', headers:H,
         body: JSON.stringify({
-          message: 'admin: update hero stats',
+          message: `admin: update site content${maintenance?' [maintenance mode]':''}`,
           content: btoa(unescape(encodeURIComponent(html))),
           sha: iData.sha
         })
       });
 
-      toast('Changes published live');
+      // ── script.js chapter unlocks ───────────────────────────
+      const sRes  = await fetch(base+'script.js', { headers: H });
+      const sData = await sRes.json();
+      let script  = atob(sData.content.replace(/\n/g,''));
 
-    } catch (err) {
+      CHAPTERS.forEach(c => {
+        const re = new RegExp(
+          `(\\{[^}]*name:\\s*"${c.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}"[^}]*unlocked:\\s*)(true|false)`,'g'
+        );
+        script = script.replace(re, `$1${c.unlocked}`);
+      });
+
+      await fetch(base+'script.js', {
+        method:'PUT', headers:H,
+        body: JSON.stringify({
+          message:'admin: update chapter statuses',
+          content: btoa(unescape(encodeURIComponent(script))),
+          sha: sData.sha
+        })
+      });
+
+      // ── Maintenance page toggle ─────────────────────────────
+      if (maintenance) {
+        // Fetch maintenance.html and put it as the live page
+        const mRes  = await fetch(base+'maintenance.html', { headers: H });
+        const mData = await mRes.json();
+
+        // Swap: back up index, serve maintenance
+        const liveRes  = await fetch(base+'index.html', { headers: H });
+        const liveData = await liveRes.json();
+
+        await fetch(base+'index.html', {
+          method:'PUT', headers:H,
+          body: JSON.stringify({
+            message:'admin: enable maintenance mode',
+            content: mData.content.replace(/\n/g,''),
+            sha: liveData.sha
+          })
+        });
+      }
+
+      toast('Changes published live ✓');
+
+    } catch(err) {
       console.error(err);
       toast('Something went wrong — check token', true);
     }
@@ -644,16 +430,16 @@
     document.getElementById('save-label').textContent = 'PUBLISH CHANGES';
   }
 
-  // ── Toast ─────────────────────────────────────────────────────────────────
-  function toast(msg, error = false) {
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  function toast(msg, error=false) {
     const el = document.getElementById('toast');
     el.textContent = msg;
-    el.className = 'show' + (error ? ' error' : '');
-    setTimeout(() => el.className = '', 3000);
+    el.className = 'show' + (error?' error':'');
+    setTimeout(()=>el.className='', 3000);
   }
 
-  // ── Auto-login if session active ──────────────────────────────────────────
-  if (sessionStorage.getItem('cgc_auth') === '1') showAdmin();
+  // ── Auto-login ─────────────────────────────────────────────────────────────
+  if (sessionStorage.getItem('cgc_auth')==='1') showAdmin();
 </script>
 
 </body>
