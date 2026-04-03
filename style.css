@@ -1000,18 +1000,16 @@ body.entry-active {
 
 .feature-image {
   width: 100%;
-  max-width: 400px;
-  border-radius: 20px;
+  max-width: 420px;
+  border-radius: 50%;
   border: 3px solid var(--gold-accent);
-  transition: transform 0.4s ease;
-  /* Crop bottom ~30% to hide the CAPTAIN GUIDO text banner in the PNG */
-  object-fit: cover;
-  object-position: top center;
-  aspect-ratio: 1 / 0.70;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  display: block;
 }
 
 .image-wrapper:hover .feature-image {
-  transform: scale(1.05) rotate(2deg);
+  transform: scale(1.06);
+  box-shadow: 0 0 60px rgba(244, 168, 54, 0.5);
 }
 
 .image-glow {
@@ -1021,18 +1019,24 @@ body.entry-active {
   transform: translate(-50%, -50%);
   width: 120%;
   height: 120%;
-  background: radial-gradient(circle, rgba(244, 168, 54, 0.3) 0%, transparent 70%);
-  animation: pulse 3s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(244, 168, 54, 0.25) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.image-wrapper:hover .image-glow {
+  opacity: 1;
+  animation: pulse 2.5s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% {
-    opacity: 0.5;
+    opacity: 0.4;
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.08);
   }
 }
 
