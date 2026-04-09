@@ -37,22 +37,32 @@
   <div id="cursor-dot" aria-hidden="true"></div>
   <div id="cursor-ring" aria-hidden="true"></div>
 
-  <!-- Entry Screen -->
-  <div id="entry-screen">
+  <!-- Entry / Loading Screen -->
+  <div id="entry-screen" role="status" aria-label="Loading Captain Guido">
     <div class="ocean-particles" id="oceanParticles"></div>
     <div class="tech-grid" aria-hidden="true"></div>
-    <div class="scan-line" aria-hidden="true"></div>
-    <div class="entry-content-wrapper">
-      <div class="entry-logo-wrapper">
+
+    <div class="loader-content">
+      <!-- Logo -->
+      <div class="loader-logo-wrap">
         <div class="sonar-rings" aria-hidden="true"></div>
-        <img src="captain-guido.png" alt="Captain Guido Logo" class="entry-logo" width="250" height="250">
+        <img src="captain-guido.png" alt="Captain Guido" class="entry-logo" width="160" height="160">
       </div>
+
+      <!-- Title -->
       <h1 class="entry-title" id="shuffleTitle">CAPTAIN GUIDO</h1>
       <p class="entry-subtitle">A VOYAGE TO CLEANER SEAS</p>
-      <button class="enter-btn" id="enterButton" type="button" aria-label="Enter the Captain Guido website">
-        <span class="btn-text">ENTER THE VOYAGE</span>
-        <span class="btn-arrow" aria-hidden="true">→</span>
-      </button>
+
+      <!-- Loading bar + counter -->
+      <div class="loader-bar-wrap" aria-hidden="true">
+        <div class="loader-bar-track">
+          <div class="loader-bar-fill" id="loaderBarFill"></div>
+        </div>
+        <div class="loader-meta">
+          <span class="loader-status" id="loaderStatus">INITIALIZING</span>
+          <span class="loader-pct" id="loaderPct">0%</span>
+        </div>
+      </div>
     </div>
   </div>
 

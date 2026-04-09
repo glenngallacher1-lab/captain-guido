@@ -22,18 +22,68 @@
   };
   // ──────────────────────────────────────────────────────────────────────────
   
-  // Entry Screen
+  // ─── AUTO LOADER ─────────────────────────────────────────────────────────
   function enterSite() {
-    const entryScreen = document.getElementById('entry-screen');
+    var entryScreen = document.getElementById('entry-screen');
     if (!entryScreen) return;
-    
     document.body.classList.remove('entry-active');
     entryScreen.classList.add('hidden');
     document.body.style.overflow = 'auto';
-    
-    setTimeout(function() {
-      entryScreen.style.display = 'none';
-    }, 350);
+    setTimeout(function() { entryScreen.style.display = 'none'; }, 750);
+  }
+
+  var LOADER_STATUSES = [
+    'INITIALIZING',
+    'LOADING ASSETS',
+    'SYNCING LEDGER',
+    'MAPPING ROUTE',
+    'READY'
+  ];
+
+  function runLoader() {
+    var fill    = document.getElementById('loaderBarFill');
+    var pctEl   = document.getElementById('loaderPct');
+    var statEl  = document.getElementById('loaderStatus');
+    if (!fill || !pctEl) { enterSite(); return; }
+
+    var pct      = 0;
+    var target   = 0;
+    var duration = 2800; // total ms to reach 100%
+    var start    = null;
+
+    // Eased progress curve — fast start, slight pause mid, burst to 100
+    function easedPct(t) {
+      // t in [0,1] → pct in [0,100]
+      if (t < 0.6) return 82 * (t / 0.6) * (2 - (t / 0.6)) * 0.5; // ease-in-out to ~82%
+      return 82 + 18 * ((t - 0.6) / 0.4);                           // linear sprint to 100%
+    }
+
+    function updateStatus(p) {
+      var idx = p < 20 ? 0 : p < 45 ? 1 : p < 65 ? 2 : p < 90 ? 3 : 4;
+      if (statEl) statEl.textContent = LOADER_STATUSES[idx];
+    }
+
+    function tick(ts) {
+      if (!start) start = ts;
+      var elapsed = Math.min(ts - start, duration);
+      var t       = elapsed / duration;
+      pct         = easedPct(t);
+
+      fill.style.width  = pct + '%';
+      pctEl.textContent = Math.floor(pct) + '%';
+      updateStatus(Math.floor(pct));
+
+      if (pct < 100) {
+        requestAnimationFrame(tick);
+      } else {
+        fill.style.width  = '100%';
+        pctEl.textContent = '100%';
+        if (statEl) statEl.textContent = 'READY';
+        setTimeout(enterSite, 400);
+      }
+    }
+
+    requestAnimationFrame(tick);
   }
 
   // Create ocean particles
@@ -480,19 +530,12 @@
     }
     initSmoothScroll();
     
-    // Shuffle animation
-    const shuffleTitle = document.getElementById('shuffleTitle');
+    // Shuffle title then kick off auto-loader
+    var shuffleTitle = document.getElementById('shuffleTitle');
     if (shuffleTitle) {
-      setTimeout(function() {
-        shuffleText(shuffleTitle);
-      }, 500);
+      shuffleText(shuffleTitle);
     }
-    
-    // Entry button
-    const enterButton = document.getElementById('enterButton');
-    if (enterButton) {
-      enterButton.addEventListener('click', enterSite);
-    }
+    setTimeout(runLoader, 600);
     
     // Tokenomics modal
     const openTokenomicsBtn = document.getElementById('openTokenomics');
