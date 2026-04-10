@@ -8,7 +8,7 @@
   "chapters": [
     {
       "num": "01",
-      "unlocked": false
+      "unlocked": true
     },
     {
       "num": "02",
@@ -55,6 +55,168 @@
       "unlocked": false
     }
   ],
+  "tasks": {
+    "p1-1": {
+      "done": false,
+      "note": ""
+    },
+    "p1-2": {
+      "done": false,
+      "note": ""
+    },
+    "p1-3": {
+      "done": false,
+      "note": "see if i cant do this via free url\n"
+    },
+    "p1-4": {
+      "done": true,
+      "note": ""
+    },
+    "p1-5": {
+      "done": false,
+      "note": ""
+    },
+    "p1-6": {
+      "done": true,
+      "note": ""
+    },
+    "p1-7": {
+      "done": false,
+      "note": ""
+    },
+    "p1-8": {
+      "done": false,
+      "note": ""
+    },
+    "p1-9": {
+      "done": true,
+      "note": ""
+    },
+    "p1-10": {
+      "done": true,
+      "note": ""
+    },
+    "p2-1": {
+      "done": true,
+      "note": ""
+    },
+    "p2-2": {
+      "done": false,
+      "note": ""
+    },
+    "p2-3": {
+      "done": false,
+      "note": ""
+    },
+    "p2-4": {
+      "done": false,
+      "note": ""
+    },
+    "p2-5": {
+      "done": false,
+      "note": ""
+    },
+    "p2-6": {
+      "done": false,
+      "note": ""
+    },
+    "p2-7": {
+      "done": false,
+      "note": ""
+    },
+    "p2-8": {
+      "done": false,
+      "note": ""
+    },
+    "p2-9": {
+      "done": false,
+      "note": ""
+    },
+    "p2-10": {
+      "done": false,
+      "note": ""
+    },
+    "p3-1": {
+      "done": false,
+      "note": ""
+    },
+    "p3-2": {
+      "done": false,
+      "note": ""
+    },
+    "p3-3": {
+      "done": false,
+      "note": ""
+    },
+    "p3-4": {
+      "done": false,
+      "note": ""
+    },
+    "p3-5": {
+      "done": false,
+      "note": ""
+    },
+    "p3-6": {
+      "done": false,
+      "note": ""
+    },
+    "p3-7": {
+      "done": false,
+      "note": ""
+    },
+    "p3-8": {
+      "done": false,
+      "note": ""
+    },
+    "p3-9": {
+      "done": false,
+      "note": ""
+    },
+    "p3-10": {
+      "done": false,
+      "note": ""
+    },
+    "p4-1": {
+      "done": false,
+      "note": ""
+    },
+    "p4-2": {
+      "done": false,
+      "note": ""
+    },
+    "p4-3": {
+      "done": false,
+      "note": ""
+    },
+    "p4-4": {
+      "done": false,
+      "note": ""
+    },
+    "p4-5": {
+      "done": false,
+      "note": ""
+    },
+    "p4-6": {
+      "done": false,
+      "note": ""
+    },
+    "p4-7": {
+      "done": false,
+      "note": ""
+    },
+    "p4-8": {
+      "done": false,
+      "note": ""
+    },
+    "p4-9": {
+      "done": false,
+      "note": ""
+    },
+    "p4-10": {
+      "done": false,
+      "note": ""
+    }
+  },
   "social": {
     "twitter": "https://twitter.com/CaptainGuido",
     "discord": "#",
