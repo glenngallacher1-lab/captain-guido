@@ -163,6 +163,15 @@
       { name: 'Return to Ostia',  lat: 41.73,         lng: 12.29,         unlocked: false, num: 12 }
     ];
 
+    // Apply any unlock states fetched from config.json before the globe initialised
+    if (window._chapterUnlockStates) {
+      chapters.forEach(function(c) {
+        if (window._chapterUnlockStates[c.num] !== undefined) {
+          c.unlocked = window._chapterUnlockStates[c.num];
+        }
+      });
+    }
+
     // ── Popup ────────────────────────────────────────────────────────────────
     var popup = document.createElement('div');
     popup.id = 'globe-popup';
@@ -187,7 +196,7 @@
       var statusColor = chapter.unlocked ? '#4ec4c4' : '#999';
       var statusBg    = chapter.unlocked ? 'rgba(78,196,196,0.2)' : 'rgba(100,100,100,0.2)';
       var statusBdr   = chapter.unlocked ? '#4ec4c4' : '#666';
-      var statusText  = chapter.unlocked ? '✓ UNLOCKED' : '🔒 LOCKED';
+      var statusText  = chapter.unlocked ? '✓ UNLOCKED' : 'LOCKED';
       popup.innerHTML =
         '<strong style="color:#f4a836;font-size:0.8rem;letter-spacing:2px;display:block;margin-bottom:0.4rem;">CHAPTER ' + String(chapter.num).padStart(2,'0') + '</strong>' +
         '<span style="font-size:1.1rem;font-weight:bold;display:block;margin-bottom:0.6rem;">' + chapter.name + '</span>' +
@@ -538,9 +547,13 @@
 
     // Chapter unlock badges + globe sync
     if (cfg.chapters) {
+      // Store states globally so the globe can read them when it initialises
+      window._chapterUnlockStates = {};
       cfg.chapters.forEach(function(ch) {
-        var num = parseInt(ch.num, 10);
+        window._chapterUnlockStates[parseInt(ch.num, 10)] = !!ch.unlocked;
+      });
 
+      cfg.chapters.forEach(function(ch) {
         // Update DOM chapter cards
         var cards = document.querySelectorAll('.chapter-card');
         cards.forEach(function(card) {
@@ -554,14 +567,14 @@
           }
         });
 
-        // Update globe in-memory chapter data
+        // If globe already initialised, update it live
         if (window._globeChapters) {
-          var gc = window._globeChapters.find(function(c) { return c.num === num; });
+          var gc = window._globeChapters.find(function(c) { return c.num === parseInt(ch.num, 10); });
           if (gc) gc.unlocked = !!ch.unlocked;
         }
       });
 
-      // Refresh globe point colours, sizes, and rings
+      // Refresh globe if already running
       if (window._globe && window._globeChapters) {
         window._globe
           .pointsData(window._globeChapters)
