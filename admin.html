@@ -592,6 +592,187 @@
     #toast.ok   { background: var(--success); }
     #toast.err  { background: var(--danger); }
 
+    /* ─── CHAT ────────────────────────────────────────────────── */
+    #panel-chat {
+      height: calc(100vh - 4rem);
+      display: none;
+      flex-direction: column;
+      gap: 0;
+    }
+    #panel-chat.active { display: flex; }
+
+    .chat-header {
+      padding: 0 0 1rem 0;
+      flex-shrink: 0;
+    }
+
+    .chat-window {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      scroll-behavior: smooth;
+    }
+
+    .chat-msg {
+      display: flex;
+      gap: 0.6rem;
+      max-width: 88%;
+      animation: msgIn 0.18s ease;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+    .chat-msg.bot  { align-self: flex-start; }
+
+    .chat-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .chat-msg.user .chat-avatar { background: var(--text); color: #fff; }
+    .chat-msg.bot  .chat-avatar { background: var(--gold); color: #fff; }
+
+    .chat-bubble {
+      padding: 0.6rem 0.9rem;
+      border-radius: 14px;
+      font-size: 0.84rem;
+      line-height: 1.55;
+      max-width: 100%;
+    }
+
+    .chat-msg.user .chat-bubble {
+      background: var(--text);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-msg.bot .chat-bubble {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-bubble code {
+      background: rgba(0,0,0,0.08);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+    }
+
+    .chat-msg.user .chat-bubble code { background: rgba(255,255,255,0.15); }
+
+    .chat-bubble .ok   { color: var(--success); font-weight: 600; }
+    .chat-bubble .err  { color: var(--danger);  font-weight: 600; }
+    .chat-bubble .muted { color: var(--muted); font-size: 0.78rem; }
+
+    .chat-typing {
+      display: none;
+      align-self: flex-start;
+      gap: 0.6rem;
+    }
+    .chat-typing.show { display: flex; }
+    .typing-dots {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0.6rem 0.9rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      border-bottom-left-radius: 4px;
+    }
+    .typing-dots span {
+      width: 6px; height: 6px;
+      background: var(--muted);
+      border-radius: 50%;
+      animation: typingDot 1.2s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingDot {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 0;
+      flex-shrink: 0;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border);
+      border-right: none;
+      border-top: none;
+      border-radius: 0 0 0 var(--radius);
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .chat-input:focus { border-color: var(--gold); }
+
+    .chat-send {
+      padding: 0.8rem 1.2rem;
+      background: var(--text);
+      color: #fff;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) 0;
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .chat-send:hover { background: #374151; }
+
+    .chat-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .chip {
+      padding: 0.3rem 0.7rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-family: inherit;
+      font-size: 0.72rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip:hover { border-color: var(--gold); color: var(--gold-dk); }
+
     /* ─── DIVIDER ─────────────────────────────────────────────── */
     .divider { border: none; border-top: 1px solid var(--border); margin: 0.25rem 0; }
 
@@ -788,6 +969,10 @@
         Social Links
       </button>
 
+      <button class="nav-item" onclick="showPanel('chat')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Command Chat
+      </button>
       <button class="nav-item" onclick="showPanel('checklist')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
         Launch Checklist
@@ -941,6 +1126,39 @@
           Create a fine-grained token at <strong>github.com → Settings → Developer settings → Fine-grained tokens</strong>.<br>
           Repository: <strong>captain-guido</strong> &nbsp;·&nbsp; Permission: <strong>Contents — Read &amp; Write</strong>
         </p>
+      </div>
+    </section>
+
+    <!-- Command Chat -->
+    <section class="panel" id="panel-chat">
+      <div class="chat-header">
+        <div class="panel-title">Command Chat</div>
+        <div class="panel-sub">Type commands to manage the site — changes publish instantly.</div>
+      </div>
+
+      <div class="chat-window" id="chat-window">
+        <!-- messages injected here -->
+        <div class="chat-typing" id="chat-typing">
+          <div class="chat-avatar" style="background:var(--gold);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;margin-top:2px;">G</div>
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" type="text" placeholder="e.g. unlock 3  ·  set lbs 8500  ·  status" autocomplete="off">
+        <button class="chat-send" onclick="chatSend()">Send</button>
+      </div>
+
+      <div class="chat-suggestions">
+        <button class="chip" onclick="chatFill('status')">status</button>
+        <button class="chip" onclick="chatFill('unlock all')">unlock all</button>
+        <button class="chip" onclick="chatFill('lock all')">lock all</button>
+        <button class="chip" onclick="chatFill('maintenance on')">maintenance on</button>
+        <button class="chip" onclick="chatFill('maintenance off')">maintenance off</button>
+        <button class="chip" onclick="chatFill('set lbs ')">set lbs</button>
+        <button class="chip" onclick="chatFill('set miles ')">set miles</button>
+        <button class="chip" onclick="chatFill('unlock ')">unlock chapter…</button>
+        <button class="chip" onclick="chatFill('help')">help</button>
       </div>
     </section>
 
@@ -1165,11 +1383,13 @@
   function logout() { sessionStorage.removeItem('cgc_auth'); location.reload(); }
 
   // ── Nav ────────────────────────────────────────────────────────────────────
+  var _chatInited = false;
   function showPanel(id) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('panel-' + id).classList.add('active');
     event.currentTarget.classList.add('active');
+    if (id === 'chat' && !_chatInited) { _chatInited = true; initChat(); }
   }
 
   // ── Maintenance ────────────────────────────────────────────────────────────
@@ -1383,6 +1603,157 @@
     el.className   = 'show' + (type ? ' ' + type : '');
     clearTimeout(el._t);
     el._t = setTimeout(() => el.className = '', 3500);
+  }
+
+  // ── Command Chat ───────────────────────────────────────────────────────────
+  function chatFill(text) {
+    var inp = document.getElementById('chat-input');
+    inp.value = text;
+    inp.focus();
+  }
+
+  function chatSend() {
+    var inp = document.getElementById('chat-input');
+    var raw = inp.value.trim();
+    if (!raw) return;
+    inp.value = '';
+    addMsg(raw, 'user');
+    setTimeout(function() { runCommand(raw); }, 280);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'chat-input') chatSend();
+  });
+
+  function addMsg(html, who) {
+    var win    = document.getElementById('chat-window');
+    var typing = document.getElementById('chat-typing');
+    var div    = document.createElement('div');
+    div.className = 'chat-msg ' + who;
+    div.innerHTML = '<div class="chat-avatar">' + (who === 'user' ? 'You' : 'G') + '</div><div class="chat-bubble">' + html + '</div>';
+    win.insertBefore(div, typing);
+    win.scrollTop = win.scrollHeight;
+  }
+
+  function showTyping() { document.getElementById('chat-typing').classList.add('show'); var w=document.getElementById('chat-window'); w.scrollTop=w.scrollHeight; }
+  function hideTyping()  { document.getElementById('chat-typing').classList.remove('show'); }
+
+  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  async function chatGhGet() {
+    var token = localStorage.getItem('cgc_gh_token');
+    var H = { Authorization:'Bearer '+token, Accept:'application/vnd.github+json' };
+    var res  = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/config.json', { headers:H });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Read failed');
+    return { cfg: JSON.parse(atob(data.content.replace(/\n/g,''))), sha: data.sha };
+  }
+
+  async function chatGhPut(cfg, sha, message) {
+    var token = localStorage.getItem('cgc_gh_token');
+    var H = { Authorization:'Bearer '+token, Accept:'application/vnd.github+json', 'Content-Type':'application/json' };
+    var res  = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/config.json', {
+      method:'PUT', headers:H,
+      body: JSON.stringify({ message:'chat: '+message, content: btoa(unescape(encodeURIComponent(JSON.stringify(cfg,null,2)))), sha })
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Write failed');
+  }
+
+  function syncChapterToggles(chapters) {
+    chapters.forEach(function(ch) {
+      var idx = CHAPTERS.findIndex(function(c){ return c.num===ch.num; });
+      if (idx===-1) return;
+      CHAPTERS[idx].unlocked = ch.unlocked;
+      var item=document.getElementById('ch-item-'+idx), badge=document.getElementById('ch-badge-'+idx), cb=item&&item.querySelector('input[type=checkbox]');
+      if (!item) return;
+      item.className='chapter-item'+(ch.unlocked?' ch-unlocked':'');
+      if (badge) badge.textContent=ch.unlocked?'UNLOCKED':'LOCKED';
+      if (cb) cb.checked=ch.unlocked;
+    });
+  }
+
+  async function runCommand(raw) {
+    if (!localStorage.getItem('cgc_gh_token')) {
+      addMsg('<span class="err">No GitHub token.</span> Go to <b>GitHub Token</b> in the sidebar first.', 'bot'); return;
+    }
+    showTyping();
+    var parts = raw.toLowerCase().replace(/^\//,'').trim().split(/\s+/);
+    var cmd=parts[0], args=parts.slice(1);
+    try {
+      if (cmd==='status') {
+        var d=await chatGhGet(), s=d.cfg.stats||{}, chs=d.cfg.chapters||[];
+        var ul=chs.filter(function(c){return c.unlocked;}).map(function(c){return'CH.'+c.num;});
+        var lk=chs.filter(function(c){return!c.unlocked;}).map(function(c){return'CH.'+c.num;});
+        hideTyping();
+        addMsg('<b>Site Status</b><br>Mode: <span class="'+(d.cfg.maintenance?'err':'ok')+'">'+(d.cfg.maintenance?'● MAINTENANCE':'● LIVE')+'</span><br>Chapters: <code>'+(s.chapters||0)+'</code> &nbsp; LBS: <code>'+(s.lbs||0).toLocaleString()+'</code> &nbsp; Miles: <code>'+(s.miles||0).toLocaleString()+'</code><br>'+(ul.length?'Unlocked: <code>'+ul.join(' ')+'</code><br>':'')+'Locked: <code>'+(lk.length?lk.join(' '):'none')+'</code>','bot');
+        return;
+      }
+      if (cmd==='help'||cmd==='?') {
+        hideTyping();
+        addMsg('<b>Commands</b><br><br><code>status</code> — live config<br><code>unlock &lt;num|all&gt;</code> — unlock chapter(s)<br><code>lock &lt;num|all&gt;</code> — lock chapter(s)<br><code>maintenance &lt;on|off&gt;</code> — toggle holding page<br><code>set lbs|miles|chapters &lt;value&gt;</code> — update hero stat<br><code>social twitter|discord|telegram &lt;url&gt;</code> — update link<br><br><span class="muted">Changes publish instantly.</span>','bot');
+        return;
+      }
+      if (cmd==='unlock'||cmd==='lock') {
+        var unlocking=cmd==='unlock';
+        var target=args[0]==='chapter'?args[1]:args[0];
+        if (!target) { hideTyping(); addMsg('Usage: <code>'+cmd+' &lt;1-12|all&gt;</code>','bot'); return; }
+        var d=await chatGhGet();
+        if (target==='all') {
+          d.cfg.chapters.forEach(function(c){c.unlocked=unlocking;});
+          await chatGhPut(d.cfg,d.sha,(unlocking?'unlock':'lock')+' all chapters');
+          syncChapterToggles(d.cfg.chapters);
+          hideTyping(); addMsg('<span class="ok">✓</span> All chapters '+(unlocking?'unlocked':'locked')+' — live in ~30s','bot');
+        } else {
+          var num=String(parseInt(target,10)).padStart(2,'0');
+          var ch=d.cfg.chapters.find(function(c){return c.num===num;});
+          if (!ch) { hideTyping(); addMsg('<span class="err">Chapter '+num+' not found.</span> Use 1–12.','bot'); return; }
+          ch.unlocked=unlocking;
+          await chatGhPut(d.cfg,d.sha,(unlocking?'unlock':'lock')+' chapter '+num);
+          syncChapterToggles(d.cfg.chapters);
+          hideTyping(); addMsg('<span class="ok">✓</span> Chapter '+num+' '+(unlocking?'unlocked':'locked')+' — live in ~30s','bot');
+        }
+        return;
+      }
+      if (cmd==='maintenance') {
+        if (args[0]!=='on'&&args[0]!=='off') { hideTyping(); addMsg('Usage: <code>maintenance on</code> or <code>maintenance off</code>','bot'); return; }
+        var on=args[0]==='on', d=await chatGhGet();
+        d.cfg.maintenance=on;
+        await chatGhPut(d.cfg,d.sha,'maintenance '+(on?'on':'off'));
+        document.getElementById('maintenance-toggle').checked=on; updateMaintenancePill();
+        hideTyping(); addMsg('<span class="'+(on?'err':'ok')+'">●</span> Maintenance '+(on?'ON — visitors see holding page':'OFF — site is live'),'bot');
+        return;
+      }
+      if (cmd==='set') {
+        var key=args[0], val=parseInt((args[1]||'').replace(/,/g,''),10);
+        if (!key||isNaN(val)) { hideTyping(); addMsg('Usage: <code>set &lt;lbs|miles|chapters&gt; &lt;number&gt;</code>','bot'); return; }
+        if (!['lbs','miles','chapters'].includes(key)) { hideTyping(); addMsg('<span class="err">Unknown stat.</span> Use lbs, miles, or chapters.','bot'); return; }
+        var d=await chatGhGet(); d.cfg.stats=d.cfg.stats||{}; d.cfg.stats[key]=val;
+        await chatGhPut(d.cfg,d.sha,'set stats.'+key+'='+val);
+        document.getElementById('stat-'+key).value=val;
+        hideTyping(); addMsg('<span class="ok">✓</span> <code>'+key.toUpperCase()+'</code> set to <code>'+val.toLocaleString()+'</code> — live in ~30s','bot');
+        return;
+      }
+      if (cmd==='social') {
+        var platform=args[0], url=args[1];
+        if (!platform||!url) { hideTyping(); addMsg('Usage: <code>social &lt;twitter|discord|telegram&gt; &lt;url&gt;</code>','bot'); return; }
+        if (!['twitter','discord','telegram'].includes(platform)) { hideTyping(); addMsg('<span class="err">Unknown platform.</span> Use twitter, discord, or telegram.','bot'); return; }
+        var d=await chatGhGet(); d.cfg.social=d.cfg.social||{}; d.cfg.social[platform]=url;
+        await chatGhPut(d.cfg,d.sha,'update social.'+platform);
+        document.getElementById('link-'+platform).value=url;
+        hideTyping(); addMsg('<span class="ok">✓</span> '+platform.charAt(0).toUpperCase()+platform.slice(1)+' link updated — live in ~30s','bot');
+        return;
+      }
+      hideTyping();
+      addMsg('Unknown command <code>'+escHtml(raw)+'</code>. Type <code>help</code> to see all commands.','bot');
+    } catch(err) {
+      hideTyping();
+      addMsg('<span class="err">'+escHtml(err.message||String(err))+'</span>','bot');
+    }
+  }
+
+  function initChat() {
+    addMsg('Hey! Type a command to manage the site — changes go live in ~30s without needing to hit Publish.<br><br>Try <code>status</code> or <code>help</code> to get started.<br><span class="muted">You can also use the suggestion chips below.</span>','bot');
   }
 
   // ── Boot ───────────────────────────────────────────────────────────────────
