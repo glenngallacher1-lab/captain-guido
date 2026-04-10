@@ -151,7 +151,8 @@
       <strong>github.com → Settings → Developer settings → Fine-grained tokens</strong> → give <code>Contents: Read &amp; Write</code> on <code>captain-guido</code>.
       <div class="token-row">
         <input type="password" id="gh-token-input" placeholder="github_pat_...">
-        <button class="token-save-btn" onclick="saveToken()">SAVE TOKEN</button>
+        <button class="token-save-btn" onclick="saveToken()">SAVE</button>
+        <button class="token-save-btn" style="background:transparent;color:var(--teal);border:1px solid var(--teal);" onclick="verifyToken()">VERIFY</button>
       </div>
     </div>
 
@@ -272,7 +273,27 @@
     if (!v) return;
     localStorage.setItem('cgc_gh_token', v);
     document.getElementById('config-warning').style.display = 'none';
-    toast('Token saved');
+    verifyToken(v);
+  }
+
+  async function verifyToken(tokenOverride) {
+    const token = tokenOverride || localStorage.getItem('cgc_gh_token');
+    if (!token) { toast('No token saved', true); return; }
+    const H = { Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json' };
+    try {
+      // Check read access
+      const rRes  = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, { headers: H });
+      const rData = await rRes.json();
+      if (!rRes.ok) { toast(`Token error: ${rData.message || rRes.status}`, true); return; }
+
+      const canWrite = rData.permissions && rData.permissions.push;
+      if (!canWrite) { toast('Token lacks write access — re-create with Contents: Read & Write', true); return; }
+
+      toast('Token OK — read & write confirmed ✓');
+      if (!tokenOverride) document.getElementById('config-warning').style.display = 'none';
+    } catch(e) {
+      toast('Network error verifying token', true);
+    }
   }
 
   // ── Maintenance ────────────────────────────────────────────────────────────
@@ -370,8 +391,9 @@
     btn.disabled = true;
     document.getElementById('save-label').textContent = 'PUBLISHING...';
 
-    const H = { Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json' };
-    const base = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
+    const base   = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
+    const getH   = { Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json' };
+    const putH   = { ...getH, 'Content-Type':'application/json' };
 
     try {
       // Build config object from form
@@ -391,24 +413,38 @@
       };
 
       // Fetch current SHA of config.json (required for GitHub PUT)
-      const getRes  = await fetch(base+'config.json', { headers: H });
+      const getRes  = await fetch(base+'config.json', { headers: getH });
       const getData = await getRes.json();
-      const sha     = getData.sha; // undefined = new file (first publish)
+
+      if (!getRes.ok) {
+        const msg = getData.message || `HTTP ${getRes.status}`;
+        throw new Error(`Read failed: ${msg}`);
+      }
+
+      const sha = getData.sha;
+
+      // Base64-encode the JSON (pure ASCII — btoa is safe)
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(cfg, null, 2))));
 
       const body = {
         message: `admin: update config${cfg.maintenance ? ' [maintenance on]' : ''}`,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(cfg, null, 2))))
+        content: encoded,
+        sha
       };
-      if (sha) body.sha = sha;
 
-      const putRes = await fetch(base+'config.json', { method:'PUT', headers:H, body: JSON.stringify(body) });
-      if (!putRes.ok) throw new Error(`GitHub API ${putRes.status}`);
+      const putRes  = await fetch(base+'config.json', { method:'PUT', headers:putH, body: JSON.stringify(body) });
+      const putData = await putRes.json();
+
+      if (!putRes.ok) {
+        const msg = putData.message || `HTTP ${putRes.status}`;
+        throw new Error(`Write failed: ${msg}`);
+      }
 
       toast('Changes published live ✓');
 
     } catch(err) {
-      console.error(err);
-      toast('Something went wrong — check token', true);
+      console.error('[CGC admin]', err);
+      toast(err.message || 'Something went wrong', true);
     }
 
     btn.disabled = false;
