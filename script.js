@@ -199,8 +199,15 @@
 
     function hidePopup() { popup.style.display = 'none'; }
 
+    // Hide popup on scroll
+    window.addEventListener('scroll', hidePopup, { passive: true });
+
+    // Hide popup AND resume rotation when clicking anywhere outside the globe
     document.addEventListener('click', function(e) {
-      if (!e.target.closest('#map')) hidePopup();
+      if (!e.target.closest('#map')) {
+        hidePopup();
+        controls.autoRotate = true;
+      }
     });
 
     // ── Globe ────────────────────────────────────────────────────────────────
@@ -252,9 +259,10 @@
     controls.enableZoom      = false;
     controls.rotateSpeed     = 0.6;
 
+    // Stop rotation while user interacts with the globe
     mapEl.addEventListener('pointerdown', function() {
       controls.autoRotate = false;
-    }, { once: true });
+    });
 
     // ── Click → arcs + popup ─────────────────────────────────────────────────
     var arcTimer = null;
