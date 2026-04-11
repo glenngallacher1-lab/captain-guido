@@ -2443,9 +2443,9 @@ footer {
 
 /* ── Locked chapter background paths ────────────────────────────── */
 @keyframes cgcPathFlow {
-  0%   { stroke-dashoffset:  3000; opacity: 0.06; }
-  50%  { opacity: 0.18; }
-  100% { stroke-dashoffset: -3000; opacity: 0.06; }
+  0%   { stroke-dashoffset:  3000; opacity: 0.08; }
+  50%  { opacity: 0.35; }
+  100% { stroke-dashoffset: -3000; opacity: 0.08; }
 }
 
 .chapter-paths-svg {
@@ -2456,17 +2456,22 @@ footer {
   pointer-events: none;
   z-index: 0;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.6s ease;
 }
 
 .chapter-card:hover .chapter-paths-svg {
   opacity: 1;
 }
 
+/* Use individual props so JS duration/delay overrides work correctly */
 .chapter-paths-svg path {
   stroke-dasharray: 3000;
   stroke-dashoffset: 3000;
-  animation: cgcPathFlow linear infinite;
+  animation-name: cgcPathFlow;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: 25s; /* JS overrides per-path */
+  animation-fill-mode: none;
 }
 
 /* Ensure card content stays above paths */
