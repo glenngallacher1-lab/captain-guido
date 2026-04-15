@@ -86,24 +86,85 @@
     requestAnimationFrame(tick);
   }
 
-  // Create ocean particles
-  function createOceanParticles() {
-    const container = document.getElementById('oceanParticles');
-    if (!container) return;
-
-    for (let i = 0; i < 50; i++) {
-      const particle = document.createElement('div');
-      particle.style.position = 'absolute';
-      particle.style.width = Math.random() * 4 + 2 + 'px';
-      particle.style.height = particle.style.width;
-      particle.style.background = 'rgba(78, 196, 196, ' + (Math.random() * 0.5 + 0.2) + ')';
-      particle.style.borderRadius = '50%';
-      particle.style.left = Math.random() * 100 + '%';
-      particle.style.top = Math.random() * 100 + '%';
-      particle.style.animation = 'float ' + (Math.random() * 10 + 5) + 's ease-in-out infinite';
-      container.appendChild(particle);
+  // ── Cosmic Parallax Background ────────────────────────────────────
+  function createCosmicBackground() {
+    // Star box-shadow generator — one element, hundreds of stars via box-shadow
+    function makeStarShadow(count, maxW, maxH, minSize, maxSize) {
+      var shadows = [];
+      for (var i = 0; i < count; i++) {
+        var x = Math.floor(Math.random() * maxW);
+        var y = Math.floor(Math.random() * maxH);
+        var sz = (Math.random() * (maxSize - minSize) + minSize).toFixed(1);
+        var a  = (Math.random() * 0.5 + 0.5).toFixed(2);
+        // Slight tint variation: pure white, warm, cool
+        var tint = Math.random();
+        var col = tint < 0.33
+          ? 'rgba(255,255,255,' + a + ')'
+          : tint < 0.66
+          ? 'rgba(200,220,255,' + a + ')'
+          : 'rgba(255,240,200,' + a + ')';
+        shadows.push(x + 'px ' + y + 'px ' + sz + 'px ' + col);
+      }
+      return shadows.join(',');
     }
+
+    var W = window.innerWidth  || 1440;
+    var H = window.innerHeight || 900;
+
+    var far  = document.getElementById('cosmic-stars-far');
+    var mid  = document.getElementById('cosmic-stars-mid');
+    var near = document.getElementById('cosmic-stars-near');
+
+    if (far) {
+      far.style.boxShadow = makeStarShadow(500, W, H, 0.5, 1.5);
+      far.style.width  = '1px';
+      far.style.height = '1px';
+    }
+    if (mid) {
+      mid.style.boxShadow = makeStarShadow(200, W, H, 1, 2);
+      mid.style.width  = '1px';
+      mid.style.height = '1px';
+    }
+    if (near) {
+      near.style.boxShadow = makeStarShadow(60, W, H, 1.5, 3);
+      near.style.width  = '1px';
+      near.style.height = '1px';
+    }
+
+    // Parallax on mouse move
+    var entry = document.getElementById('entry-screen');
+    if (entry) {
+      entry.addEventListener('mousemove', function(e) {
+        var cx = (e.clientX / window.innerWidth  - 0.5);
+        var cy = (e.clientY / window.innerHeight - 0.5);
+        if (far)  far.style.transform  = 'translate(' + ( cx * 6)  + 'px,' + ( cy * 6)  + 'px)';
+        if (mid)  mid.style.transform  = 'translate(' + ( cx * 14) + 'px,' + ( cy * 14) + 'px)';
+        if (near) near.style.transform = 'translate(' + ( cx * 24) + 'px,' + ( cy * 24) + 'px)';
+        var earth = document.getElementById('cosmic-earth');
+        if (earth) earth.style.transform = 'translate(' + (-cx * 18) + 'px,' + (-cy * 10) + 'px)';
+      });
+    }
+
+    // Shooting stars — fire one every 4–9s
+    function launchShootingStar() {
+      var bg = document.getElementById('cosmic-bg');
+      if (!bg) return;
+      var shoot = document.createElement('div');
+      shoot.className = 'cosmic-shoot';
+      var startX = Math.random() * W * 0.7 + W * 0.2;
+      var startY = Math.random() * H * 0.4;
+      var dur    = (Math.random() * 1.2 + 0.8).toFixed(2);
+      shoot.style.left = startX + 'px';
+      shoot.style.top  = startY + 'px';
+      shoot.style.animationDuration = dur + 's';
+      bg.appendChild(shoot);
+      setTimeout(function() { shoot.remove(); }, dur * 1000 + 100);
+      setTimeout(launchShootingStar, Math.random() * 5000 + 4000);
+    }
+    setTimeout(launchShootingStar, 2000);
   }
+
+  // (createOceanParticles defined later for bioluminescent particles)
 
   // Shuffle Text Animation
   function shuffleText(element) {
@@ -614,9 +675,9 @@
 
         path.animate(
           [
-            { strokeDashoffset: fwd ?  len : -len, opacity: 0.08 },
-            { strokeDashoffset: len * 0.2,          opacity: 0.65 },
-            { strokeDashoffset: fwd ? -len :  len, opacity: 0.08 }
+            { strokeDashoffset: fwd ?  len : -len, opacity: 0.15 },
+            { strokeDashoffset: len * 0.2,          opacity: 0.9 },
+            { strokeDashoffset: fwd ? -len :  len, opacity: 0.15 }
           ],
           {
             duration:   dur,
@@ -779,6 +840,7 @@
       .catch(function() {});
 
     document.body.classList.add('entry-active');
+    createCosmicBackground();
     createOceanParticles();
     renderImpact();
     initializeMap();
