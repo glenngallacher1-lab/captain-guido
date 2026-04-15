@@ -982,6 +982,10 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Presale
       </button>
+      <button class="nav-item" onclick="showPanel('time')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+        Time Tracker
+      </button>
       <button class="nav-item" onclick="showPanel('log')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Session Log
@@ -1295,6 +1299,50 @@
       </div>
     </section>
 
+    <!-- Time Tracker Panel -->
+    <section class="panel" id="panel-time">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Time Tracker</div>
+          <div class="panel-sub">Clock in when you start working, clock out when done. Entries are saved locally.</div>
+        </div>
+        <button class="btn-secondary" onclick="clearTimeLog()" style="font-size:0.72rem;padding:0.4rem 0.9rem;">Clear History</button>
+      </div>
+
+      <!-- Clock widget -->
+      <div class="card" style="text-align:center;">
+        <div id="tt-clock-display" style="font-family:var(--mono,monospace);font-size:3rem;font-weight:700;letter-spacing:6px;color:var(--primary,#6366f1);margin-bottom:0.5rem;transition:color 0.3s;">00:00:00</div>
+        <div id="tt-status-label" style="font-size:0.72rem;letter-spacing:3px;color:var(--text-muted,#888);margin-bottom:1.25rem;">NOT CLOCKED IN</div>
+        <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+          <button id="tt-clock-btn" class="btn-primary" onclick="ttToggle()" style="min-width:140px;">CLOCK IN</button>
+          <input id="tt-note" type="text" placeholder="What are you working on? (optional)" style="flex:1;min-width:200px;padding:0.55rem 0.75rem;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-size:0.82rem;">
+        </div>
+      </div>
+
+      <!-- Totals -->
+      <div class="card" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;">
+        <div>
+          <div id="tt-today" style="font-size:1.5rem;font-weight:700;font-family:var(--mono,monospace);color:var(--text-primary);">0h 0m</div>
+          <div style="font-size:0.65rem;letter-spacing:2px;color:var(--text-muted);">TODAY</div>
+        </div>
+        <div>
+          <div id="tt-week" style="font-size:1.5rem;font-weight:700;font-family:var(--mono,monospace);color:var(--text-primary);">0h 0m</div>
+          <div style="font-size:0.65rem;letter-spacing:2px;color:var(--text-muted);">THIS WEEK</div>
+        </div>
+        <div>
+          <div id="tt-total" style="font-size:1.5rem;font-weight:700;font-family:var(--mono,monospace);color:var(--text-primary);">0h 0m</div>
+          <div style="font-size:0.65rem;letter-spacing:2px;color:var(--text-muted);">ALL TIME</div>
+        </div>
+      </div>
+
+      <!-- Session history -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:1rem;">Session History</div>
+        <div id="tt-history"></div>
+        <p id="tt-empty" style="color:var(--text-muted);font-size:0.82rem;margin:0;">No sessions logged yet.</p>
+      </div>
+    </section>
+
     <!-- Session Log Panel -->
     <section class="panel" id="panel-log">
       <div class="panel-header">
@@ -1582,6 +1630,146 @@
       roundRaised:   parseFloat(document.getElementById('presaleRaised').value) || 0,
       totalRaised:   parseFloat(document.getElementById('presaleTotalRaised').value) || 0
     };
+  }
+
+  // ── Time Tracker ─────────────────────────────────────────────────────────
+  var TT_KEY      = 'cgc_time_log';
+  var ttRunning   = false;
+  var ttStartTs   = null;
+  var ttTick      = null;
+
+  function ttLoadLog() {
+    try { return JSON.parse(localStorage.getItem(TT_KEY)) || []; } catch { return []; }
+  }
+  function ttSaveLog(entries) { localStorage.setItem(TT_KEY, JSON.stringify(entries)); }
+
+  function ttFmtDuration(ms) {
+    var s = Math.floor(ms / 1000);
+    var h = Math.floor(s / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sec = s % 60;
+    return (h ? h + 'h ' : '') + m + 'm ' + (h ? '' : sec + 's');
+  }
+  function ttFmtClock(ms) {
+    var s  = Math.floor(ms / 1000);
+    var h  = String(Math.floor(s / 3600)).padStart(2,'0');
+    var m  = String(Math.floor((s % 3600) / 60)).padStart(2,'0');
+    var sc = String(s % 60).padStart(2,'0');
+    return h + ':' + m + ':' + sc;
+  }
+  function ttFmtHM(ms) {
+    var m = Math.floor(ms / 60000);
+    return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+  }
+  function ttFmtDate(ts) {
+    return new Date(ts).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+  function ttFmtTime(ts) {
+    return new Date(ts).toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+  }
+  function ttIsToday(ts) {
+    var d = new Date(ts); var n = new Date();
+    return d.getDate()===n.getDate() && d.getMonth()===n.getMonth() && d.getFullYear()===n.getFullYear();
+  }
+  function ttIsThisWeek(ts) {
+    var now = Date.now();
+    var startOfWeek = now - (new Date().getDay() * 86400000);
+    return ts >= startOfWeek;
+  }
+
+  function ttToggle() {
+    if (!ttRunning) {
+      // Clock In
+      ttRunning = true;
+      ttStartTs = Date.now();
+      document.getElementById('tt-clock-btn').textContent   = 'CLOCK OUT';
+      document.getElementById('tt-clock-btn').style.background = '#e74c3c';
+      document.getElementById('tt-status-label').textContent = 'CLOCKED IN';
+      document.getElementById('tt-status-label').style.color  = '#2ecc71';
+      document.getElementById('tt-clock-display').style.color = '#2ecc71';
+      ttTick = setInterval(ttUpdateDisplay, 1000);
+    } else {
+      // Clock Out
+      clearInterval(ttTick);
+      var endTs    = Date.now();
+      var duration = endTs - ttStartTs;
+      var note     = (document.getElementById('tt-note').value || '').trim();
+      // Save session
+      var entries  = ttLoadLog();
+      entries.push({ startTs: ttStartTs, endTs: endTs, duration: duration, note: note });
+      ttSaveLog(entries);
+      // Reset UI
+      ttRunning = false;
+      ttStartTs = null;
+      document.getElementById('tt-clock-display').textContent  = '00:00:00';
+      document.getElementById('tt-clock-display').style.color  = 'var(--primary,#6366f1)';
+      document.getElementById('tt-clock-btn').textContent      = 'CLOCK IN';
+      document.getElementById('tt-clock-btn').style.background = '';
+      document.getElementById('tt-status-label').textContent   = 'CLOCKED OUT — ' + ttFmtDuration(duration) + ' logged';
+      document.getElementById('tt-status-label').style.color   = 'var(--text-muted,#888)';
+      document.getElementById('tt-note').value = '';
+      ttRenderHistory();
+    }
+  }
+
+  function ttUpdateDisplay() {
+    if (!ttRunning || !ttStartTs) return;
+    document.getElementById('tt-clock-display').textContent = ttFmtClock(Date.now() - ttStartTs);
+  }
+
+  function ttRenderHistory() {
+    var entries  = ttLoadLog();
+    var history  = document.getElementById('tt-history');
+    var empty    = document.getElementById('tt-empty');
+    if (!history) return;
+    history.innerHTML = '';
+
+    // Totals
+    var todayMs = 0, weekMs = 0, totalMs = 0;
+    entries.forEach(function(e) {
+      totalMs += e.duration;
+      if (ttIsToday(e.startTs))    todayMs += e.duration;
+      if (ttIsThisWeek(e.startTs)) weekMs  += e.duration;
+    });
+    var el = function(id) { return document.getElementById(id); };
+    if (el('tt-today')) el('tt-today').textContent = ttFmtHM(todayMs);
+    if (el('tt-week'))  el('tt-week').textContent  = ttFmtHM(weekMs);
+    if (el('tt-total')) el('tt-total').textContent = ttFmtHM(totalMs);
+
+    if (entries.length === 0) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    // Show newest first
+    entries.slice().reverse().forEach(function(e, idx) {
+      var realIdx = entries.length - 1 - idx;
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;padding:0.7rem 0;border-bottom:1px solid var(--border);flex-wrap:wrap;';
+      row.innerHTML =
+        '<div style="flex:1;">' +
+          '<div style="font-size:0.72rem;font-family:var(--mono,monospace);color:var(--text-muted);letter-spacing:1px;margin-bottom:0.2rem;">' +
+            ttFmtDate(e.startTs) + ' · ' + ttFmtTime(e.startTs) + ' → ' + ttFmtTime(e.endTs) +
+          '</div>' +
+          (e.note ? '<div style="font-size:0.82rem;color:var(--text-primary);">' + escHtml(e.note) + '</div>' : '') +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">' +
+          '<span style="font-family:var(--mono,monospace);font-size:0.82rem;font-weight:600;color:var(--text-primary);">' + ttFmtDuration(e.duration) + '</span>' +
+          '<button onclick="ttDelete(' + realIdx + ')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.75rem;padding:0;" title="Delete">✕</button>' +
+        '</div>';
+      history.appendChild(row);
+    });
+  }
+
+  function ttDelete(idx) {
+    var entries = ttLoadLog();
+    entries.splice(idx, 1);
+    ttSaveLog(entries);
+    ttRenderHistory();
+  }
+
+  function clearTimeLog() {
+    if (!confirm('Clear all time tracking history?')) return;
+    ttSaveLog([]);
+    ttRenderHistory();
   }
 
   // ── Session Log ──────────────────────────────────────────────────────────
