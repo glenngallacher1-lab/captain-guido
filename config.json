@@ -98,7 +98,7 @@
     },
     "p2-1": {
       "done": true,
-      "note": ""
+      "note": "just got this one done here \n"
     },
     "p2-2": {
       "done": false,
@@ -157,7 +157,7 @@
       "note": ""
     },
     "p3-6": {
-      "done": false,
+      "done": true,
       "note": ""
     },
     "p3-7": {
@@ -221,5 +221,11 @@
     "twitter": "https://twitter.com/CaptainGuido",
     "discord": "#",
     "telegram": "#"
+  },
+  "presale": {
+    "active": false,
+    "currentRound": 1,
+    "roundRaised": 0,
+    "totalRaised": 0
   }
 }
