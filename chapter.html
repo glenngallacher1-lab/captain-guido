@@ -12,10 +12,15 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* ── Chapter page overrides ── */
-    body { overflow-x: hidden; }
+    :root {
+      --ch-accent:    #00d4ff;
+      --ch-secondary: #f4a836;
+      --ch-gradient:  radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.1) 0%, transparent 60%);
+    }
 
-    /* Nav back bar */
+    body { overflow-x: hidden; background: #020c1b; }
+
+    /* ── Nav ── */
     .chapter-nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -27,240 +32,295 @@
       height: 64px;
       background: rgba(2, 12, 27, 0.92);
       backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(0, 212, 255, 0.12);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: border-color 0.4s;
     }
     .chapter-nav-left {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.65rem;
       text-decoration: none;
-      color: var(--text-secondary);
+      color: rgba(255,255,255,0.4);
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       letter-spacing: 2px;
       transition: color 0.2s;
     }
-    .chapter-nav-left:hover { color: var(--aqua); }
-    .chapter-nav-left svg { flex-shrink: 0; }
+    .chapter-nav-left:hover { color: var(--ch-accent); }
     .chapter-nav-brand {
       display: flex;
       align-items: center;
       gap: 0.6rem;
       font-family: var(--font-display);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       letter-spacing: 3px;
-      color: var(--text-primary);
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
     }
     .chapter-nav-brand img { border-radius: 50%; }
 
-    /* Hero */
+    /* ── Hero ── */
     .chapter-hero {
-      padding: 120px 2rem 60px;
-      max-width: 760px;
+      position: relative;
+      padding: 130px 2rem 56px;
+      max-width: 800px;
       margin: 0 auto;
-      text-align: left;
+      overflow: hidden;
     }
+
+    /* Themed gradient overlay */
+    .chapter-hero::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: var(--ch-gradient);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Decoration canvas */
+    .ch-deco {
+      position: absolute;
+      top: 0; right: 0;
+      width: 420px;
+      height: 420px;
+      pointer-events: none;
+      opacity: 0.18;
+      z-index: 0;
+    }
+
     .chapter-num-label {
+      position: relative;
+      z-index: 1;
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       letter-spacing: 4px;
-      color: var(--aqua);
-      opacity: 0.7;
-      margin-bottom: 1rem;
+      color: var(--ch-accent);
+      opacity: 0.8;
+      margin-bottom: 1.1rem;
     }
     .chapter-hero-title {
+      position: relative;
+      z-index: 1;
       font-family: var(--font-display);
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-size: clamp(2rem, 5vw, 3.4rem);
       font-weight: 700;
       letter-spacing: 4px;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #ffffff 0%, #c0dff5 60%, #00aadd 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 1rem;
+      color: #fff;
+      margin-bottom: 1.2rem;
       line-height: 1.15;
+      text-shadow: 0 0 40px rgba(0,0,0,0.6);
+    }
+    /* Accent bar under title using chapter theme colour */
+    .chapter-hero-title::after {
+      content: '';
+      display: block;
+      width: 56px;
+      height: 2px;
+      background: var(--ch-accent);
+      box-shadow: 0 0 10px var(--ch-accent);
+      margin-top: 1rem;
     }
     .chapter-setting-row {
+      position: relative;
+      z-index: 1;
       display: flex;
       align-items: center;
-      gap: 1.2rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
-      margin-bottom: 0.5rem;
+      margin-top: 1.4rem;
     }
     .chapter-setting-pill {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       letter-spacing: 2px;
-      color: var(--text-secondary);
-      background: rgba(0, 212, 255, 0.06);
-      border: 1px solid rgba(0, 212, 255, 0.15);
+      color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 4px;
-      padding: 0.3rem 0.75rem;
+      padding: 0.3rem 0.8rem;
     }
     .chapter-setting-pill .dot {
       width: 5px; height: 5px;
       border-radius: 50%;
-      background: var(--aqua);
+      background: var(--ch-accent);
+      box-shadow: 0 0 6px var(--ch-accent);
     }
-    .chapter-divider {
-      width: 60px;
-      height: 1px;
-      background: linear-gradient(90deg, var(--aqua), transparent);
-      margin: 2rem 0;
-      opacity: 0.5;
+    .chapter-setting-pill .dot-secondary {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--ch-secondary);
+      box-shadow: 0 0 6px var(--ch-secondary);
     }
 
-    /* Body text */
+    /* ── Body ── */
     .chapter-body {
       max-width: 720px;
       margin: 0 auto;
-      padding: 0 2rem 6rem;
+      padding: 2.5rem 2rem 5rem;
+      position: relative;
+      z-index: 1;
     }
     .chapter-body p {
-      font-family: var(--font-body, 'Inter', sans-serif);
-      font-size: 1.1rem;
-      line-height: 1.9;
-      color: rgba(200, 218, 240, 0.88);
-      margin-bottom: 1.4rem;
+      font-size: 1.08rem;
+      line-height: 1.95;
+      color: rgba(210,228,248,0.85);
+      margin-bottom: 1.5rem;
     }
+    /* Drop cap — colour from theme */
     .chapter-body p:first-child::first-letter {
-      font-size: 3.2rem;
+      font-size: 3.4rem;
       font-family: var(--font-display);
       font-weight: 700;
       line-height: 0.8;
       float: left;
-      margin: 0.1em 0.1em 0 0;
-      color: var(--aqua);
+      margin: 0.08em 0.12em 0 0;
+      color: var(--ch-accent);
+      text-shadow: 0 0 20px var(--ch-accent);
     }
-    /* Inline ledger entry style */
     .chapter-ledger-entry {
       font-family: var(--font-mono) !important;
       font-size: 0.8rem !important;
       letter-spacing: 2px;
-      color: var(--aqua) !important;
-      background: rgba(0, 212, 255, 0.06);
-      border-left: 2px solid var(--aqua);
+      color: var(--ch-accent) !important;
+      background: rgba(255,255,255,0.03);
+      border-left: 2px solid var(--ch-accent);
       padding: 0.6rem 1rem !important;
       margin: 2rem 0 !important;
     }
     .chapter-ledger-entry::first-letter { all: unset; }
 
-    /* Prev / Next */
+    /* ── Pagination ── */
     .chapter-pagination {
       max-width: 720px;
       margin: 0 auto;
-      padding: 0 2rem 5rem;
+      padding: 2.5rem 2rem 5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      border-top: 1px solid rgba(0, 212, 255, 0.1);
-      padding-top: 2.5rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
     }
     .chapter-page-btn {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.55rem;
       font-family: var(--font-mono);
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       letter-spacing: 2px;
-      color: var(--text-secondary);
+      color: rgba(255,255,255,0.35);
       text-decoration: none;
-      background: rgba(0, 212, 255, 0.05);
-      border: 1px solid rgba(0, 212, 255, 0.15);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.09);
       border-radius: 6px;
-      padding: 0.7rem 1.2rem;
-      transition: all 0.2s;
-      cursor: pointer;
+      padding: 0.7rem 1.1rem;
+      transition: all 0.22s;
     }
     .chapter-page-btn:hover:not([disabled]) {
-      color: var(--aqua);
-      border-color: rgba(0, 212, 255, 0.4);
-      background: rgba(0, 212, 255, 0.08);
+      color: var(--ch-accent);
+      border-color: var(--ch-accent);
+      background: rgba(255,255,255,0.05);
+      box-shadow: 0 0 14px rgba(0,0,0,0.3);
     }
     .chapter-page-btn[disabled] {
-      opacity: 0.25;
+      opacity: 0.2;
       cursor: default;
       pointer-events: none;
     }
     .chapter-back-voyage {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       letter-spacing: 2px;
-      color: var(--text-secondary);
+      color: rgba(255,255,255,0.3);
       text-decoration: none;
       transition: color 0.2s;
     }
-    .chapter-back-voyage:hover { color: var(--aqua); }
+    .chapter-back-voyage:hover { color: var(--ch-accent); }
 
-    /* Loading / error states */
+    /* ── Loading / Error ── */
     #chapter-loading, #chapter-error {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 60vh;
+      min-height: 80vh;
       gap: 1rem;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      letter-spacing: 2px;
-      color: var(--text-secondary);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.25);
     }
-    #chapter-error a {
-      color: var(--aqua);
-      text-decoration: none;
+    #chapter-error a { color: #00d4ff; text-decoration: none; }
+
+    /* ── Deco animations ── */
+    @keyframes chRotate    { to { transform: rotate(360deg); } }
+    @keyframes chRotateRev { to { transform: rotate(-360deg); } }
+    @keyframes chRadarSweep {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes chPulse {
+      0%, 100% { opacity: 0.18; }
+      50%       { opacity: 0.35; }
+    }
+    @keyframes chGyreSpin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes chStarTwinkle {
+      0%, 100% { opacity: 0.6; }
+      50%       { opacity: 1; }
+    }
+    @keyframes chDawnPulse {
+      0%, 100% { opacity: 0.15; transform: scale(1); }
+      50%       { opacity: 0.28; transform: scale(1.04); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Nav -->
-  <nav class="chapter-nav">
-    <a href="index.html#journey" class="chapter-nav-left" aria-label="Back to voyage">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 5l-7 7 7 7"/>
-      </svg>
+  <nav class="chapter-nav" id="ch-nav">
+    <a href="index.html#journey" class="chapter-nav-left">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       BACK TO VOYAGE
     </a>
     <a href="index.html" class="chapter-nav-brand">
-      <img src="captain-guido.png" alt="Captain Guido" width="32" height="32">
+      <img src="captain-guido.png" alt="Captain Guido" width="30" height="30">
       CAPTAIN GUIDO
     </a>
   </nav>
 
-  <!-- Content injected by JS -->
   <main id="chapter-main">
-    <div id="chapter-loading">
-      <span>LOADING CHAPTER...</span>
-    </div>
+    <div id="chapter-loading"><span>LOADING CHAPTER...</span></div>
     <div id="chapter-error" style="display:none;">
       <span>CHAPTER NOT FOUND</span>
       <a href="index.html#journey">← RETURN TO VOYAGE LOG</a>
     </div>
     <div id="chapter-content" style="display:none;">
       <header class="chapter-hero">
-        <div class="chapter-num-label" id="ch-num-label"></div>
-        <h1 class="chapter-hero-title" id="ch-title"></h1>
+        <div class="ch-deco" id="ch-deco" aria-hidden="true"></div>
+        <div class="chapter-num-label"  id="ch-num-label"></div>
+        <h1  class="chapter-hero-title" id="ch-title"></h1>
         <div class="chapter-setting-row">
           <span class="chapter-setting-pill"><span class="dot"></span><span id="ch-location"></span></span>
-          <span class="chapter-setting-pill"><span class="dot" style="background:var(--gold-accent)"></span><span id="ch-setting"></span></span>
+          <span class="chapter-setting-pill"><span class="dot-secondary"></span><span id="ch-setting"></span></span>
         </div>
-        <div class="chapter-divider"></div>
       </header>
+
       <article class="chapter-body" id="ch-body"></article>
+
       <nav class="chapter-pagination" aria-label="Chapter navigation">
         <a class="chapter-page-btn" id="ch-prev">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-          PREV CHAPTER
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          PREV
         </a>
         <a href="index.html#journey" class="chapter-back-voyage">VOYAGE LOG</a>
         <a class="chapter-page-btn" id="ch-next">
-          NEXT CHAPTER
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          NEXT
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </nav>
     </div>
@@ -268,83 +328,480 @@
 
   <script src="chapters-data.js"></script>
   <script>
-    (function () {
-      var params   = new URLSearchParams(window.location.search);
-      var chNum    = parseInt(params.get('ch'), 10);
-      var chapters = window.CGC_CHAPTERS || [];
-      var chapter  = chapters.find(function (c) { return c.num === chNum; });
+  (function () {
+    var NS = 'http://www.w3.org/2000/svg';
 
-      var elLoading = document.getElementById('chapter-loading');
-      var elError   = document.getElementById('chapter-error');
-      var elContent = document.getElementById('chapter-content');
+    /* ── Decoration builders ─────────────────────────────────────────── */
+    var decos = {
 
-      // Unknown chapter number → error
-      if (!chapter || isNaN(chNum)) {
-        elLoading.style.display = 'none';
-        elError.style.display   = 'flex';
-        return;
-      }
-
-      function renderChapter(cfg) {
-        var pad = chNum < 10 ? '0' + chNum : String(chNum);
-        document.title = 'CH.' + pad + ' — ' + chapter.title + ' | Captain Guido';
-        document.getElementById('ch-num-label').textContent = 'CH.' + pad + ' — CHAPTER ' + chNum + ' OF ' + chapters.length;
-        document.getElementById('ch-title').textContent     = chapter.title;
-        document.getElementById('ch-location').textContent  = chapter.location;
-        document.getElementById('ch-setting').textContent   = 'SETTING: ' + chapter.setting.toUpperCase();
-        document.getElementById('ch-body').innerHTML        = chapter.body;
-
-        var elPrev = document.getElementById('ch-prev');
-        var elNext = document.getElementById('ch-next');
-
-        // Helper: is a given chapter number unlocked in config?
-        function isUnlocked(num) {
-          if (!cfg || !cfg.chapters) return false;
-          var c = cfg.chapters.find(function (c) { return parseInt(c.num, 10) === num; });
-          return !!(c && c.unlocked);
-        }
-
-        var prevNum = chNum - 1;
-        var nextNum = chNum + 1;
-        var prevExists = chapters.some(function (c) { return c.num === prevNum; });
-        var nextExists = chapters.some(function (c) { return c.num === nextNum; });
-
-        if (prevExists && isUnlocked(prevNum)) {
-          elPrev.href = 'chapter.html?ch=' + prevNum;
-        } else {
-          elPrev.setAttribute('disabled', 'true');
-          elPrev.removeAttribute('href');
-        }
-
-        if (nextExists && isUnlocked(nextNum)) {
-          elNext.href = 'chapter.html?ch=' + nextNum;
-        } else {
-          elNext.setAttribute('disabled', 'true');
-          elNext.removeAttribute('href');
-        }
-
-        elLoading.style.display = 'none';
-        elContent.style.display = 'block';
-      }
-
-      // Verify unlock state via config.json before showing content
-      fetch('config.json?v=' + Date.now())
-        .then(function (r) { return r.json(); })
-        .then(function (cfg) {
-          var chapterCfg = cfg.chapters && cfg.chapters.find(function (c) {
-            return parseInt(c.num, 10) === chNum;
-          });
-          if (!chapterCfg || !chapterCfg.unlocked) {
-            window.location.replace('index.html#journey');
-            return;
-          }
-          renderChapter(cfg);
-        })
-        .catch(function () {
-          // Config unreachable — fail open, but no prev/next since we can't verify
-          renderChapter(null);
+      compass: function (accent) {
+        // Rotating compass rose
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 200 200');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        var g = document.createElementNS(NS, 'g');
+        g.setAttribute('transform', 'translate(100,100)');
+        g.style.animation = 'chRotate 60s linear infinite';
+        // Outer ring
+        var c1 = document.createElementNS(NS, 'circle');
+        c1.setAttribute('r','90'); c1.setAttribute('stroke', accent); c1.setAttribute('stroke-width','0.5'); c1.setAttribute('stroke-dasharray','4 6');
+        g.appendChild(c1);
+        // Inner ring
+        var c2 = document.createElementNS(NS, 'circle');
+        c2.setAttribute('r','60'); c2.setAttribute('stroke', accent); c2.setAttribute('stroke-width','0.3'); c2.setAttribute('stroke-dasharray','2 8');
+        g.appendChild(c2);
+        // 8 spokes
+        [0,45,90,135,180,225,270,315].forEach(function(a, i) {
+          var rad = a * Math.PI / 180;
+          var len = i % 2 === 0 ? 88 : 60;
+          var l = document.createElementNS(NS, 'line');
+          l.setAttribute('x1','0'); l.setAttribute('y1','0');
+          l.setAttribute('x2', (Math.cos(rad)*len).toFixed(1));
+          l.setAttribute('y2', (Math.sin(rad)*len).toFixed(1));
+          l.setAttribute('stroke', accent); l.setAttribute('stroke-width', i % 2 === 0 ? '0.6' : '0.3');
+          g.appendChild(l);
         });
-    })();
+        // Center dot
+        var cd = document.createElementNS(NS, 'circle');
+        cd.setAttribute('r','4'); cd.setAttribute('fill', accent);
+        g.appendChild(cd);
+        s.appendChild(g);
+        return s;
+      },
+
+      radar: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 200 200');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        var g = document.createElementNS(NS, 'g');
+        g.setAttribute('transform', 'translate(100,100)');
+        // Rings
+        [30,55,80,95].forEach(function(r) {
+          var c = document.createElementNS(NS, 'circle');
+          c.setAttribute('r', r); c.setAttribute('stroke', accent); c.setAttribute('stroke-width','0.4'); c.setAttribute('opacity','0.6');
+          g.appendChild(c);
+        });
+        // Crosshairs
+        [0,90].forEach(function(a) {
+          var l = document.createElementNS(NS, 'line');
+          var rad = a * Math.PI / 180;
+          l.setAttribute('x1', (Math.cos(rad)*-95).toFixed(1)); l.setAttribute('y1', (Math.sin(rad)*-95).toFixed(1));
+          l.setAttribute('x2', (Math.cos(rad)*95).toFixed(1));  l.setAttribute('y2', (Math.sin(rad)*95).toFixed(1));
+          l.setAttribute('stroke', accent); l.setAttribute('stroke-width','0.3'); l.setAttribute('opacity','0.5');
+          g.appendChild(l);
+        });
+        // Sweep arm
+        var sweep = document.createElementNS(NS, 'g');
+        sweep.style.animation = 'chRadarSweep 4s linear infinite';
+        var arm = document.createElementNS(NS, 'line');
+        arm.setAttribute('x1','0'); arm.setAttribute('y1','0');
+        arm.setAttribute('x2','95'); arm.setAttribute('y2','0');
+        arm.setAttribute('stroke', accent); arm.setAttribute('stroke-width','1.2');
+        // Sweep gradient fade
+        var defs = document.createElementNS(NS, 'defs');
+        var trail = document.createElementNS(NS, 'path');
+        trail.setAttribute('d', 'M 0 0 L 80 0 A 80 80 0 0 0 ' + (80*Math.cos(-Math.PI/3)).toFixed(1) + ' ' + (80*Math.sin(-Math.PI/3)).toFixed(1) + ' Z');
+        trail.setAttribute('fill', accent); trail.setAttribute('opacity','0.12');
+        sweep.appendChild(trail);
+        sweep.appendChild(arm);
+        g.appendChild(defs);
+        g.appendChild(sweep);
+        s.appendChild(g);
+        return s;
+      },
+
+      circuit: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 300 300');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        // Grid lines
+        for (var i = 0; i <= 6; i++) {
+          var x = i * 50;
+          var vl = document.createElementNS(NS, 'line');
+          vl.setAttribute('x1', x); vl.setAttribute('y1','0'); vl.setAttribute('x2', x); vl.setAttribute('y2','300');
+          vl.setAttribute('stroke', accent); vl.setAttribute('stroke-width','0.3'); vl.setAttribute('opacity','0.4');
+          s.appendChild(vl);
+          var hl = document.createElementNS(NS, 'line');
+          hl.setAttribute('x1','0'); hl.setAttribute('y1', x); hl.setAttribute('x2','300'); hl.setAttribute('y2', x);
+          hl.setAttribute('stroke', accent); hl.setAttribute('stroke-width','0.3'); hl.setAttribute('opacity','0.4');
+          s.appendChild(hl);
+        }
+        // Circuit nodes
+        [[50,50],[150,100],[200,200],[100,250],[250,50],[50,200]].forEach(function(p) {
+          var c = document.createElementNS(NS, 'circle');
+          c.setAttribute('cx', p[0]); c.setAttribute('cy', p[1]); c.setAttribute('r','4');
+          c.setAttribute('fill', accent); c.setAttribute('opacity','0.7');
+          c.style.animation = 'chPulse ' + (2 + Math.random()*2).toFixed(1) + 's ease-in-out infinite';
+          s.appendChild(c);
+        });
+        return s;
+      },
+
+      abyss: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 200 400');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        // Vertical depth lines
+        for (var i = 0; i < 12; i++) {
+          var x = 10 + i * 17;
+          var l = document.createElementNS(NS, 'line');
+          l.setAttribute('x1', x); l.setAttribute('y1','0'); l.setAttribute('x2', x); l.setAttribute('y2','400');
+          l.setAttribute('stroke', accent); l.setAttribute('stroke-width','0.5');
+          l.setAttribute('stroke-dasharray', (20 + i*5) + ' ' + (10 + i*3));
+          l.setAttribute('opacity', (0.2 + i*0.04).toFixed(2));
+          l.style.animation = 'chPulse ' + (3 + i*0.4).toFixed(1) + 's ease-in-out ' + (i*0.2).toFixed(1) + 's infinite';
+          s.appendChild(l);
+        }
+        // Depth markers
+        [80, 200, 320].forEach(function(y, i) {
+          var line = document.createElementNS(NS, 'line');
+          line.setAttribute('x1','0'); line.setAttribute('y1', y); line.setAttribute('x2','200'); line.setAttribute('y2', y);
+          line.setAttribute('stroke', accent); line.setAttribute('stroke-width','0.4'); line.setAttribute('opacity','0.3');
+          s.appendChild(line);
+        });
+        return s;
+      },
+
+      coral: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 300 300');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        // Wave curves
+        var waveD = 'M0,150 C50,100 100,200 150,150 C200,100 250,200 300,150';
+        [0, 40, 80, 120].forEach(function(offset, i) {
+          var p = document.createElementNS(NS, 'path');
+          p.setAttribute('d', 'M0,' + (130+offset) + ' C50,' + (80+offset) + ' 100,' + (180+offset) + ' 150,' + (130+offset) + ' C200,' + (80+offset) + ' 250,' + (180+offset) + ' 300,' + (130+offset));
+          p.setAttribute('stroke', i % 2 === 0 ? accent : '#fd79a8');
+          p.setAttribute('stroke-width','0.7');
+          p.setAttribute('opacity', (0.3 + i*0.08).toFixed(2));
+          s.appendChild(p);
+        });
+        // Coral branch shapes
+        [[60,250],[180,220],[240,270]].forEach(function(pt) {
+          var g2 = document.createElementNS(NS, 'g');
+          [0,30,-30,60,-60].forEach(function(angle) {
+            var rad = (angle - 90) * Math.PI / 180;
+            var len = 30 + Math.abs(angle) * 0.3;
+            var l2 = document.createElementNS(NS, 'line');
+            l2.setAttribute('x1', pt[0]); l2.setAttribute('y1', pt[1]);
+            l2.setAttribute('x2', (pt[0]+Math.cos(rad)*len).toFixed(1));
+            l2.setAttribute('y2', (pt[1]+Math.sin(rad)*len).toFixed(1));
+            l2.setAttribute('stroke', accent); l2.setAttribute('stroke-width','0.8'); l2.setAttribute('opacity','0.5');
+            g2.appendChild(l2);
+          });
+          s.appendChild(g2);
+        });
+        return s;
+      },
+
+      storm: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 400 300');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        // Jagged wave lines
+        [0,1,2,3,4].forEach(function(row) {
+          var y = 60 + row * 50;
+          var d = 'M0,' + y;
+          for (var x = 0; x <= 400; x += 30) {
+            var peak = (row % 2 === 0 ? -1 : 1) * (8 + Math.sin(x*0.1)*6);
+            d += ' L' + (x+15) + ',' + (y + peak) + ' L' + (x+30) + ',' + y;
+          }
+          var p = document.createElementNS(NS, 'path');
+          p.setAttribute('d', d); p.setAttribute('stroke', accent);
+          p.setAttribute('stroke-width', (0.4 + row*0.15).toFixed(2));
+          p.setAttribute('opacity', (0.2 + row*0.07).toFixed(2));
+          p.style.animation = 'chPulse ' + (2 + row*0.5).toFixed(1) + 's ease-in-out ' + (row*0.3).toFixed(1) + 's infinite';
+          s.appendChild(p);
+        });
+        // Lightning bolt
+        var bolt = document.createElementNS(NS, 'path');
+        bolt.setAttribute('d','M320,20 L300,90 L315,90 L295,160');
+        bolt.setAttribute('stroke', accent); bolt.setAttribute('stroke-width','1.2'); bolt.setAttribute('opacity','0.45');
+        bolt.style.animation = 'chPulse 1.8s ease-in-out infinite';
+        s.appendChild(bolt);
+        return s;
+      },
+
+      gyre: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 200 200');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        var g = document.createElementNS(NS, 'g');
+        g.setAttribute('transform', 'translate(100,100)');
+        g.style.animation = 'chGyreSpin 30s linear infinite';
+        // Spiral arcs
+        for (var i = 0; i < 6; i++) {
+          var r1 = 20 + i * 13;
+          var arc = document.createElementNS(NS, 'path');
+          var x1 = r1; var y1 = 0;
+          var x2 = -r1; var y2 = 0;
+          arc.setAttribute('d', 'M' + x1 + ',0 A' + r1 + ',' + r1 + ' 0 0 1 ' + x2 + ',0');
+          arc.setAttribute('stroke', accent); arc.setAttribute('stroke-width','0.5');
+          arc.setAttribute('opacity', (0.15 + i*0.1).toFixed(2));
+          g.appendChild(arc);
+          // Second half offset
+          var arc2 = document.createElementNS(NS, 'path');
+          var r2 = r1 + 6;
+          arc2.setAttribute('d', 'M-' + r2 + ',0 A' + r2 + ',' + r2 + ' 0 0 1 ' + r2 + ',0');
+          arc2.setAttribute('stroke', accent); arc2.setAttribute('stroke-width','0.3');
+          arc2.setAttribute('opacity', (0.1 + i*0.06).toFixed(2));
+          g.appendChild(arc2);
+        }
+        s.appendChild(g);
+        return s;
+      },
+
+      ice: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 200 200');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        var g = document.createElementNS(NS, 'g');
+        g.setAttribute('transform', 'translate(100,100)');
+        g.style.animation = 'chRotate 40s linear infinite';
+        // 6-pointed snowflake
+        for (var i = 0; i < 6; i++) {
+          var angle = i * 60 * Math.PI / 180;
+          var cos = Math.cos(angle); var sin = Math.sin(angle);
+          // Main arm
+          var arm = document.createElementNS(NS, 'line');
+          arm.setAttribute('x1','0'); arm.setAttribute('y1','0');
+          arm.setAttribute('x2', (cos*90).toFixed(1)); arm.setAttribute('y2', (sin*90).toFixed(1));
+          arm.setAttribute('stroke', accent); arm.setAttribute('stroke-width','0.8');
+          g.appendChild(arm);
+          // Branch 1
+          [0.4, 0.65].forEach(function(frac) {
+            var bAngle = angle + Math.PI/6;
+            var bx = cos*90*frac; var by = sin*90*frac;
+            var b1 = document.createElementNS(NS, 'line');
+            b1.setAttribute('x1', bx.toFixed(1)); b1.setAttribute('y1', by.toFixed(1));
+            b1.setAttribute('x2', (bx + Math.cos(bAngle)*20).toFixed(1)); b1.setAttribute('y2', (by + Math.sin(bAngle)*20).toFixed(1));
+            b1.setAttribute('stroke', accent); b1.setAttribute('stroke-width','0.5');
+            g.appendChild(b1);
+            var b2 = document.createElementNS(NS, 'line');
+            b2.setAttribute('x1', bx.toFixed(1)); b2.setAttribute('y1', by.toFixed(1));
+            b2.setAttribute('x2', (bx + Math.cos(angle - Math.PI/6)*20).toFixed(1)); b2.setAttribute('y2', (by + Math.sin(angle - Math.PI/6)*20).toFixed(1));
+            b2.setAttribute('stroke', accent); b2.setAttribute('stroke-width','0.5');
+            g.appendChild(b2);
+          });
+        }
+        // Center hex
+        var hex = document.createElementNS(NS, 'polygon');
+        var pts = [];
+        for (var j=0; j<6; j++) { var a2 = j*60*Math.PI/180; pts.push((Math.cos(a2)*8).toFixed(1)+','+(Math.sin(a2)*8).toFixed(1)); }
+        hex.setAttribute('points', pts.join(' ')); hex.setAttribute('stroke', accent); hex.setAttribute('stroke-width','0.6');
+        g.appendChild(hex);
+        s.appendChild(g);
+        return s;
+      },
+
+      vortex: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 200 200');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        var g = document.createElementNS(NS, 'g');
+        g.setAttribute('transform', 'translate(100,100)');
+        // Concentric circles with dashes growing inward
+        [90,75,60,45,30,15].forEach(function(r, i) {
+          var c = document.createElementNS(NS, 'circle');
+          c.setAttribute('r', r); c.setAttribute('stroke', accent);
+          c.setAttribute('stroke-width', (0.3 + i*0.08).toFixed(2));
+          c.setAttribute('stroke-dasharray', (r * 0.4).toFixed(0) + ' ' + (r * 0.2).toFixed(0));
+          c.setAttribute('opacity', (0.15 + i*0.1).toFixed(2));
+          c.style.animation = 'chRotate ' + (8 + i*4) + 's linear ' + (i%2===0?'':'reverse') + ' infinite';
+          g.appendChild(c);
+        });
+        s.appendChild(g);
+        return s;
+      },
+
+      rig: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 300 300');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        // Horizontal platform lines (oil rig silhouette feel)
+        [60,90,130,170,210].forEach(function(y, i) {
+          var l = document.createElementNS(NS, 'line');
+          l.setAttribute('x1','30'); l.setAttribute('y1', y); l.setAttribute('x2','270'); l.setAttribute('y2', y);
+          l.setAttribute('stroke', accent); l.setAttribute('stroke-width', i === 0 ? '1' : '0.4');
+          l.setAttribute('opacity', (0.15 + i*0.07).toFixed(2));
+          s.appendChild(l);
+        });
+        // Vertical legs
+        [[80,90,80,270],[150,90,150,270],[220,90,220,270]].forEach(function(coords) {
+          var l2 = document.createElementNS(NS, 'line');
+          l2.setAttribute('x1',coords[0]); l2.setAttribute('y1',coords[1]); l2.setAttribute('x2',coords[2]); l2.setAttribute('y2',coords[3]);
+          l2.setAttribute('stroke', accent); l2.setAttribute('stroke-width','0.5'); l2.setAttribute('opacity','0.2');
+          s.appendChild(l2);
+        });
+        // Flare stack
+        var fl = document.createElementNS(NS, 'path');
+        fl.setAttribute('d','M240,60 L240,30 L248,15 L232,15 L240,30');
+        fl.setAttribute('stroke', accent); fl.setAttribute('stroke-width','0.8'); fl.setAttribute('opacity','0.4');
+        fl.style.animation = 'chPulse 1.5s ease-in-out infinite';
+        s.appendChild(fl);
+        return s;
+      },
+
+      constellation: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 300 300');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        var stars = [[60,40],[140,80],[220,30],[280,120],[200,160],[100,140],[40,180],[160,220],[240,200],[120,260],[280,250]];
+        var connections = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[4,9],[9,10],[1,5],[5,7],[7,8]];
+        connections.forEach(function(c) {
+          var a = stars[c[0]]; var b = stars[c[1]];
+          var l = document.createElementNS(NS, 'line');
+          l.setAttribute('x1', a[0]); l.setAttribute('y1', a[1]);
+          l.setAttribute('x2', b[0]); l.setAttribute('y2', b[1]);
+          l.setAttribute('stroke', accent); l.setAttribute('stroke-width','0.35'); l.setAttribute('opacity','0.3');
+          s.appendChild(l);
+        });
+        stars.forEach(function(p, i) {
+          var c = document.createElementNS(NS, 'circle');
+          c.setAttribute('cx', p[0]); c.setAttribute('cy', p[1]); c.setAttribute('r', i < 3 ? '3' : '2');
+          c.setAttribute('fill', accent); c.setAttribute('opacity','0.8');
+          c.style.animation = 'chStarTwinkle ' + (2 + i*0.3).toFixed(1) + 's ease-in-out ' + (i*0.2).toFixed(1) + 's infinite';
+          s.appendChild(c);
+        });
+        return s;
+      },
+
+      dawn: function (accent) {
+        var s = document.createElementNS(NS, 'svg');
+        s.setAttribute('viewBox', '0 0 300 300');
+        s.setAttribute('fill', 'none');
+        s.setAttribute('width', '100%'); s.setAttribute('height', '100%');
+        var defs = document.createElementNS(NS, 'defs');
+        var rg = document.createElementNS(NS, 'radialGradient');
+        rg.setAttribute('id','dawn-grad'); rg.setAttribute('cx','50%'); rg.setAttribute('cy','50%'); rg.setAttribute('r','50%');
+        var s1 = document.createElementNS(NS, 'stop');
+        s1.setAttribute('offset','0%'); s1.setAttribute('stop-color', accent); s1.setAttribute('stop-opacity','0.6');
+        var s2 = document.createElementNS(NS, 'stop');
+        s2.setAttribute('offset','100%'); s2.setAttribute('stop-color', accent); s2.setAttribute('stop-opacity','0');
+        rg.appendChild(s1); rg.appendChild(s2); defs.appendChild(rg); s.appendChild(defs);
+        // Sun circle
+        var sun = document.createElementNS(NS, 'circle');
+        sun.setAttribute('cx','150'); sun.setAttribute('cy','150'); sun.setAttribute('r','30');
+        sun.setAttribute('fill','url(#dawn-grad)');
+        sun.style.animation = 'chDawnPulse 4s ease-in-out infinite';
+        s.appendChild(sun);
+        // Rays
+        for (var i = 0; i < 12; i++) {
+          var a = i * 30 * Math.PI / 180;
+          var ray = document.createElementNS(NS, 'line');
+          ray.setAttribute('x1', (150 + Math.cos(a)*35).toFixed(1)); ray.setAttribute('y1', (150 + Math.sin(a)*35).toFixed(1));
+          ray.setAttribute('x2', (150 + Math.cos(a)*90).toFixed(1)); ray.setAttribute('y2', (150 + Math.sin(a)*90).toFixed(1));
+          ray.setAttribute('stroke', accent); ray.setAttribute('stroke-width','0.6'); ray.setAttribute('opacity',(0.2 + (i%3)*0.1).toFixed(2));
+          s.appendChild(ray);
+        }
+        return s;
+      }
+    };
+
+    /* ── Main ─────────────────────────────────────────────────────────── */
+    var params   = new URLSearchParams(window.location.search);
+    var chNum    = parseInt(params.get('ch'), 10);
+    var chapters = window.CGC_CHAPTERS || [];
+    var chapter  = chapters.find(function (c) { return c.num === chNum; });
+
+    var elLoading = document.getElementById('chapter-loading');
+    var elError   = document.getElementById('chapter-error');
+    var elContent = document.getElementById('chapter-content');
+
+    if (!chapter || isNaN(chNum)) {
+      elLoading.style.display = 'none';
+      elError.style.display   = 'flex';
+      return;
+    }
+
+    function applyTheme(t) {
+      if (!t) return;
+      var root = document.documentElement;
+      root.style.setProperty('--ch-accent',    t.accent);
+      root.style.setProperty('--ch-secondary', t.secondary);
+      root.style.setProperty('--ch-gradient',  t.gradient);
+      // Tint the nav border
+      document.getElementById('ch-nav').style.borderBottomColor = 'rgba(255,255,255,0.06)';
+      // Decoration
+      var decoEl = document.getElementById('ch-deco');
+      var builder = decos[t.deco];
+      if (builder && decoEl) {
+        var svgEl = builder(t.accent);
+        decoEl.appendChild(svgEl);
+      }
+    }
+
+    function renderChapter(cfg) {
+      var t   = chapter.theme || {};
+      var pad = chNum < 10 ? '0' + chNum : String(chNum);
+
+      document.title = 'CH.' + pad + ' — ' + chapter.title + ' | Captain Guido';
+      document.getElementById('ch-num-label').textContent = 'CH.' + pad + ' / BOOK ONE / ' + chapter.location.toUpperCase();
+      document.getElementById('ch-title').textContent     = chapter.title;
+      document.getElementById('ch-location').textContent  = chapter.location;
+      document.getElementById('ch-setting').textContent   = chapter.setting.toUpperCase();
+      document.getElementById('ch-body').innerHTML        = chapter.body;
+
+      applyTheme(t);
+
+      var elPrev = document.getElementById('ch-prev');
+      var elNext = document.getElementById('ch-next');
+
+      function isUnlocked(num) {
+        if (!cfg || !cfg.chapters) return false;
+        var c = cfg.chapters.find(function (c) { return parseInt(c.num, 10) === num; });
+        return !!(c && c.unlocked);
+      }
+
+      var prevNum = chNum - 1;
+      var nextNum = chNum + 1;
+      var prevExists = chapters.some(function (c) { return c.num === prevNum; });
+      var nextExists = chapters.some(function (c) { return c.num === nextNum; });
+
+      if (prevExists && isUnlocked(prevNum)) {
+        elPrev.href = 'chapter.html?ch=' + prevNum;
+      } else {
+        elPrev.setAttribute('disabled', 'true');
+        elPrev.removeAttribute('href');
+      }
+      if (nextExists && isUnlocked(nextNum)) {
+        elNext.href = 'chapter.html?ch=' + nextNum;
+      } else {
+        elNext.setAttribute('disabled', 'true');
+        elNext.removeAttribute('href');
+      }
+
+      elLoading.style.display = 'none';
+      elContent.style.display = 'block';
+    }
+
+    fetch('config.json?v=' + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (cfg) {
+        var chapterCfg = cfg.chapters && cfg.chapters.find(function (c) {
+          return parseInt(c.num, 10) === chNum;
+        });
+        if (!chapterCfg || !chapterCfg.unlocked) {
+          window.location.replace('index.html#journey');
+          return;
+        }
+        renderChapter(cfg);
+      })
+      .catch(function () {
+        renderChapter(null);
+      });
+  })();
   </script>
 </body>
 </html>

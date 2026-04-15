@@ -8,6 +8,12 @@ window.CGC_CHAPTERS = [
     title: 'The Port of Ostia',
     location: 'Mediterranean Sea, Italy',
     setting: 'Port of Ostia',
+    theme: {
+      accent: '#f4a836',
+      secondary: '#ffd580',
+      gradient: 'radial-gradient(ellipse at 15% 60%, rgba(244,168,54,0.14) 0%, transparent 55%)',
+      deco: 'compass'
+    },
     body: `
 <p>The salt air hit like memory.</p>
 <p>Captain Guido stood on the bow of the Hashwind, staring out at the ghost-grey horizon. Gulls wheeled above the half-crumbling wharf behind him, where olive nets hung limp and forgotten—much like the fishing industry that once gave this coast its soul.</p>
@@ -39,6 +45,12 @@ window.CGC_CHAPTERS = [
     title: 'Signals in Cairo',
     location: 'Red Sea, Egypt',
     setting: 'Suez Canal approach',
+    theme: {
+      accent: '#ff9f43',
+      secondary: '#e67e22',
+      gradient: 'radial-gradient(ellipse at 80% 30%, rgba(255,159,67,0.13) 0%, transparent 55%)',
+      deco: 'radar'
+    },
     body: `
 <p>The Hashwind glided silently up the Suez, sails down, engines muted — every creak and whisper a signal to the alert crew. Cairo's heat shimmered ahead, a sprawling city caught between ancient sands and modern shadows.</p>
 <p>Captain Guido stood at the bow, eyes sharp, scanning the haze. "We're not alone," he murmured. "There's too much noise for a quiet zone."</p>
@@ -58,6 +70,12 @@ window.CGC_CHAPTERS = [
     title: 'Arabian Tides',
     location: 'Arabian Sea',
     setting: 'Open Arabian Sea',
+    theme: {
+      accent: '#2ecc71',
+      secondary: '#00b894',
+      gradient: 'radial-gradient(ellipse at 50% 80%, rgba(46,204,113,0.11) 0%, transparent 55%)',
+      deco: 'circuit'
+    },
     body: `
 <p>In the War Room aboard the Hashwind, Captain Guido and Kins studied glowing charts of the Arabian Sea — its currents, hotspots, and the dark stains of pollution.</p>
 <p>"Barcelona feels like a lifetime ago," Guido said, tracing a finger over a map marked with ghost nets and oil slicks. "You were a cryptographer, chasing signals no one else could read."</p>
@@ -77,6 +95,12 @@ window.CGC_CHAPTERS = [
     title: 'The Indian Abyss',
     location: 'Indian Ocean',
     setting: 'Open Indian Ocean',
+    theme: {
+      accent: '#a29bfe',
+      secondary: '#6c5ce7',
+      gradient: 'radial-gradient(ellipse at 50% 100%, rgba(108,92,231,0.18) 0%, transparent 60%)',
+      deco: 'abyss'
+    },
     body: `
 <p>The Hashwind sliced through the restless waves of the Indian Ocean, its carbon-fiber sails stretched tight against the salty breeze. Captain Guido scanned the horizon, alert for signs of the rogue fleets.</p>
 <p>"Those ships aren't just fishing illegally," Kins warned. "They're dumping toxins, laundering profits through shadow chains, disappearing without a trace."</p>
@@ -94,6 +118,12 @@ window.CGC_CHAPTERS = [
     title: 'Shadows in the Philippine Sea',
     location: 'Philippine Sea',
     setting: 'Philippine island chains',
+    theme: {
+      accent: '#00cec9',
+      secondary: '#fd79a8',
+      gradient: 'radial-gradient(ellipse at 25% 40%, rgba(0,206,201,0.12) 0%, rgba(253,121,168,0.06) 50%, transparent 70%)',
+      deco: 'coral'
+    },
     body: `
 <p>Fresh from the battle in the Indian Abyss, the Hashwind sailed onward. The echoes of frozen, vanished enemy vessels still pulsed in their encrypted ledger as Captain Guido and Kins adjusted course. Their next challenge awaited in the turbulent Philippine Sea—a battleground where ecological recovery and digital justice intertwined.</p>
 <p>The Hashwind wove through island chains, its carbon-fiber sails slicing the tropical breeze. Kins scanned the radar, spotting dozens of enemy vessels lurking—ghost ships cloaked in smart-contract camouflage, hiding their dumping of toxins and illegal waste beneath the waves.</p>
@@ -110,6 +140,12 @@ window.CGC_CHAPTERS = [
     title: 'The South Pacific Reckoning',
     location: 'South Pacific Ocean',
     setting: 'Open South Pacific',
+    theme: {
+      accent: '#e74c3c',
+      secondary: '#f39c12',
+      gradient: 'radial-gradient(ellipse at 70% 20%, rgba(231,76,60,0.14) 0%, rgba(243,156,18,0.06) 50%, transparent 65%)',
+      deco: 'storm'
+    },
     body: `
 <p>The Hashwind sliced through the restless waves of the South Pacific, snapping sharply in the wind. Captain Guido's eyes scanned the horizon—this sea held more danger than ever before.</p>
 <p>Reports had warned of toxic dumping and illegal fishing—pirates disguised by encrypted signals, slipping through the cracks of coastal patrols. But this time, the threats were more brutal.</p>
@@ -131,6 +167,12 @@ window.CGC_CHAPTERS = [
     title: 'North Pacific Requiem',
     location: 'North Pacific Ocean',
     setting: 'The Great Pacific Gyre',
+    theme: {
+      accent: '#b2bec3',
+      secondary: '#636e72',
+      gradient: 'radial-gradient(ellipse at 50% 50%, rgba(178,190,195,0.09) 0%, transparent 60%)',
+      deco: 'gyre'
+    },
     body: `
 <p>The Hashwind drifted through the North Pacific's mirrored surface, her sails slack in the windless calm. Patchwork scars on the hull told stories of battles won—but not without cost.</p>
 <p>Guido stood at the bow, eyes narrowed toward the horizon where sea met sky in a silvery blur.</p>
@@ -163,6 +205,12 @@ window.CGC_CHAPTERS = [
     title: 'Bering Sea Crossfire',
     location: 'Bering Sea',
     setting: 'Northern Bering Strait',
+    theme: {
+      accent: '#74b9ff',
+      secondary: '#ffffff',
+      gradient: 'radial-gradient(ellipse at 30% 20%, rgba(116,185,255,0.16) 0%, rgba(255,255,255,0.04) 40%, transparent 65%)',
+      deco: 'ice'
+    },
     body: `
 <p>The fog over the Bering Sea moved like a slow exhale from the lungs of the Earth. Bitter air curled around the hull of the Hashwind as Guido stood at the prow, eyes locked on the radar, watching the pulse of an anomaly slide closer. Kins leaned against the edge of the bridge, silent, as if the sea itself had asked for reverence.</p>
 <p>Then it came—dark and slithering below the surface, too fast, too precise to be whale or ice. The water split like it was being cut from beneath. A mass of alloy breached the mist, taller than the Hashwind, silent save for the sound of dripping melt off its pitch-black hull. Its tower bore a glowing snowflake emblem, eerie and slow-pulsing with white-blue light—the kind that comes only from something not meant to exist.</p>
@@ -203,6 +251,12 @@ window.CGC_CHAPTERS = [
     title: 'Gyres of the Graveyard',
     location: 'North Atlantic Ocean',
     setting: 'North Atlantic Gyre',
+    theme: {
+      accent: '#55efc4',
+      secondary: '#2d3436',
+      gradient: 'radial-gradient(ellipse at 60% 70%, rgba(85,239,196,0.10) 0%, rgba(45,52,54,0.2) 50%, transparent 70%)',
+      deco: 'vortex'
+    },
     body: `
 <p>The North Atlantic never rested.</p>
 <p>Even on calm days, it carried tension—old routes, old wars, old wrecks grinding beneath the waves. The Hashwind cut into the gyre at full throttle, CGC turbines humming low as plastic and wreckage began to spiral around them.</p>
@@ -233,6 +287,12 @@ window.CGC_CHAPTERS = [
     title: 'Gulf of America',
     location: 'Gulf of Mexico',
     setting: 'Gulf of America',
+    theme: {
+      accent: '#fdcb6e',
+      secondary: '#d35400',
+      gradient: 'radial-gradient(ellipse at 40% 60%, rgba(211,84,0,0.14) 0%, rgba(253,203,110,0.06) 50%, transparent 70%)',
+      deco: 'rig'
+    },
     body: `
 <p>Warm water. Quiet violence.</p>
 <p>The Gulf looked peaceful from the surface—sunlit, calm, alive. But below, dead zones stretched for miles. Oxygen-starved trenches. Runoff-fed blooms choking everything in their path.</p>
@@ -253,6 +313,12 @@ window.CGC_CHAPTERS = [
     title: 'Southern Cross',
     location: 'South Atlantic Ocean',
     setting: 'South Atlantic approach to Antarctic convergence',
+    theme: {
+      accent: '#a29bfe',
+      secondary: '#00cec9',
+      gradient: 'radial-gradient(ellipse at 20% 80%, rgba(108,92,231,0.15) 0%, rgba(0,206,201,0.06) 50%, transparent 65%)',
+      deco: 'constellation'
+    },
     body: `
 <p>The South Atlantic felt wide in a way the others didn't.</p>
 <p>Empty. Long. Honest.</p>
@@ -278,6 +344,12 @@ window.CGC_CHAPTERS = [
     title: 'Return to Ostia',
     location: 'Mediterranean Sea, Italy',
     setting: 'Port of Ostia',
+    theme: {
+      accent: '#ffeaa7',
+      secondary: '#f4a836',
+      gradient: 'radial-gradient(ellipse at 50% 0%, rgba(255,234,167,0.16) 0%, rgba(244,168,54,0.08) 40%, transparent 70%)',
+      deco: 'dawn'
+    },
     body: `
 <p>The water smelled the same.</p>
 <p>Salt. Stone. Memory.</p>
