@@ -128,6 +128,33 @@
     .btn-primary:hover  { background: var(--gold-dk); }
     .btn-primary:active { transform: scale(0.98); }
 
+    .login-user-btn {
+      flex: 1;
+      padding: 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .login-user-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .login-back {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.78rem;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: center;
+      padding: 0.25rem;
+    }
+    .login-back:hover { color: var(--text); }
+
     .login-error {
       display: none;
       font-size: 0.78rem;
@@ -925,14 +952,46 @@
   <div class="login-card">
     <img src="captain-guido.png" alt="Captain Guido" class="login-avatar">
     <div>
-      <div class="login-heading">CGC Command</div>
-      <div class="login-sub">Captain Guido Admin Panel</div>
+      <div class="login-heading">CGT Admin</div>
+      <div class="login-sub">Captain Guido Token</div>
     </div>
-    <div class="login-form">
-      <label for="pw-input">Password</label>
-      <input type="password" id="pw-input" placeholder="Enter password" autofocus>
-      <div id="login-error" class="login-error">Incorrect password. Try again.</div>
-      <button class="btn-primary" onclick="checkPassword()">Sign in</button>
+
+    <!-- Step 1: Who are you -->
+    <div class="login-form" id="step-user">
+      <label>Who are you?</label>
+      <div style="display:flex;gap:0.6rem;">
+        <button class="login-user-btn" onclick="selectUser('Glenn')">Glenn</button>
+        <button class="login-user-btn" onclick="selectUser('Jude')">Jude</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Password -->
+    <div class="login-form" id="step-pw" style="display:none;">
+      <label id="pw-label">Password</label>
+      <input type="password" id="pw-input" placeholder="Enter password">
+      <div id="login-error" class="login-error">Incorrect password.</div>
+      <button class="btn-primary" onclick="checkPassword()">Continue →</button>
+      <button class="login-back" onclick="backToStep('step-user')">← Back</button>
+    </div>
+
+    <!-- Step 3: TOTP code -->
+    <div class="login-form" id="step-totp" style="display:none;">
+      <label id="totp-label">6-digit code</label>
+      <input type="text" id="totp-input" placeholder="000000" maxlength="6"
+             inputmode="numeric" autocomplete="one-time-code"
+             style="font-size:1.6rem;letter-spacing:0.4em;text-align:center;font-family:monospace;">
+      <div id="totp-error" class="login-error">Invalid code. Try again.</div>
+      <button class="btn-primary" onclick="checkTotp()">Sign in</button>
+      <button class="login-back" onclick="backToStep('step-pw')">← Back</button>
+    </div>
+
+    <!-- First-time setup: QR code -->
+    <div class="login-form" id="step-setup" style="display:none;">
+      <label>First-time setup</label>
+      <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.5rem;">Open <strong>Google Authenticator</strong> or <strong>Authy</strong> and scan this QR code.</p>
+      <div id="setup-qr" style="display:flex;justify-content:center;padding:0.5rem;background:#fff;border-radius:8px;"></div>
+      <p style="font-size:0.7rem;color:var(--muted);margin:0.5rem 0 0;text-align:center;">Scan once — then enter the code below every login.</p>
+      <button class="btn-primary" onclick="setupDone()">I've scanned it →</button>
     </div>
   </div>
 </div>
@@ -1426,6 +1485,7 @@
 
 <div id="toast"></div>
 
+<script src="https://unpkg.com/qrcode@1.5.4/build/qrcode.min.js"></script>
 <script>
   const PW_HASH    = '6c30a00ea8714f8f0f8de7d70f3ac80a763ea77d1547ce41db7ecd4383619af1';
   const REPO_OWNER = 'captainguidotoken-ops';
@@ -1559,16 +1619,59 @@
   ];
 
   // ── Auth ───────────────────────────────────────────────────────────────────
+  // Per-user password hashes and TOTP secrets (base32)
+  const USERS = {
+    Glenn: {
+      pwHash: '6c30a00ea8714f8f0f8de7d70f3ac80a763ea77d1547ce41db7ecd4383619af1',
+      totpSecret: 'YENUWTFHIK2Z5HKMZVH4FISATAYZZYOT'
+    },
+    Jude: {
+      pwHash: '6c30a00ea8714f8f0f8de7d70f3ac80a763ea77d1547ce41db7ecd4383619af1',
+      totpSecret: 'FW6LLAZCQMGXJB53XNP222GRRSY3USX3'
+    }
+  };
+
+  var _loginUser = null;
+
+  function backToStep(id) {
+    ['step-user','step-pw','step-totp','step-setup'].forEach(function(s) {
+      document.getElementById(s).style.display = 'none';
+    });
+    document.getElementById(id).style.display = '';
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('totp-error').style.display  = 'none';
+  }
+
+  function selectUser(name) {
+    _loginUser = name;
+    document.getElementById('pw-label').textContent = name + "'s Password";
+    document.getElementById('step-user').style.display = 'none';
+    document.getElementById('step-pw').style.display   = '';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+
   async function sha256(s) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
     return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
 
   async function checkPassword() {
+    if (!_loginUser) return;
     const h = await sha256(document.getElementById('pw-input').value);
-    if (h === PW_HASH) {
-      sessionStorage.setItem('cgc_auth','1');
-      showAdmin();
+    if (h === USERS[_loginUser].pwHash) {
+      document.getElementById('login-error').style.display = 'none';
+      // Check if TOTP setup done
+      var setupKey = 'cgc_totp_setup_' + _loginUser.toLowerCase();
+      if (!localStorage.getItem(setupKey)) {
+        showTotpSetup();
+      } else {
+        document.getElementById('step-pw').style.display   = 'none';
+        document.getElementById('step-totp').style.display = '';
+        document.getElementById('totp-label').textContent  = 'Code from ' + _loginUser + "'s Authenticator";
+        document.getElementById('totp-input').value = '';
+        document.getElementById('totp-input').focus();
+      }
     } else {
       document.getElementById('login-error').style.display = 'block';
       document.getElementById('pw-input').value = '';
@@ -1576,7 +1679,88 @@
     }
   }
 
-  document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key==='Enter') checkPassword(); });
+  function showTotpSetup() {
+    document.getElementById('step-pw').style.display    = 'none';
+    document.getElementById('step-setup').style.display = '';
+    var secret = USERS[_loginUser].totpSecret;
+    var label  = encodeURIComponent('CGT Admin (' + _loginUser + ')');
+    var issuer = encodeURIComponent('Captain Guido');
+    var uri    = 'otpauth://totp/' + label + '?secret=' + secret + '&issuer=' + issuer + '&algorithm=SHA1&digits=6&period=30';
+    var qrEl   = document.getElementById('setup-qr');
+    qrEl.innerHTML = '';
+    if (typeof QRCode !== 'undefined') {
+      new QRCode(qrEl, { text: uri, width: 180, height: 180, colorDark: '#000', colorLight: '#fff', correctLevel: QRCode.CorrectLevel.M });
+    }
+  }
+
+  function setupDone() {
+    localStorage.setItem('cgc_totp_setup_' + _loginUser.toLowerCase(), '1');
+    document.getElementById('step-setup').style.display = 'none';
+    document.getElementById('step-totp').style.display  = '';
+    document.getElementById('totp-label').textContent   = 'Code from ' + _loginUser + "'s Authenticator";
+    document.getElementById('totp-input').value = '';
+    document.getElementById('totp-input').focus();
+  }
+
+  // TOTP verification — RFC 6238, SHA-1, 6 digits, 30s window
+  async function totpVerify(secret, token) {
+    // base32 decode
+    var b32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    var bits = '', bytes = [];
+    for (var i = 0; i < secret.length; i++) {
+      var v = b32.indexOf(secret[i].toUpperCase());
+      if (v < 0) continue;
+      bits += v.toString(2).padStart(5, '0');
+    }
+    for (var i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i+8), 2));
+    var keyBytes = new Uint8Array(bytes);
+
+    var key = await crypto.subtle.importKey('raw', keyBytes, { name:'HMAC', hash:'SHA-1' }, false, ['sign']);
+
+    async function hotp(counter) {
+      var buf = new ArrayBuffer(8);
+      var view = new DataView(buf);
+      var high = Math.floor(counter / 0x100000000);
+      var low  = counter >>> 0;
+      view.setUint32(0, high, false);
+      view.setUint32(4, low,  false);
+      var sig    = await crypto.subtle.sign('HMAC', key, buf);
+      var arr    = new Uint8Array(sig);
+      var offset = arr[19] & 0xf;
+      var code   = ((arr[offset] & 0x7f) << 24 | arr[offset+1] << 16 | arr[offset+2] << 8 | arr[offset+3]) % 1000000;
+      return String(code).padStart(6, '0');
+    }
+
+    var t = Math.floor(Date.now() / 1000 / 30);
+    // Accept current window ± 1 (30s drift tolerance)
+    for (var d = -1; d <= 1; d++) {
+      if (await hotp(t + d) === token) return true;
+    }
+    return false;
+  }
+
+  async function checkTotp() {
+    var token = document.getElementById('totp-input').value.replace(/\s/g,'');
+    if (token.length !== 6) { document.getElementById('totp-error').style.display = 'block'; return; }
+    var valid = await totpVerify(USERS[_loginUser].totpSecret, token);
+    if (valid) {
+      sessionStorage.setItem('cgc_auth', '1');
+      sessionStorage.setItem('cgc_login_user', _loginUser);
+      localStorage.setItem('cgc_tt_user', _loginUser);
+      showAdmin();
+    } else {
+      document.getElementById('totp-error').style.display = 'block';
+      document.getElementById('totp-input').value = '';
+      document.getElementById('totp-input').focus();
+    }
+  }
+
+  document.getElementById('pw-input').addEventListener('keydown',   e => { if (e.key==='Enter') checkPassword(); });
+  document.getElementById('totp-input').addEventListener('keydown', e => { if (e.key==='Enter') checkTotp(); });
+  document.getElementById('totp-input').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g,'').slice(0,6);
+    if (this.value.length === 6) checkTotp();
+  });
 
   function showAdmin() {
     document.getElementById('login-screen').style.display = 'none';
@@ -1617,6 +1801,8 @@
   function logout() {
     if (ttRunning) ttToggle(); // auto clock-out before leaving
     sessionStorage.removeItem('cgc_auth');
+    sessionStorage.removeItem('cgc_login_user');
+    _loginUser = null;
     location.reload();
   }
 
@@ -2663,7 +2849,10 @@
   }
 
   // ── Boot ───────────────────────────────────────────────────────────────────
-  if (sessionStorage.getItem('cgc_auth') === '1') showAdmin();
+  if (sessionStorage.getItem('cgc_auth') === '1') {
+    _loginUser = sessionStorage.getItem('cgc_login_user') || 'Glenn';
+    showAdmin();
+  }
 </script>
 </body>
 </html>
