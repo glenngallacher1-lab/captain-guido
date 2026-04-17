@@ -825,6 +825,22 @@
     document.getElementById('trackerPct').textContent        = pct.toFixed(1) + '%';
     document.getElementById('trackerTarget').textContent     = 'of ' + fmtUSDC(target);
     document.getElementById('trackerRemaining').textContent  = fmtTokens(remaining) + ' $GUIDO remaining this round';
+
+    // Tokenomics modal live block
+    var modalLive = document.getElementById('modal-presale-live');
+    if (modalLive) {
+      modalLive.style.display = 'block';
+      document.getElementById('modal-round-badge').textContent    = 'ROUND ' + roundNum + ' OF 10';
+      document.getElementById('modal-presale-price').textContent  = roundData.price.toLocaleString();
+      document.getElementById('modal-presale-raised').textContent = fmtUSDC(raised);
+      document.getElementById('modal-presale-remaining').textContent = fmtTokens(remaining);
+      document.getElementById('modal-presale-bar').style.width    = pct.toFixed(1) + '%';
+    }
+
+    // Highlight active round in the grid
+    document.querySelectorAll('.round-item').forEach(function(el, i) {
+      el.classList.toggle('round-item--active', i === roundNum - 1);
+    });
   }
 
   // Initialize

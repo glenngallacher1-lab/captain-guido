@@ -635,6 +635,26 @@
         <div class="presale-rounds">
           <h3>Presale — 10 Progressive Rounds</h3>
           <p class="modal-note">Early rounds receive more $GUIDO per USDC. Round 1 opens the voyage.</p>
+
+          <!-- Live presale status (hidden until presale.active = true) -->
+          <div id="modal-presale-live" style="display:none;margin-bottom:1.5rem;padding:1rem 1.25rem;background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.15);border-radius:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.6rem;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#2ecc71;display:inline-block;animation:liveDot 1.4s ease-in-out infinite;"></span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:3px;color:#2ecc71;">PRESALE LIVE</span>
+              </div>
+              <span id="modal-round-badge" style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:2px;color:var(--aqua);"></span>
+            </div>
+            <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:0.75rem;">
+              <div><div id="modal-presale-price" style="font-family:var(--font-mono);font-size:1.3rem;font-weight:700;color:#fff;"></div><div style="font-size:0.62rem;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-top:2px;">$GUIDO / USDC</div></div>
+              <div><div id="modal-presale-raised" style="font-family:var(--font-mono);font-size:1.3rem;font-weight:700;color:#fff;"></div><div style="font-size:0.62rem;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-top:2px;">RAISED THIS ROUND</div></div>
+              <div><div id="modal-presale-remaining" style="font-family:var(--font-mono);font-size:1.3rem;font-weight:700;color:var(--gold-accent,#f4a836);"></div><div style="font-size:0.62rem;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-top:2px;">REMAINING</div></div>
+            </div>
+            <div style="height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;">
+              <div id="modal-presale-bar" style="height:100%;background:linear-gradient(90deg,var(--aqua),var(--gold-accent,#f4a836));border-radius:2px;width:0%;transition:width 0.6s ease;"></div>
+            </div>
+          </div>
+
           <div class="rounds-grid">
             <div class="round-item"><span class="round-num">R1</span><span class="round-price">20,000 / USDC</span><span class="round-target">$250K</span></div>
             <div class="round-item"><span class="round-num">R2</span><span class="round-price">18,000 / USDC</span><span class="round-target">$300K</span></div>

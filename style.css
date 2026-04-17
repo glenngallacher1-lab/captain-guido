@@ -2008,6 +2008,12 @@ footer {
   border-color: rgba(244, 168, 54, 0.25);
 }
 
+.round-item--active {
+  border-color: rgba(0, 212, 255, 0.5);
+  background: rgba(0, 212, 255, 0.07);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.1);
+}
+
 .round-num {
   font-family: var(--font-mono);
   font-size: 0.75rem;
