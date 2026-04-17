@@ -1568,6 +1568,25 @@
     document.getElementById('admin-panel').style.display  = 'block';
     renderChapters();
     renderChecklist();
+    // Restore active session across page refreshes
+    try {
+      var active = JSON.parse(localStorage.getItem(TT_ACTIVE_KEY));
+      if (active && active.startTs) {
+        if (active.user) localStorage.setItem('cgc_tt_user', active.user);
+        ttRunning = true;
+        ttStartTs = active.startTs;
+        ttTick    = setInterval(ttUpdateDisplay, 1000);
+        ttUpdateDisplay();
+        ttSyncSidebar();
+        var btn = document.getElementById('tt-clock-btn');
+        if (btn) { btn.textContent = 'CLOCK OUT'; btn.style.background = '#e74c3c'; }
+        var lbl = document.getElementById('tt-status-label');
+        if (lbl) { lbl.textContent = 'CLOCKED IN'; lbl.style.color = '#2ecc71'; }
+        var dsp = document.getElementById('tt-clock-display');
+        if (dsp) dsp.style.color = '#2ecc71';
+      }
+    } catch(e) {}
+
     const saved = localStorage.getItem('cgc_gh_token');
     if (saved) {
       document.getElementById('gh-token-input').value = '•'.repeat(20);
@@ -1664,6 +1683,7 @@
 
   // ── Time Tracker ─────────────────────────────────────────────────────────
   var TT_USERS    = ['Glenn', 'Jude'];
+  var TT_ACTIVE_KEY = 'cgc_tt_active';
   var ttRunning   = false;
   var ttStartTs   = null;
   var ttTick      = null;
@@ -1730,6 +1750,7 @@
       // Clock In
       ttRunning = true;
       ttStartTs = Date.now();
+      localStorage.setItem(TT_ACTIVE_KEY, JSON.stringify({ startTs: ttStartTs, user: ttCurrentUser() }));
       ttLogEvent('🕐 Clocked in');
       document.getElementById('tt-clock-btn').textContent   = 'CLOCK OUT';
       document.getElementById('tt-clock-btn').style.background = '#e74c3c';
@@ -1753,6 +1774,7 @@
       // Reset UI
       ttRunning = false;
       ttStartTs = null;
+      localStorage.removeItem(TT_ACTIVE_KEY);
       document.getElementById('tt-clock-display').textContent  = '00:00:00';
       document.getElementById('tt-clock-display').style.color  = 'var(--primary,#6366f1)';
       document.getElementById('tt-clock-btn').textContent      = 'CLOCK IN';
