@@ -1602,7 +1602,7 @@
       }
     } catch(e) {}
 
-    const saved = localStorage.getItem('cgc_gh_token');
+    const saved = sessionStorage.getItem('cgc_gh_token');
     if (saved) {
       document.getElementById('gh-token-input').value = '•'.repeat(20);
       loadConfig();
@@ -1713,7 +1713,7 @@
   var _ttSha     = null;
 
   function ttGhHeaders() {
-    var token = localStorage.getItem('cgc_gh_token');
+    var token = sessionStorage.getItem('cgc_gh_token');
     return token ? { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } : null;
   }
 
@@ -1734,13 +1734,20 @@
   async function ttPushAll(obj) {
     var H = ttGhHeaders();
     if (!H) return;
-    var body = { message: 'chore: update time log', content: btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2)))) };
-    if (_ttSha) body.sha = _ttSha;
-    try {
+    async function attempt(sha) {
+      var body = { message: 'chore: update time log', content: btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2)))) };
+      if (sha) body.sha = sha;
       var res  = await fetch(TT_GH_URL, { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var data = await res.json();
+      if (res.status === 409 || res.status === 422) {
+        var fresh = await fetch(TT_GH_URL + '?v=' + Date.now(), { headers: H });
+        var fd    = await fresh.json();
+        _ttSha    = fd.sha;
+        return attempt(_ttSha);
+      }
       if (data.content) { _ttSha = data.content.sha; _ttCache = obj; }
-    } catch(e) {}
+    }
+    try { await attempt(_ttSha); } catch(e) { console.warn('time-log push failed', e); }
   }
 
   function ttLoadLog(user) {
@@ -1860,7 +1867,7 @@
 
   async function ttRenderHistory() {
     var warn = document.getElementById('tt-token-warn');
-    if (warn) warn.style.display = localStorage.getItem('cgc_gh_token') ? 'none' : 'block';
+    if (warn) warn.style.display = sessionStorage.getItem('cgc_gh_token') ? 'none' : 'block';
     var userEl = document.getElementById('tt-user');
     if (userEl) userEl.value = ttCurrentUser();
     var isGlennSession = ttCurrentUser().toLowerCase() === 'glenn';
@@ -2037,7 +2044,7 @@
   var _logSha   = null;   // GitHub file SHA for updates
 
   function logGhHeaders() {
-    var token = localStorage.getItem('cgc_gh_token');
+    var token = sessionStorage.getItem('cgc_gh_token');
     return token ? { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } : null;
   }
   var LOG_GH_PATH = 'session-log.json';
@@ -2059,13 +2066,20 @@
   async function pushLog(entries) {
     var H = logGhHeaders();
     if (!H) return;
-    var body = { message: 'chore: update session log', content: btoa(unescape(encodeURIComponent(JSON.stringify(entries, null, 2)))) };
-    if (_logSha) body.sha = _logSha;
-    try {
+    async function attempt(sha) {
+      var body = { message: 'chore: update session log', content: btoa(unescape(encodeURIComponent(JSON.stringify(entries, null, 2)))) };
+      if (sha) body.sha = sha;
       var res  = await fetch(LOG_GH_URL, { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       var data = await res.json();
+      if (res.status === 409 || res.status === 422) {
+        var fresh = await fetch(LOG_GH_URL + '?v=' + Date.now(), { headers: H });
+        var fd    = await fresh.json();
+        _logSha   = fd.sha;
+        return attempt(_logSha);
+      }
       if (data.content) { _logSha = data.content.sha; _logCache = entries; }
-    } catch(e) {}
+    }
+    try { await attempt(_logSha); } catch(e) { console.warn('session-log push failed', e); }
   }
 
   function renderLogEntries(entries) {
@@ -2219,13 +2233,13 @@
   function saveToken() {
     const v = document.getElementById('gh-token-input').value.trim();
     if (!v || v.startsWith('•')) return;
-    localStorage.setItem('cgc_gh_token', v);
+    sessionStorage.setItem('cgc_gh_token', v);
     document.getElementById('gh-token-input').value = '•'.repeat(20);
     verifyToken();
   }
 
   function clearToken() {
-    localStorage.removeItem('cgc_gh_token');
+    sessionStorage.removeItem('cgc_gh_token');
     document.getElementById('gh-token-input').value = '';
     setTokenStatus(null, 'Token cleared');
   }
@@ -2238,7 +2252,7 @@
   }
 
   async function verifyToken() {
-    const token = localStorage.getItem('cgc_gh_token');
+    const token = sessionStorage.getItem('cgc_gh_token');
     if (!token) { setTokenStatus(false, 'No token saved — enter one above'); return; }
     setTokenStatus(null, 'Checking…');
     try {
@@ -2256,7 +2270,7 @@
 
   // ── Load live config from GitHub ───────────────────────────────────────────
   async function loadConfig() {
-    const token = localStorage.getItem('cgc_gh_token');
+    const token = sessionStorage.getItem('cgc_gh_token');
     if (!token) return;
     const H = { Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json' };
     try {
@@ -2313,7 +2327,7 @@
 
   // ── Publish ────────────────────────────────────────────────────────────────
   async function saveChanges() {
-    const token = localStorage.getItem('cgc_gh_token');
+    const token = sessionStorage.getItem('cgc_gh_token');
     if (!token) { showPanel('token'); toast('Enter your GitHub token first', 'err'); return; }
 
     const btn = document.getElementById('pub-btn');
@@ -2390,7 +2404,7 @@
     var raw = inp.value.trim();
     if (!raw) return;
     inp.value = '';
-    addMsg(raw, 'user');
+    addMsg(escHtml(raw), 'user');
     setTimeout(function() { runCommand(raw); }, 280);
   }
 
@@ -2414,7 +2428,7 @@
   function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   async function chatGhGet() {
-    var token = localStorage.getItem('cgc_gh_token');
+    var token = sessionStorage.getItem('cgc_gh_token');
     var H = { Authorization:'Bearer '+token, Accept:'application/vnd.github+json' };
     var res  = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/config.json', { headers:H });
     var data = await res.json();
@@ -2423,7 +2437,7 @@
   }
 
   async function chatGhPut(cfg, sha, message) {
-    var token = localStorage.getItem('cgc_gh_token');
+    var token = sessionStorage.getItem('cgc_gh_token');
     var H = { Authorization:'Bearer '+token, Accept:'application/vnd.github+json', 'Content-Type':'application/json' };
     var res  = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/config.json', {
       method:'PUT', headers:H,
@@ -2447,7 +2461,7 @@
   }
 
   async function runCommand(raw) {
-    if (!localStorage.getItem('cgc_gh_token')) {
+    if (!sessionStorage.getItem('cgc_gh_token')) {
       addMsg('<span class="err">No GitHub token.</span> Go to <b>GitHub Token</b> in the sidebar first.', 'bot'); return;
     }
     showTyping();
