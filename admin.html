@@ -991,6 +991,7 @@
       <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.5rem;">Open <strong>Google Authenticator</strong> or <strong>Authy</strong> and scan this QR code.</p>
       <div id="setup-qr" style="display:flex;justify-content:center;padding:0.5rem;background:#fff;border-radius:8px;"></div>
       <p style="font-size:0.7rem;color:var(--muted);margin:0.5rem 0 0;text-align:center;">Scan once — then enter the code below every login.</p>
+      <a id="setup-manual" href="#" style="font-size:0.7rem;color:var(--gold);text-align:center;display:block;"></a>
       <button class="btn-primary" onclick="setupDone()">I've scanned it →</button>
     </div>
   </div>
@@ -1485,7 +1486,7 @@
 
 <div id="toast"></div>
 
-<script src="https://unpkg.com/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
   const PW_HASH    = '6c30a00ea8714f8f0f8de7d70f3ac80a763ea77d1547ce41db7ecd4383619af1';
   const REPO_OWNER = 'captainguidotoken-ops';
@@ -1689,8 +1690,13 @@
     var qrEl   = document.getElementById('setup-qr');
     qrEl.innerHTML = '';
     if (typeof QRCode !== 'undefined') {
-      new QRCode(qrEl, { text: uri, width: 180, height: 180, colorDark: '#000', colorLight: '#fff', correctLevel: QRCode.CorrectLevel.M });
+      new QRCode(qrEl, { text: uri, width: 200, height: 200, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+    } else {
+      qrEl.innerHTML = '<p style="font-size:0.72rem;color:red;">QR library failed to load. Use manual entry below.</p>';
     }
+    // Manual fallback link
+    var manual = document.getElementById('setup-manual');
+    if (manual) { manual.href = uri; manual.textContent = 'Or tap here to add manually'; }
   }
 
   function setupDone() {
@@ -1715,7 +1721,7 @@
     for (var i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i+8), 2));
     var keyBytes = new Uint8Array(bytes);
 
-    var key = await crypto.subtle.importKey('raw', keyBytes, { name:'HMAC', hash:'SHA-1' }, false, ['sign']);
+    var key = await crypto.subtle.importKey('raw', keyBytes, {name:'HMAC', hash:'SHA-1'}, false, ['sign']);
 
     async function hotp(counter) {
       var buf = new ArrayBuffer(8);
