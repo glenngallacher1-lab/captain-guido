@@ -1000,6 +1000,12 @@
     </nav>
 
     <div class="sidebar-footer">
+      <!-- Persistent clock — always visible when clocked in -->
+      <div id="sb-clock-wrap" style="display:none;margin-bottom:0.75rem;padding:0.65rem 0.75rem;background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.2);border-radius:8px;cursor:pointer;" onclick="showPanel('time')" title="Go to Time Tracker">
+        <div style="font-size:0.6rem;letter-spacing:2px;color:#2ecc71;margin-bottom:2px;">● CLOCKED IN</div>
+        <div id="sb-clock-display" style="font-family:var(--mono,monospace);font-size:1.1rem;font-weight:700;letter-spacing:3px;color:#fff;">00:00:00</div>
+        <div id="sb-clock-user" style="font-size:0.6rem;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-top:2px;"></div>
+      </div>
       <button class="btn-logout" onclick="logout()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Sign out
@@ -1576,7 +1582,11 @@
     }
   }
 
-  function logout() { sessionStorage.removeItem('cgc_auth'); location.reload(); }
+  function logout() {
+    if (ttRunning) ttToggle(); // auto clock-out before leaving
+    sessionStorage.removeItem('cgc_auth');
+    location.reload();
+  }
 
   // ── Presale ───────────────────────────────────────────────────────────────
   var ADMIN_ROUNDS = [
@@ -1721,6 +1731,7 @@
       document.getElementById('tt-status-label').style.color  = '#2ecc71';
       document.getElementById('tt-clock-display').style.color = '#2ecc71';
       ttTick = setInterval(ttUpdateDisplay, 1000);
+      ttSyncSidebar();
     } else {
       // Clock Out
       clearInterval(ttTick);
@@ -1742,13 +1753,28 @@
       document.getElementById('tt-status-label').textContent   = 'CLOCKED OUT — ' + ttFmtDuration(duration) + ' logged';
       document.getElementById('tt-status-label').style.color   = 'var(--text-muted,#888)';
       document.getElementById('tt-note').value = '';
+      ttSyncSidebar();
       ttRenderHistory();
     }
   }
 
   function ttUpdateDisplay() {
     if (!ttRunning || !ttStartTs) return;
-    document.getElementById('tt-clock-display').textContent = ttFmtClock(Date.now() - ttStartTs);
+    var elapsed = ttFmtClock(Date.now() - ttStartTs);
+    document.getElementById('tt-clock-display').textContent = elapsed;
+    // Sidebar persistent clock
+    var sb = document.getElementById('sb-clock-display');
+    if (sb) sb.textContent = elapsed;
+  }
+
+  function ttSyncSidebar() {
+    var wrap = document.getElementById('sb-clock-wrap');
+    if (!wrap) return;
+    wrap.style.display = ttRunning ? 'block' : 'none';
+    if (ttRunning) {
+      var userEl = document.getElementById('sb-clock-user');
+      if (userEl) userEl.textContent = ttCurrentUser().toUpperCase();
+    }
   }
 
   function ttRenderHistory() {
