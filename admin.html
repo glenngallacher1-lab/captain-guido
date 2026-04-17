@@ -1748,13 +1748,6 @@
     return ts >= startOfWeek;
   }
 
-  function ttLogEvent(text) {
-    var user    = ttCurrentUser();
-    var entries = loadLog();
-    entries.push({ ts: Date.now(), author: user, text: text });
-    saveLog(entries);
-  }
-
   function ttToggle() {
     if (!ttRunning) {
       // Clock In
@@ -1985,38 +1978,55 @@
   }
 
   // ── Session Log ──────────────────────────────────────────────────────────
-  var LOG_KEY = 'cgc_session_log';
+  // ── Session Log — GitHub-backed so Glenn & Jude share the same log ──────────
+  var _logCache = null;   // in-memory cache
+  var _logSha   = null;   // GitHub file SHA for updates
 
-  function loadLog() {
-    try { return JSON.parse(localStorage.getItem(LOG_KEY)) || []; }
-    catch { return []; }
+  function logGhHeaders() {
+    var token = localStorage.getItem('cgc_gh_token');
+    return token ? { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } : null;
+  }
+  var LOG_GH_PATH = 'session-log.json';
+  var LOG_GH_URL  = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + LOG_GH_PATH;
+
+  async function fetchLog() {
+    var H = logGhHeaders();
+    if (!H) { _logCache = _logCache || []; return _logCache; }
+    try {
+      var res  = await fetch(LOG_GH_URL + '?v=' + Date.now(), { headers: H });
+      if (res.status === 404) { _logCache = []; _logSha = null; return _logCache; }
+      var data = await res.json();
+      _logSha    = data.sha;
+      _logCache  = JSON.parse(atob(data.content.replace(/\n/g, '')));
+    } catch(e) { _logCache = _logCache || []; }
+    return _logCache;
   }
 
-  function saveLog(entries) {
-    localStorage.setItem(LOG_KEY, JSON.stringify(entries));
+  async function pushLog(entries) {
+    var H = logGhHeaders();
+    if (!H) return;
+    var body = { message: 'chore: update session log', content: btoa(unescape(encodeURIComponent(JSON.stringify(entries, null, 2)))) };
+    if (_logSha) body.sha = _logSha;
+    try {
+      var res  = await fetch(LOG_GH_URL, { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      var data = await res.json();
+      if (data.content) { _logSha = data.content.sha; _logCache = entries; }
+    } catch(e) {}
   }
 
-  function renderLog() {
-    // Sync author field to current time-tracker user
-    var authorEl = document.getElementById('log-author');
-    if (authorEl) authorEl.value = ttCurrentUser();
-    var entries  = loadLog();
-    var elList   = document.getElementById('log-entries');
-    var elEmpty  = document.getElementById('log-empty');
+  function renderLogEntries(entries) {
+    var elList  = document.getElementById('log-entries');
+    var elEmpty = document.getElementById('log-empty');
     if (!elList) return;
     elList.innerHTML = '';
-    if (entries.length === 0) {
-      elEmpty.style.display = 'block';
-      return;
-    }
+    if (!entries || entries.length === 0) { elEmpty.style.display = 'block'; return; }
     elEmpty.style.display = 'none';
-    // Show newest first
     entries.slice().reverse().forEach(function(e) {
       var el = document.createElement('div');
       el.style.cssText = 'background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;padding:0.9rem 1rem;position:relative;';
       var date = new Date(e.ts);
-      var dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      var timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      var dateStr = date.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+      var timeStr = date.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
       el.innerHTML =
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:0.5rem;">' +
           '<span style="font-size:0.7rem;font-family:var(--mono,monospace);color:var(--text-muted);letter-spacing:1px;">' +
@@ -2030,31 +2040,55 @@
     });
   }
 
+  async function renderLog() {
+    var authorEl = document.getElementById('log-author');
+    if (authorEl) authorEl.value = ttCurrentUser();
+    var elList = document.getElementById('log-entries');
+    if (!elList) return;
+    elList.innerHTML = '<div style="color:var(--text-muted);font-size:0.78rem;padding:0.5rem 0;">Loading…</div>';
+    var entries = await fetchLog();
+    renderLogEntries(entries);
+  }
+
   function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  function addLogEntry() {
+  async function addLogEntry() {
     var text   = (document.getElementById('log-input').value || '').trim();
     var author = (document.getElementById('log-author').value || '').trim();
     if (!text) return;
-    var entries = loadLog();
+    var btn = document.querySelector('#panel-log .btn-primary');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+    var entries = _logCache ? _logCache.slice() : await fetchLog();
     entries.push({ ts: Date.now(), author: author, text: text });
-    saveLog(entries);
+    await pushLog(entries);
     document.getElementById('log-input').value = '';
-    renderLog();
+    renderLogEntries(entries);
+    if (btn) { btn.disabled = false; btn.textContent = '+ Add Entry'; }
   }
 
-  function deleteLogEntry(ts) {
-    var entries = loadLog().filter(function(e) { return e.ts !== ts; });
-    saveLog(entries);
-    renderLog();
+  async function deleteLogEntry(ts) {
+    var entries = (_logCache || []).filter(function(e) { return e.ts !== ts; });
+    await pushLog(entries);
+    renderLogEntries(entries);
   }
 
-  function clearLog() {
+  async function clearLog() {
     if (!confirm('Clear all log entries?')) return;
-    saveLog([]);
-    renderLog();
+    await pushLog([]);
+    renderLogEntries([]);
+  }
+
+  // ttLogEvent still works — writes clock in/out to shared log
+  function ttLogEvent(text) {
+    var user = ttCurrentUser();
+    // fire-and-forget: fetch latest, append, push
+    fetchLog().then(function(entries) {
+      var updated = entries.slice();
+      updated.push({ ts: Date.now(), author: user, text: text });
+      pushLog(updated);
+    });
   }
 
   // ── Nav ────────────────────────────────────────────────────────────────────
