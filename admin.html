@@ -1323,6 +1323,11 @@
         <button class="btn-secondary" onclick="showPanel('tt-report')" style="font-size:0.72rem;padding:0.4rem 0.9rem;margin-left:auto;">Weekly Report →</button>
       </div>
 
+      <!-- Token warning -->
+      <div id="tt-token-warn" style="display:none;padding:0.65rem 1rem;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:6px;font-size:0.75rem;color:#e74c3c;margin-bottom:0.5rem;">
+        ⚠ No GitHub token set — sessions will <strong>not</strong> be saved to the shared log. <a href="#" onclick="showPanel('token');return false;" style="color:#e74c3c;text-decoration:underline;">Add token →</a>
+      </div>
+
       <!-- Clock widget -->
       <div class="card" style="text-align:center;">
         <div id="tt-clock-display" style="font-family:var(--mono,monospace);font-size:3rem;font-weight:700;letter-spacing:6px;color:var(--primary,#6366f1);margin-bottom:0.5rem;transition:color 0.3s;">00:00:00</div>
@@ -1854,6 +1859,8 @@
   }
 
   async function ttRenderHistory() {
+    var warn = document.getElementById('tt-token-warn');
+    if (warn) warn.style.display = localStorage.getItem('cgc_gh_token') ? 'none' : 'block';
     var userEl = document.getElementById('tt-user');
     if (userEl) userEl.value = ttCurrentUser();
     var isGlennSession = ttCurrentUser().toLowerCase() === 'glenn';
