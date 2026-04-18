@@ -1796,7 +1796,7 @@
       if (res.status === 404) { _ttCache = { glenn: [], jude: [] }; _ttSha = null; return _ttCache; }
       var data = await res.json();
       _ttSha   = data.sha;
-      _ttCache = JSON.parse(atob(data.content.replace(/\n/g, '')));
+      _ttCache = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
       TT_USERS.forEach(function(u) { if (!_ttCache[u.toLowerCase()]) _ttCache[u.toLowerCase()] = []; });
     } catch(e) { _ttCache = _ttCache || { glenn: [], jude: [] }; }
     return _ttCache;
@@ -2133,7 +2133,7 @@
       if (res.status === 404) { _logCache = []; _logSha = null; return _logCache; }
       var data = await res.json();
       _logSha    = data.sha;
-      _logCache  = JSON.parse(atob(data.content.replace(/\n/g, '')));
+      _logCache  = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
     } catch(e) { _logCache = _logCache || []; }
     return _logCache;
   }
@@ -2358,7 +2358,7 @@
         return;
       }
       const data = await res.json();
-      const cfg  = JSON.parse(atob(data.content.replace(/\n/g,'')));
+      const cfg  = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))));
 
       document.getElementById('maintenance-toggle').checked = !!cfg.maintenance;
       updateMaintenancePill();
@@ -2518,7 +2518,7 @@
     var res  = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/config.json', { headers:H });
     var data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Read failed');
-    return { cfg: JSON.parse(atob(data.content.replace(/\n/g,''))), sha: data.sha };
+    return { cfg: JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))))), sha: data.sha };
   }
 
   async function chatGhPut(cfg, sha, message) {
