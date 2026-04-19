@@ -2922,10 +2922,10 @@
       var res  = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type':'application/json', 'X-Secret': secret },
-        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:10, messages:[{ role:'user', content:'ping' }] })
+        body: JSON.stringify({ model:'claude-3-5-haiku-20241022', max_tokens:10, messages:[{ role:'user', content:'ping' }] })
       });
       var data = await res.json();
-      if (!res.ok) { setAIStatus(false, data.error || 'Worker error ' + res.status); return; }
+      if (!res.ok) { setAIStatus(false, (data.error && data.error.message) || data.error || 'Worker error ' + res.status); return; }
       setAIStatus(true, 'AI connected — Claude is ready');
     } catch(e) {
       setAIStatus(false, 'Could not reach worker — check the URL');
@@ -2978,14 +2978,14 @@
         method: 'POST',
         headers: { 'Content-Type':'application/json', 'X-Secret': secret },
         body: JSON.stringify({
-          model:      'claude-sonnet-4-6',
+          model:      'claude-3-5-haiku-20241022',
           max_tokens: 600,
           system:     CGC_SYSTEM,
           messages:   messages
         })
       });
       var data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Worker error ' + res.status);
+      if (!res.ok) throw new Error((data.error && data.error.message) || data.error || 'Worker error ' + res.status);
 
       var reply = data.content && data.content[0] && data.content[0].text;
       if (!reply) throw new Error('Empty response');

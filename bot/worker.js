@@ -214,6 +214,7 @@ async function handleAI(request, env) {
   });
 
   const data = await anthropicRes.json();
+  if (!anthropicRes.ok) console.error('Anthropic error:', anthropicRes.status, JSON.stringify(data));
   return new Response(JSON.stringify(data), {
     status: anthropicRes.status,
     headers: { ...CORS_PRIVATE, 'Content-Type': 'application/json' },
