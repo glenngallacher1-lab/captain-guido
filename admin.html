@@ -1543,7 +1543,12 @@
   function _ghWorker() {
     var url    = localStorage.getItem('cgc_ai_url');
     var secret = localStorage.getItem('cgc_ai_secret');
-    return (url && secret) ? { base: url.replace(/\/+$/, '') + '/gh', secret } : null;
+    if (!url || !secret) return null;
+    // Sanitize — HTTP headers only allow ISO-8859-1 visible chars
+    if (!url.startsWith('http')) url = 'https://' + url;
+    url    = url.replace(/\/+$/, '');
+    secret = secret.replace(/[^\x20-\x7E]/g, '');
+    return { base: url + '/gh', secret };
   }
   function _ghPat() {
     var t = localStorage.getItem('cgc_gh_token');
