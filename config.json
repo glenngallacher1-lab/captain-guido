@@ -62,7 +62,7 @@
     },
     "p1-2": {
       "done": false,
-      "note": "Manus audit complete. "
+      "note": ""
     },
     "p1-3": {
       "done": false,
@@ -117,7 +117,7 @@
       "note": ""
     },
     "p2-6": {
-      "done": false,
+      "done": true,
       "note": ""
     },
     "p2-7": {
