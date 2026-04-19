@@ -220,6 +220,73 @@ async function handleAI(request, env) {
   });
 }
 
+// ── GitHub proxy ─────────────────────────────────────────────────────────────
+// GET  /gh?path=time-log.json   → returns raw GitHub Contents API JSON
+// PUT  /gh?path=time-log.json   → body: { message, content, sha? }
+// Both require X-Secret header. Uses the Worker's own GITHUB_TOKEN — callers
+// never need their own PAT.
+async function handleGitHub(request, env) {
+  const secret = request.headers.get('X-Secret');
+  if (!secret || secret !== env.WORKER_SECRET) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...CORS_PRIVATE, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const url      = new URL(request.url);
+  const filePath = url.searchParams.get('path');
+  if (!filePath || filePath.includes('..')) {
+    return new Response(JSON.stringify({ error: 'Missing or invalid path' }), {
+      status: 400,
+      headers: { ...CORS_PRIVATE, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Allowlist: only allow specific files the admin panel legitimately reads/writes
+  const ALLOWED_PATHS = ['config.json', 'time-log.json', 'session-log.json', 'analytics.json'];
+  if (!ALLOWED_PATHS.includes(filePath)) {
+    return new Response(JSON.stringify({ error: 'Path not permitted' }), {
+      status: 403,
+      headers: { ...CORS_PRIVATE, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const ghUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
+  const ghH   = ghHeaders(env.GITHUB_TOKEN);
+
+  if (request.method === 'GET') {
+    const res  = await fetch(ghUrl + '?v=' + Date.now(), { headers: ghH });
+    const data = await res.json();
+    return new Response(JSON.stringify(data), {
+      status: res.status,
+      headers: { ...CORS_PRIVATE, 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (request.method === 'PUT') {
+    const raw  = await request.text();
+    if (raw.length > 512000) { // 512KB max for a file write
+      return new Response(JSON.stringify({ error: 'payload too large' }), {
+        status: 413, headers: { ...CORS_PRIVATE, 'Content-Type': 'application/json' },
+      });
+    }
+    const body = JSON.parse(raw);
+    const res  = await fetch(ghUrl, {
+      method: 'PUT',
+      headers: { ...ghH, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: body.message, content: body.content, sha: body.sha }),
+    });
+    const data = await res.json();
+    return new Response(JSON.stringify(data), {
+      status: res.status,
+      headers: { ...CORS_PRIVATE, 'Content-Type': 'application/json' },
+    });
+  }
+
+  return new Response('Method not allowed', { status: 405, headers: CORS_PRIVATE });
+}
+
 // ── Main fetch handler ────────────────────────────────────────────────────────
 export default {
   async fetch(request, env) {
@@ -228,15 +295,16 @@ export default {
 
     // CORS preflight
     if (method === 'OPTIONS') {
-      const headers = url.pathname === '/beacon' ? CORS_PUBLIC : CORS_PRIVATE;
-      return new Response(null, { status: 204, headers });
+      const isPublic = url.pathname === '/beacon';
+      return new Response(null, { status: 204, headers: isPublic ? CORS_PUBLIC : CORS_PRIVATE });
     }
 
-    if (method !== 'POST') {
+    if (method !== 'POST' && !(method === 'GET' && url.pathname === '/gh') && !(method === 'PUT' && url.pathname === '/gh')) {
       return new Response('Method not allowed', { status: 405 });
     }
 
     if (url.pathname === '/beacon') return handleBeacon(request, env);
+    if (url.pathname === '/gh')     return handleGitHub(request, env);
     return handleAI(request, env);
   },
 };

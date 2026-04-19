@@ -1538,6 +1538,64 @@
   const REPO_OWNER = 'captainguidotoken-ops';
   const REPO_NAME  = 'captain-guido';
 
+  // ── Unified GitHub access — prefers Worker proxy so Jude never needs a PAT ──
+  // Priority: 1) Worker /gh endpoint (uses server-side token), 2) local PAT
+  function _ghWorker() {
+    var url    = localStorage.getItem('cgc_ai_url');
+    var secret = localStorage.getItem('cgc_ai_secret');
+    return (url && secret) ? { base: url.replace(/\/+$/, '') + '/gh', secret } : null;
+  }
+  function _ghPat() {
+    var t = localStorage.getItem('cgc_gh_token');
+    return t ? { Authorization: 'Bearer ' + t, Accept: 'application/vnd.github+json' } : null;
+  }
+  function _ghDirectBase() {
+    return 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/';
+  }
+  function ghReady() { return !!(_ghWorker() || _ghPat()); }
+
+  async function ghGet(path) {
+    var w = _ghWorker();
+    if (w) {
+      var res = await fetch(w.base + '?path=' + encodeURIComponent(path) + '&v=' + Date.now(), {
+        headers: { 'X-Secret': w.secret }
+      });
+      return res.json();
+    }
+    var H = _ghPat();
+    if (!H) throw new Error('No GitHub access — configure the Worker or a PAT');
+    var res = await fetch(_ghDirectBase() + path + '?v=' + Date.now(), { headers: H });
+    return res.json();
+  }
+
+  async function ghPut(path, message, content, sha) {
+    var body = { message: message, content: content };
+    if (sha) body.sha = sha;
+    var w = _ghWorker();
+    if (w) {
+      var res = await fetch(w.base + '?path=' + encodeURIComponent(path), {
+        method: 'PUT',
+        headers: { 'X-Secret': w.secret, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      return res.json();
+    }
+    var H = _ghPat();
+    if (!H) throw new Error('No GitHub access — configure the Worker or a PAT');
+    var res = await fetch(_ghDirectBase() + path, {
+      method: 'PUT',
+      headers: { ...H, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return res.json();
+  }
+
+  function b64enc(obj) { return btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2)))); }
+  function b64dec(str) {
+    var bytes = Uint8Array.from(atob(str.replace(/\n/g,'')), function(c){ return c.charCodeAt(0); });
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
   // ── Launch Checklist ────────────────────────────────────────────────────────
   const TASKS = {
     1: [
@@ -1810,10 +1868,8 @@
     } catch(e) {}
 
     const saved = localStorage.getItem('cgc_gh_token');
-    if (saved) {
-      document.getElementById('gh-token-input').value = '•'.repeat(20);
-      loadConfig();
-    }
+    if (saved) document.getElementById('gh-token-input').value = '•'.repeat(20);
+    if (ghReady()) loadConfig();
     if (localStorage.getItem('cgc_ai_url')) {
       document.getElementById('ai-worker-url').value    = localStorage.getItem('cgc_ai_url');
       document.getElementById('ai-worker-secret').value = '•'.repeat(16);
@@ -1922,42 +1978,30 @@
   var _ttCache   = null;   // full { glenn:[], jude:[] } object
   var _ttSha     = null;
 
-  function ttGhHeaders() {
-    var token = localStorage.getItem('cgc_gh_token');
-    return token ? { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } : null;
-  }
-
   async function ttFetchAll() {
-    var H = ttGhHeaders();
-    if (!H) { _ttCache = _ttCache || { glenn: [], jude: [] }; return _ttCache; }
+    if (!ghReady()) { _ttCache = _ttCache || { glenn: [], jude: [] }; return _ttCache; }
     try {
-      var res  = await fetch(TT_GH_URL + '?v=' + Date.now(), { headers: H });
-      if (res.status === 404) { _ttCache = { glenn: [], jude: [] }; _ttSha = null; return _ttCache; }
-      var data = await res.json();
+      var data = await ghGet(TT_GH_PATH);
+      if (data.status === 404 || !data.content) { _ttCache = { glenn: [], jude: [] }; _ttSha = null; return _ttCache; }
       _ttSha   = data.sha;
-      _ttCache = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+      _ttCache = b64dec(data.content);
       TT_USERS.forEach(function(u) { if (!_ttCache[u.toLowerCase()]) _ttCache[u.toLowerCase()] = []; });
     } catch(e) { _ttCache = _ttCache || { glenn: [], jude: [] }; }
     return _ttCache;
   }
 
   async function ttPushAll(obj) {
-    var H = ttGhHeaders();
-    if (!H) return;
+    if (!ghReady()) return;
     async function attempt(sha) {
-      var body = { message: 'chore: update time log', content: btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2)))) };
-      if (sha) body.sha = sha;
-      var res  = await fetch(TT_GH_URL, { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      if (res.status === 409 || res.status === 422) {
-        var fresh = await fetch(TT_GH_URL + '?v=' + Date.now(), { headers: H });
-        var fd    = await fresh.json();
-        _ttSha    = fd.sha;
+      var data = await ghPut(TT_GH_PATH, 'chore: update time log', b64enc(obj), sha);
+      if (data.status === 409 || data.status === 422) {
+        var fresh = await ghGet(TT_GH_PATH);
+        _ttSha = fresh.sha;
         return attempt(_ttSha);
       }
       if (data.content) { _ttSha = data.content.sha; _ttCache = obj; }
     }
-    try { await attempt(_ttSha); } catch(e) { console.warn('time-log push failed', e); toast('Time log failed to save — check your token', 'err'); }
+    try { await attempt(_ttSha); } catch(e) { console.warn('time-log push failed', e); toast('Time log failed to save', 'err'); }
   }
 
   function ttLoadLog(user) {
@@ -2312,45 +2356,32 @@
   var _logCache = null;   // in-memory cache
   var _logSha   = null;   // GitHub file SHA for updates
 
-  function logGhHeaders() {
-    var token = localStorage.getItem('cgc_gh_token');
-    return token ? { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } : null;
-  }
   var LOG_GH_PATH = 'session-log.json';
-  var LOG_GH_URL  = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + LOG_GH_PATH;
 
   async function fetchLog() {
-    var H = logGhHeaders();
-    if (!H) { _logCache = _logCache || []; return _logCache; }
+    if (!ghReady()) { _logCache = _logCache || []; return _logCache; }
     try {
-      var res  = await fetch(LOG_GH_URL + '?v=' + Date.now(), { headers: H });
-      if (res.status === 404) { _logCache = []; _logSha = null; return _logCache; }
-      var data = await res.json();
+      var data = await ghGet(LOG_GH_PATH);
+      if (data.status === 404 || !data.content) { _logCache = []; _logSha = null; return _logCache; }
       _logSha   = data.sha;
-      var bytes = Uint8Array.from(atob(data.content.replace(/\n/g,'')), function(c){ return c.charCodeAt(0); });
-      _logCache = JSON.parse(new TextDecoder().decode(bytes));
+      _logCache = b64dec(data.content);
       if (!Array.isArray(_logCache)) _logCache = [];
     } catch(e) { console.warn('fetchLog error:', e); _logCache = _logCache || []; }
     return _logCache;
   }
 
   async function pushLog(entries) {
-    var H = logGhHeaders();
-    if (!H) return;
+    if (!ghReady()) return;
     async function attempt(sha) {
-      var body = { message: 'chore: update session log', content: btoa(unescape(encodeURIComponent(JSON.stringify(entries, null, 2)))) };
-      if (sha) body.sha = sha;
-      var res  = await fetch(LOG_GH_URL, { method: 'PUT', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      var data = await res.json();
-      if (res.status === 409 || res.status === 422) {
-        var fresh = await fetch(LOG_GH_URL + '?v=' + Date.now(), { headers: H });
-        var fd    = await fresh.json();
-        _logSha   = fd.sha;
+      var data = await ghPut(LOG_GH_PATH, 'chore: update session log', b64enc(entries), sha);
+      if (data.status === 409 || data.status === 422) {
+        var fresh = await ghGet(LOG_GH_PATH);
+        _logSha   = fresh.sha;
         return attempt(_logSha);
       }
       if (data.content) { _logSha = data.content.sha; _logCache = entries; }
     }
-    try { await attempt(_logSha); } catch(e) { console.warn('session-log push failed', e); toast('Session log failed to save — check your token', 'err'); }
+    try { await attempt(_logSha); } catch(e) { console.warn('session-log push failed', e); toast('Session log failed to save', 'err'); }
   }
 
   function renderLogEntries(entries) {
@@ -2547,20 +2578,17 @@
 
   // ── Load live config from GitHub ───────────────────────────────────────────
   async function loadConfig() {
-    const token = localStorage.getItem('cgc_gh_token');
-    if (!token) return;
-    const H = { Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json' };
+    if (!ghReady()) return;
     const hint = document.querySelector('.publish-hint');
     if (hint) hint.textContent = 'Syncing config from GitHub…';
     try {
-      const res  = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/config.json`, { headers: H });
-      if (!res.ok) {
+      const data = await ghGet('config.json');
+      if (!data.content) {
         if (hint) hint.textContent = 'Changes are saved locally until you publish.';
-        toast(`Config load failed (${res.status}) — check your token`, 'err');
+        toast('Config load failed — check Worker/token config', 'err');
         return;
       }
-      const data = await res.json();
-      const cfg  = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))));
+      const cfg = b64dec(data.content);
 
       document.getElementById('maintenance-toggle').checked = !!cfg.maintenance;
       updateMaintenancePill();
@@ -2614,16 +2642,11 @@
 
   // ── Publish ────────────────────────────────────────────────────────────────
   async function saveChanges() {
-    const token = localStorage.getItem('cgc_gh_token');
-    if (!token) { showPanel('token'); toast('Enter your GitHub token first', 'err'); return; }
+    if (!ghReady()) { showPanel('token'); toast('Configure the Worker or a GitHub token first', 'err'); return; }
 
     const btn = document.getElementById('pub-btn');
     btn.disabled = true;
     document.getElementById('pub-label').textContent = 'Publishing…';
-
-    const base = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
-    const getH = { Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json' };
-    const putH = { ...getH, 'Content-Type':'application/json' };
 
     try {
       const cfg = {
@@ -2645,22 +2668,12 @@
         presale: getPresaleData()
       };
 
-      const getRes  = await fetch(base + 'config.json', { headers: getH });
-      const getData = await getRes.json();
-      if (!getRes.ok) throw new Error(getData.message || `Read error ${getRes.status}`);
-
-      const body = {
-        message: `admin: update config${cfg.maintenance ? ' [maintenance on]' : ''}`,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(cfg, null, 2)))),
-        sha: getData.sha
-      };
-
-      const putRes  = await fetch(base + 'config.json', { method:'PUT', headers:putH, body: JSON.stringify(body) });
-      const putData = await putRes.json();
-      if (!putRes.ok) throw new Error(putData.message || `Write error ${putRes.status}`);
+      const getData = await ghGet('config.json');
+      if (!getData.sha) throw new Error(getData.message || 'Could not read config');
+      const putData = await ghPut('config.json', `admin: update config${cfg.maintenance ? ' [maintenance on]' : ''}`, b64enc(cfg), getData.sha);
+      if (putData.message && !putData.content) throw new Error(putData.message);
 
       toast('Published — changes live in ~30s', 'ok');
-
     } catch(err) {
       console.error('[CGC admin]', err);
       toast(err.message || 'Something went wrong', 'err');
@@ -2671,39 +2684,22 @@
   }
 
   async function saveNotes() {
-    const token = localStorage.getItem('cgc_gh_token');
-    if (!token) { showPanel('token'); toast('Enter your GitHub token first', 'err'); return; }
+    if (!ghReady()) { showPanel('token'); toast('Configure the Worker or a GitHub token first', 'err'); return; }
 
     const btn = document.getElementById('cl-save-btn');
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
-    const base = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/`;
-    const getH = { Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json' };
-    const putH = { ...getH, 'Content-Type':'application/json' };
-
     try {
-      const getRes  = await fetch(base + 'config.json', { headers: getH });
-      const getData = await getRes.json();
-      if (!getRes.ok) throw new Error(getData.message || `Read error ${getRes.status}`);
-
-      // Parse existing config and update only task notes/done state
+      const getData = await ghGet('config.json');
+      if (!getData.sha) throw new Error(getData.message || 'Could not read config');
       let cfg = {};
-      try { cfg = JSON.parse(decodeURIComponent(escape(atob(getData.content.replace(/\n/g,''))))); } catch(e) { cfg = {}; }
+      try { cfg = b64dec(getData.content); } catch(e) { cfg = {}; }
       cfg.tasks = Object.fromEntries(
         TASKS_FLAT.map(t => [t.id, { done: taskState[t.id].done, note: taskState[t.id].note }])
       );
-
-      const body = {
-        message: 'admin: save checklist notes',
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(cfg, null, 2)))),
-        sha: getData.sha
-      };
-
-      const putRes  = await fetch(base + 'config.json', { method:'PUT', headers:putH, body: JSON.stringify(body) });
-      const putData = await putRes.json();
-      if (!putRes.ok) throw new Error(putData.message || `Write error ${putRes.status}`);
-
+      const putData = await ghPut('config.json', 'admin: save checklist notes', b64enc(cfg), getData.sha);
+      if (putData.message && !putData.content) throw new Error(putData.message);
       toast('Notes saved ✓', 'ok');
     } catch(err) {
       console.error('[CGC admin]', err);
@@ -2759,23 +2755,14 @@
   function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   async function chatGhGet() {
-    var token = localStorage.getItem('cgc_gh_token');
-    var H = { Authorization:'Bearer '+token, Accept:'application/vnd.github+json' };
-    var res  = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/config.json', { headers:H });
-    var data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Read failed');
-    return { cfg: JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))))), sha: data.sha };
+    var data = await ghGet('config.json');
+    if (!data.content) throw new Error(data.message || 'Read failed');
+    return { cfg: b64dec(data.content), sha: data.sha };
   }
 
   async function chatGhPut(cfg, sha, message) {
-    var token = localStorage.getItem('cgc_gh_token');
-    var H = { Authorization:'Bearer '+token, Accept:'application/vnd.github+json', 'Content-Type':'application/json' };
-    var res  = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/config.json', {
-      method:'PUT', headers:H,
-      body: JSON.stringify({ message:'chat: '+message, content: btoa(unescape(encodeURIComponent(JSON.stringify(cfg,null,2)))), sha })
-    });
-    var data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Write failed');
+    var data = await ghPut('config.json', 'chat: ' + message, b64enc(cfg), sha);
+    if (data.message && !data.content) throw new Error(data.message || 'Write failed');
   }
 
   function syncChapterToggles(chapters) {
@@ -2792,8 +2779,8 @@
   }
 
   async function runCommand(raw) {
-    if (!localStorage.getItem('cgc_gh_token')) {
-      addMsg('<span class="err">No GitHub token.</span> Go to <b>GitHub Token</b> in the sidebar first.', 'bot'); return;
+    if (!ghReady()) {
+      addMsg('<span class="err">No GitHub access.</span> Go to <b>GitHub Token → AI Assistant</b> and configure the Worker URL + secret.', 'bot'); return;
     }
     showTyping();
     var parts = raw.toLowerCase().replace(/^\//,'').trim().split(/\s+/);
@@ -3044,24 +3031,16 @@
   //  MONITOR — analytics, traffic chart, security events
   // ════════════════════════════════════════════════════════════════════════════
   var MON_GH_PATH = 'analytics.json';
-  var MON_GH_URL  = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + MON_GH_PATH;
   var _monCache   = null;
   var _monSha     = null;
 
-  function monGhHeaders() {
-    var token = localStorage.getItem('cgc_gh_token');
-    return token ? { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } : null;
-  }
-
   async function monFetch() {
-    var H = monGhHeaders();
-    if (!H) { _monCache = _monCache || { visits: [], secEvents: [] }; return _monCache; }
+    if (!ghReady()) { _monCache = _monCache || { visits: [], secEvents: [] }; return _monCache; }
     try {
-      var res  = await fetch(MON_GH_URL + '?v=' + Date.now(), { headers: H });
-      if (res.status === 404) { _monCache = { visits: [], secEvents: [] }; _monSha = null; return _monCache; }
-      var data = await res.json();
+      var data = await ghGet(MON_GH_PATH);
+      if (!data.content) { _monCache = { visits: [], secEvents: [] }; _monSha = null; return _monCache; }
       _monSha   = data.sha;
-      _monCache = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))));
+      _monCache = b64dec(data.content);
       if (!_monCache.visits)    _monCache.visits    = [];
       if (!_monCache.secEvents) _monCache.secEvents = [];
     } catch(e) { _monCache = _monCache || { visits: [], secEvents: [] }; }
@@ -3069,18 +3048,13 @@
   }
 
   async function monPush(obj) {
-    var H = monGhHeaders();
-    if (!H) return;
+    if (!ghReady()) return;
     _monCache = obj;
     async function attempt(sha) {
-      var body = { message: 'chore: update analytics', content: btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2)))) };
-      if (sha) body.sha = sha;
-      var res  = await fetch(MON_GH_URL, { method:'PUT', headers:{...H,'Content-Type':'application/json'}, body: JSON.stringify(body) });
-      var data = await res.json();
-      if (res.status === 409 || res.status === 422) {
-        var fresh = await fetch(MON_GH_URL + '?v=' + Date.now(), { headers: H });
-        var fd    = await fresh.json();
-        _monSha   = fd.sha;
+      var data = await ghPut(MON_GH_PATH, 'chore: update analytics', b64enc(obj), sha);
+      if (data.status === 409 || data.status === 422) {
+        var fresh = await ghGet(MON_GH_PATH);
+        _monSha   = fresh.sha;
         return attempt(_monSha);
       }
       if (data.content) { _monSha = data.content.sha; }
