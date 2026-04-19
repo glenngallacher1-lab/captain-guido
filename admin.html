@@ -1933,9 +1933,11 @@
   }
   function ttIsThisWeek(ts) {
     var now = new Date();
+    var day = now.getDay(); // 0=Sun,1=Mon...6=Sat
+    var daysToMonday = day === 0 ? 6 : day - 1; // back to most recent Monday
     var startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // back to Sunday
-    startOfWeek.setHours(0, 0, 0, 0);                 // midnight
+    startOfWeek.setDate(now.getDate() - daysToMonday);
+    startOfWeek.setHours(0, 0, 0, 0);
     return ts >= startOfWeek.getTime();
   }
 
@@ -2130,9 +2132,20 @@
     el.innerHTML = '<div style="color:var(--text-muted);font-size:0.78rem;padding:0.5rem 0;">Loading…</div>';
     // Use cached data if available (avoids overwriting optimistic cache with stale GitHub response)
     if (!_ttCache) await ttFetchAll();
+    // Include any currently-running session as a virtual entry
+    var activeRaw = localStorage.getItem(TT_ACTIVE_KEY);
+    var activeEntry = null;
+    if (activeRaw && ttRunning) {
+      try {
+        var act = JSON.parse(activeRaw);
+        activeEntry = { startTs: act.startTs, endTs: Date.now(), duration: Date.now() - act.startTs, note: '(in progress)', user: act.user };
+      } catch(e) {}
+    }
     var html = '';
     TT_USERS.forEach(function(user) {
-      var entries = ttLoadLog(user);
+      var entries = ttLoadLog(user).slice();
+      // Inject live session for this user if one is running
+      if (activeEntry && activeEntry.user === user) entries.push(activeEntry);
       var weekMs = 0, todayMs = 0, allMs = 0;
       entries.forEach(function(e) {
         allMs += e.duration;
