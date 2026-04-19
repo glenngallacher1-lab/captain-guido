@@ -2326,9 +2326,11 @@
       var res  = await fetch(LOG_GH_URL + '?v=' + Date.now(), { headers: H });
       if (res.status === 404) { _logCache = []; _logSha = null; return _logCache; }
       var data = await res.json();
-      _logSha    = data.sha;
-      _logCache  = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
-    } catch(e) { _logCache = _logCache || []; }
+      _logSha   = data.sha;
+      var bytes = Uint8Array.from(atob(data.content.replace(/\n/g,'')), function(c){ return c.charCodeAt(0); });
+      _logCache = JSON.parse(new TextDecoder().decode(bytes));
+      if (!Array.isArray(_logCache)) _logCache = [];
+    } catch(e) { console.warn('fetchLog error:', e); _logCache = _logCache || []; }
     return _logCache;
   }
 
@@ -2360,19 +2362,19 @@
     elEmpty.style.display = 'none';
     entries.slice().reverse().forEach(function(e) {
       var el = document.createElement('div');
-      el.style.cssText = 'background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;padding:0.9rem 1rem;position:relative;';
+      el.style.cssText = 'background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:0.9rem 1rem;position:relative;';
       var date = new Date(e.ts);
       var dateStr = date.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
       var timeStr = date.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
       el.innerHTML =
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:0.5rem;">' +
-          '<span style="font-size:0.7rem;font-family:var(--mono,monospace);color:var(--text-muted);letter-spacing:1px;">' +
+          '<span style="font-size:0.7rem;font-family:var(--mono,monospace);color:var(--muted);letter-spacing:1px;">' +
             dateStr + ' · ' + timeStr +
             (e.author ? ' · <strong style="color:' + (e.author.toLowerCase()==='jude'?'#f4a836':'#00d4ff') + ';letter-spacing:1px;">' + escHtml(e.author) + '</strong>' : '') +
           '</span>' +
-          '<button onclick="deleteLogEntry(' + e.ts + ')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.75rem;padding:0;line-height:1;" title="Delete entry">✕</button>' +
+          '<button onclick="deleteLogEntry(' + e.ts + ')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.75rem;padding:0;line-height:1;" title="Delete entry">✕</button>' +
         '</div>' +
-        '<p style="margin:0;font-size:0.85rem;color:var(--text-primary);white-space:pre-wrap;line-height:1.6;">' + escHtml(e.text) + '</p>';
+        '<p style="margin:0;font-size:0.85rem;color:var(--text);white-space:pre-wrap;line-height:1.6;">' + escHtml(e.text) + '</p>';
       elList.appendChild(el);
     });
   }
