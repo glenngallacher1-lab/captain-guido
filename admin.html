@@ -2882,6 +2882,10 @@
     var url    = document.getElementById('ai-worker-url').value.trim();
     var secret = document.getElementById('ai-worker-secret').value.trim();
     if (!url || !secret) return;
+    // Always ensure https:// prefix
+    if (url && !url.startsWith('http')) url = 'https://' + url;
+    // Strip trailing slash
+    url = url.replace(/\/+$/, '');
     localStorage.setItem('cgc_ai_url',    url);
     localStorage.setItem('cgc_ai_secret', secret);
     document.getElementById('ai-worker-url').value    = url;
