@@ -26,16 +26,13 @@
   function enterSite() {
     var entryScreen = document.getElementById('entry-screen');
     if (!entryScreen) return;
-    // Trigger cinematic zoom-burst on logo
-    var logoWrap = document.querySelector('.loader-logo-wrap');
-    if (logoWrap) logoWrap.classList.add('zoom-burst');
-    // Dismiss entry screen after burst animation completes
+    // Logo has already filled the viewport — fade entry screen to reveal home page
+    entryScreen.classList.add('zoom-exit');
+    document.body.style.overflow = 'auto';
     setTimeout(function() {
       document.body.classList.remove('entry-active');
-      entryScreen.classList.add('hidden');
-      document.body.style.overflow = 'auto';
-      setTimeout(function() { entryScreen.style.display = 'none'; }, 750);
-    }, 900);
+      entryScreen.style.display = 'none';
+    }, 800);
   }
 
   var LOADER_STATUSES = [
@@ -82,17 +79,21 @@
       pctEl.textContent = Math.floor(pct) + '%';
       updateStatus(Math.floor(pct));
 
-      // Slow zoom: logo scales 1 → 2 as progress 0 → 100%
+      // Dramatic zoom into logo: scale 1 → 5.5 as bar fills 0 → 100%
       if (logoWrap) {
-        logoWrap.style.transform = 'scale(' + (1 + pct / 100) + ')';
+        logoWrap.style.transform = 'scale(' + (1 + (pct / 100) * 4.5) + ')';
       }
 
-      // Fade out title, subtitle, bar after 65%
-      if (pct > 65) {
-        var fade = Math.min((pct - 65) / 30, 1);
-        if (entryTitle) entryTitle.style.opacity = String(1 - fade);
-        if (entrySub)   entrySub.style.opacity   = String(1 - fade);
-        if (barWrap)    barWrap.style.opacity     = String(1 - fade);
+      // Title + subtitle fade after 50% so logo zoom dominates
+      if (pct > 50) {
+        var titleFade = Math.min((pct - 50) / 35, 1);
+        if (entryTitle) entryTitle.style.opacity = String(1 - titleFade);
+        if (entrySub)   entrySub.style.opacity   = String(1 - titleFade);
+      }
+      // Bar fades last — stays visible until nearly full
+      if (pct > 85) {
+        var barFade = Math.min((pct - 85) / 15, 1);
+        if (barWrap) barWrap.style.opacity = String(1 - barFade);
       }
 
       if (pct < 100) {
