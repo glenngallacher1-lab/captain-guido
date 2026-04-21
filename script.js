@@ -26,10 +26,16 @@
   function enterSite() {
     var entryScreen = document.getElementById('entry-screen');
     if (!entryScreen) return;
-    document.body.classList.remove('entry-active');
-    entryScreen.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-    setTimeout(function() { entryScreen.style.display = 'none'; }, 750);
+    // Trigger cinematic zoom-burst on logo
+    var logoWrap = document.querySelector('.loader-logo-wrap');
+    if (logoWrap) logoWrap.classList.add('zoom-burst');
+    // Dismiss entry screen after burst animation completes
+    setTimeout(function() {
+      document.body.classList.remove('entry-active');
+      entryScreen.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+      setTimeout(function() { entryScreen.style.display = 'none'; }, 750);
+    }, 900);
   }
 
   var LOADER_STATUSES = [
@@ -41,13 +47,16 @@
   ];
 
   function runLoader() {
-    var fill    = document.getElementById('loaderBarFill');
-    var pctEl   = document.getElementById('loaderPct');
-    var statEl  = document.getElementById('loaderStatus');
+    var fill       = document.getElementById('loaderBarFill');
+    var pctEl      = document.getElementById('loaderPct');
+    var statEl     = document.getElementById('loaderStatus');
+    var logoWrap   = document.querySelector('.loader-logo-wrap');
+    var entryTitle = document.querySelector('.entry-title');
+    var entrySub   = document.querySelector('.entry-subtitle');
+    var barWrap    = document.querySelector('.loader-bar-wrap');
     if (!fill || !pctEl) { enterSite(); return; }
 
     var pct      = 0;
-    var target   = 0;
     var duration = 2600; // total ms to reach 100%
     var start    = null;
 
@@ -72,6 +81,19 @@
       fill.style.width  = pct + '%';
       pctEl.textContent = Math.floor(pct) + '%';
       updateStatus(Math.floor(pct));
+
+      // Slow zoom: logo scales 1 → 2 as progress 0 → 100%
+      if (logoWrap) {
+        logoWrap.style.transform = 'scale(' + (1 + pct / 100) + ')';
+      }
+
+      // Fade out title, subtitle, bar after 65%
+      if (pct > 65) {
+        var fade = Math.min((pct - 65) / 30, 1);
+        if (entryTitle) entryTitle.style.opacity = String(1 - fade);
+        if (entrySub)   entrySub.style.opacity   = String(1 - fade);
+        if (barWrap)    barWrap.style.opacity     = String(1 - fade);
+      }
 
       if (pct < 100) {
         requestAnimationFrame(tick);
