@@ -3306,6 +3306,22 @@ html {
   100% { opacity: 0; transform: translate(-400px, 200px); }
 }
 
+/* ── Cinematic zoom-into-logo loader exit ────────────────────────── */
+#entry-screen,
+.loader-content {
+  overflow: visible;
+}
+
+.loader-logo-wrap.zoom-burst {
+  animation: logoZoomBurst 0.85s cubic-bezier(0.2, 0, 0.6, 1) forwards;
+}
+
+@keyframes logoZoomBurst {
+  0%   { transform: scale(2);  opacity: 1; }
+  55%  { transform: scale(12); opacity: 1; }
+  100% { transform: scale(32); opacity: 0; }
+}
+
 /* ── Scroll progress bar ─────────────────────────────────────────── */
 #scroll-progress {
   position: fixed;
