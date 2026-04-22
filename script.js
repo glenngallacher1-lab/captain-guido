@@ -198,9 +198,9 @@
 
     // 3D Coin — embossed logo on metallic gold face
     var coinR   = 1.8;
-    var edgeMat = new THREE.MeshStandardMaterial({ color: 0x8a7018, metalness: 0.45, roughness: 0.55, transparent: true });
-    var faceMat = new THREE.MeshStandardMaterial({ color: 0x9c8020, metalness: 0.35, roughness: 0.52, transparent: true });
-    var coinGeo = new THREE.CylinderGeometry(coinR, coinR, 0.26, 64, 1, false);
+    var edgeMat = new THREE.MeshStandardMaterial({ color: 0x0a2030, metalness: 0.30, roughness: 0.65, transparent: true });
+    var faceMat = new THREE.MeshBasicMaterial({ transparent: true }); // face colour = scene bg — logo floats in space
+    var coinGeo = new THREE.CylinderGeometry(coinR, coinR, 0.10, 64, 1, false);
     var coin    = new THREE.Mesh(coinGeo, [edgeMat, faceMat, faceMat]);
     coin.rotation.x = Math.PI / 2;  // face toward camera within the group
     var coinGroup = new THREE.Group();
@@ -208,42 +208,18 @@
     coinGroup.add(coin);
     scene.add(coinGroup);
     new THREE.TextureLoader().load('captain-guido.png', function(loaded) {
-      var sz = 512;
-      var cx = sz / 2, cy = sz / 2;
-
-      // Sample logo alpha from source image on an isolated canvas
-      var tmpCvs = document.createElement('canvas');
-      tmpCvs.width = sz; tmpCvs.height = sz;
-      var tmpCtx = tmpCvs.getContext('2d');
-      tmpCtx.drawImage(loaded.image, 0, 0, sz, sz);
-      var ld = tmpCtx.getImageData(0, 0, sz, sz).data;
-
-      // Bump canvas: black = flat, bright = raised
+      var sz  = 512;
       var cvs = document.createElement('canvas');
       cvs.width = sz; cvs.height = sz;
       var ctx = cvs.getContext('2d');
-      ctx.fillStyle = '#000000';
+      // Fill with exact scene fog colour so the disc face is invisible
+      ctx.fillStyle = '#01060d';
       ctx.fillRect(0, 0, sz, sz);
-
-      // Logo silhouette as raised bump (driven by alpha, not colour so dark logo still lifts)
-      var bd = ctx.getImageData(0, 0, sz, sz);
-      var d  = bd.data;
-      for (var i = 0; i < ld.length; i += 4) {
-        var alpha = ld[i + 3] / 255;
-        if (alpha > 0.08) {
-          var lum = (ld[i] * 0.299 + ld[i+1] * 0.587 + ld[i+2] * 0.114) / 255;
-          var val = Math.min(255, Math.round((0.55 + lum * 0.45) * alpha * 255));
-          d[i] = d[i+1] = d[i+2] = val;
-          d[i+3] = 255;
-        }
-      }
-      ctx.putImageData(bd, 0, 0);
-
-      var bumpTex = new THREE.CanvasTexture(cvs);
-      bumpTex.center.set(0.5, 0.5);
-      bumpTex.rotation = Math.PI / 2;
-      faceMat.bumpMap   = bumpTex;
-      faceMat.bumpScale = 0.8;
+      ctx.drawImage(loaded.image, 0, 0, sz, sz);
+      var tex = new THREE.CanvasTexture(cvs);
+      tex.center.set(0.5, 0.5);
+      tex.rotation = Math.PI / 2;
+      faceMat.map = tex;
       faceMat.needsUpdate = true;
     });
 
