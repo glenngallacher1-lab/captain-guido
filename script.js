@@ -196,13 +196,12 @@
     var wave1 = makeWavePlane(0x00d4ff, 0.28, -2.5, -10,  0);
     var wave2 = makeWavePlane(0x00ffe0, 0.15, -4.5, -20, 1.8);
 
-    // 3D Coin — embossed logo on metallic gold face
+    // 3D Sphere — logo on front hemisphere, back blends into scene
     var coinR   = 1.8;
-    var edgeMat = new THREE.MeshStandardMaterial({ color: 0x0a2030, metalness: 0.30, roughness: 0.65, transparent: true });
-    var faceMat = new THREE.MeshBasicMaterial({ transparent: true }); // face colour = scene bg — logo floats in space
-    var coinGeo = new THREE.CylinderGeometry(coinR, coinR, 0.10, 64, 1, false);
-    var coin    = new THREE.Mesh(coinGeo, [edgeMat, faceMat, faceMat]);
-    coin.rotation.x = Math.PI / 2;  // face toward camera within the group
+    var faceMat = new THREE.MeshBasicMaterial({ transparent: true });
+    var coinGeo = new THREE.SphereGeometry(coinR, 48, 48);
+    var coin    = new THREE.Mesh(coinGeo, faceMat);
+    coin.rotation.y = -Math.PI / 2;  // UV offset so logo centre faces camera
     var coinGroup = new THREE.Group();
     coinGroup.position.set(0, 0.5, 0);
     coinGroup.add(coin);
@@ -217,8 +216,6 @@
       ctx.fillRect(0, 0, sz, sz);
       ctx.drawImage(loaded.image, 0, 0, sz, sz);
       var tex = new THREE.CanvasTexture(cvs);
-      tex.center.set(0.5, 0.5);
-      tex.rotation = Math.PI / 2;
       faceMat.map = tex;
       faceMat.needsUpdate = true;
     });
