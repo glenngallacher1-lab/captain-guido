@@ -159,25 +159,25 @@
     camera.lookAt(0, 0.5, 0);
 
     // Lights
-    scene.add(new THREE.AmbientLight(0x334466, 1.5));
-    // Warm key light from camera — directly illuminates coin face when facing forward
-    var keyLight = new THREE.DirectionalLight(0xfff2cc, 3.5);
-    keyLight.position.set(1, 4, 15);
+    scene.add(new THREE.AmbientLight(0x1a2a3a, 2.2));
+    // Soft neutral fill — no warm spotlight flash
+    var keyLight = new THREE.DirectionalLight(0xddeeff, 1.2);
+    keyLight.position.set(2, 5, 14);
     scene.add(keyLight);
-    var aquaLight = new THREE.PointLight(0x00c8ff, 2.0, 45);
+    var aquaLight = new THREE.PointLight(0x00c8ff, 1.4, 45);
     aquaLight.position.set(-5, 6, 6);
     scene.add(aquaLight);
-    var rimLight = new THREE.PointLight(0x00ffe0, 2.0, 35);
+    var rimLight = new THREE.PointLight(0x00ffe0, 1.0, 35);
     rimLight.position.set(7, 1, -6);
     scene.add(rimLight);
 
-    // Stars
-    var starPos = new Float32Array(2000 * 3);
+    // Stars — sparse, quiet
+    var starPos = new Float32Array(700 * 3);
     for (var si = 0; si < starPos.length; si++) starPos[si] = (Math.random() - 0.5) * 400;
     var starGeo = new THREE.BufferGeometry();
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
     scene.add(new THREE.Points(starGeo,
-      new THREE.PointsMaterial({ color: 0xaaddff, size: 0.28, transparent: true, opacity: 0.7 })
+      new THREE.PointsMaterial({ color: 0x88bbdd, size: 0.18, transparent: true, opacity: 0.4 })
     ));
 
     // Ocean waves — horizontal planes (rotation.x=-PI/2), animate local Z for real height variation
@@ -198,8 +198,8 @@
 
     // 3D Coin — embossed logo on metallic gold face
     var coinR   = 1.8;
-    var edgeMat = new THREE.MeshStandardMaterial({ color: 0xf0c030, metalness: 0.95, roughness: 0.10, transparent: true });
-    var faceMat = new THREE.MeshStandardMaterial({ color: 0xf5d055, metalness: 0.78, roughness: 0.12, transparent: true });
+    var edgeMat = new THREE.MeshStandardMaterial({ color: 0x8a7018, metalness: 0.45, roughness: 0.55, transparent: true });
+    var faceMat = new THREE.MeshStandardMaterial({ color: 0x9c8020, metalness: 0.35, roughness: 0.52, transparent: true });
     var coinGeo = new THREE.CylinderGeometry(coinR, coinR, 0.26, 64, 1, false);
     var coin    = new THREE.Mesh(coinGeo, [edgeMat, faceMat, faceMat]);
     coin.rotation.x = Math.PI / 2;  // face toward camera within the group
@@ -239,34 +239,11 @@
       }
       ctx.putImageData(bd, 0, 0);
 
-      // ── Engrave "CAPTAIN GUIDO TOKEN" around the rim ──────────────────────
-      // tex.rotation = PI/2 maps canvas-right → coin-top, so centre arc at angle=0
-      ctx.save();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 21px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      var text   = 'CAPTAIN GUIDO TOKEN';
-      var chars  = text.split('');
-      var textR  = 213;
-      var total  = Math.PI * 1.05;            // ~190° arc sitting at the top of the coin
-      var aStart = -(total / 2);              // centred at angle=0 (canvas right = coin top)
-      var aStep  = total / (chars.length - 1);
-      chars.forEach(function(ch, i) {
-        var a = aStart + i * aStep;
-        ctx.save();
-        ctx.translate(cx + textR * Math.cos(a), cy + textR * Math.sin(a));
-        ctx.rotate(a + Math.PI / 2);          // characters face outward
-        ctx.fillText(ch, 0, 0);
-        ctx.restore();
-      });
-      ctx.restore();
-
       var bumpTex = new THREE.CanvasTexture(cvs);
       bumpTex.center.set(0.5, 0.5);
       bumpTex.rotation = Math.PI / 2;
       faceMat.bumpMap   = bumpTex;
-      faceMat.bumpScale = 2.4;
+      faceMat.bumpScale = 0.8;
       faceMat.needsUpdate = true;
     });
 
