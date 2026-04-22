@@ -114,7 +114,11 @@
         fill.style.width  = '100%';
         pctEl.textContent = '100%';
         if (statEl) statEl.textContent = 'READY';
-        setTimeout(enterSite, 400);
+        if (threeScene) {
+          threeScene.startLanding(enterSite);
+        } else {
+          setTimeout(enterSite, 400);
+        }
       }
     }
 
@@ -193,19 +197,20 @@
     var wave1 = makeWavePlane(0x00d4ff, 0.20, -4.0,  -5,  0);
     var wave2 = makeWavePlane(0x00ffe0, 0.09, -5.8, -18, 1.8);
 
-    // 3D Coin — soft antique gold edge, face toward camera
-    var coinR   = 1.8;
-    var edgeMat = new THREE.MeshStandardMaterial({ color: 0xc8a050, metalness: 0.90, roughness: 0.22 });
-    var faceMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.6,  roughness: 0.2  });
-    var coinGeo = new THREE.CylinderGeometry(coinR, coinR, 0.22, 64, 1, false);
-    var coin    = new THREE.Mesh(coinGeo, [edgeMat, faceMat, faceMat]);
-    coin.rotation.x = Math.PI / 2;
-    coin.position.set(0, 0.5, 0);
-    scene.add(coin);
-    var coinSpin = 0;
+    // 3D Coin — light bright gold, wrapped in Group for flip animation
+    var coinR     = 1.8;
+    var edgeMat   = new THREE.MeshStandardMaterial({ color: 0xe0c060, metalness: 0.88, roughness: 0.20 });
+    var faceMat   = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.6,  roughness: 0.2  });
+    var coinGeo   = new THREE.CylinderGeometry(coinR, coinR, 0.22, 64, 1, false);
+    var coin      = new THREE.Mesh(coinGeo, [edgeMat, faceMat, faceMat]);
+    coin.rotation.x = Math.PI / 2;  // face toward camera within the group
+    var coinGroup = new THREE.Group();
+    coinGroup.position.set(0, 0.5, 0);
+    coinGroup.add(coin);
+    scene.add(coinGroup);
     new THREE.TextureLoader().load('captain-guido.png', function(tex) {
       tex.center.set(0.5, 0.5);
-      tex.rotation = Math.PI / 2;   // correct 90° orientation so logo is upright
+      tex.rotation = Math.PI / 2;   // correct 90° so logo is upright
       faceMat.map = tex;
       faceMat.needsUpdate = true;
     });
@@ -219,20 +224,27 @@
     });
 
     // Animation state
-    var clock   = new THREE.Clock();
-    var running = true;
+    var clock           = new THREE.Clock();
+    var running         = true;
     var rafId;
-    var camTgtZ = 18;
-    var camTgtY = 3;
+    var camTgtZ         = 18;
+    var camTgtY         = 3;
+    // Coin flip state
+    var flipAngle       = 0;
+    var flipSpeed       = 0.12;     // rad/frame — ~3 flips over the 2.6s load
+    var flipSlowing     = false;
+    var flipLanded      = false;
+    var landingCb       = null;
+    var landingTimerSet = false;
 
     // Multi-frequency wave — primary swell + cross-swell + chop + ripple
     function waveH(lx, ly, t, phase) {
       return (
-        Math.sin(lx * 0.15 - t * 1.3 + phase)          * 1.1  +   // long primary swell
-        Math.sin(ly * 0.20 + t * 1.0 + phase * 0.6)    * 0.85 +   // perpendicular swell
-        Math.sin(lx * 0.38 + ly * 0.12 - t * 1.85)     * 0.45 +   // diagonal chop
-        Math.sin(lx * 0.08 - ly * 0.32 + t * 0.7)      * 0.30 +   // low-freq roll
-        Math.sin(lx * 0.60 + ly * 0.42 + t * 2.4)      * 0.14     // high-freq ripple
+        Math.sin(lx * 0.15 - t * 1.3 + phase)          * 1.1  +
+        Math.sin(ly * 0.20 + t * 1.0 + phase * 0.6)    * 0.85 +
+        Math.sin(lx * 0.38 + ly * 0.12 - t * 1.85)     * 0.45 +
+        Math.sin(lx * 0.08 - ly * 0.32 + t * 0.7)      * 0.30 +
+        Math.sin(lx * 0.60 + ly * 0.42 + t * 2.4)      * 0.14
       );
     }
 
@@ -241,7 +253,7 @@
       rafId = requestAnimationFrame(animLoop);
       var t = clock.getElapsedTime();
 
-      // Wave height animation — setZ drives real world-Y displacement on horizontal plane
+      // Wave height animation
       [wave1, wave2].forEach(function(w) {
         for (var vi = 0; vi < w.pos.count; vi++) {
           var lx = w.pos.getX(vi);
@@ -251,18 +263,36 @@
         w.pos.needsUpdate = true;
       });
 
-      // Coin: slow spin + gentle float + subtle tilt
-      coinSpin += 0.005;
-      coin.rotation.set(Math.PI / 2, Math.sin(t * 0.35) * 0.1, coinSpin);
-      coin.position.y = 0.5 + Math.sin(t * 0.65) * 0.12;
+      // Coin flip — toss → decelerate → land face-on
+      if (!flipSlowing) {
+        flipAngle += flipSpeed;
+      } else if (!flipLanded) {
+        var target = Math.round(flipAngle / (2 * Math.PI)) * (2 * Math.PI);
+        var diff   = target - flipAngle;
+        flipAngle += diff * 0.10;
+        if (Math.abs(diff) < 0.008) {
+          flipAngle = target;
+          flipLanded = true;
+          if (!landingTimerSet) {
+            landingTimerSet = true;
+            setTimeout(function() { if (landingCb) landingCb(); }, 1500);
+          }
+        }
+      }
+      coinGroup.rotation.x = flipAngle;
+      coinGroup.position.y = 0.5 + Math.sin(t * 0.65) * 0.12;
+      // Subtle sway while flipping, settle to zero when landed
+      coinGroup.rotation.y = flipLanded ? 0 : Math.sin(t * 0.35) * 0.08;
 
-      // Pulse aqua light
-      aquaLight.intensity = 2.5 + Math.sin(t * 1.6) * 0.9;
+      // Aqua light: steady during flip, strong glow pulse on reveal
+      aquaLight.intensity = flipLanded
+        ? 4.0 + Math.sin(t * 2.8) * 1.2
+        : 2.5 + Math.sin(t * 1.6) * 0.9;
 
       // Smooth camera follow target
       camera.position.z += (camTgtZ - camera.position.z) * 0.05;
       camera.position.y += (camTgtY - camera.position.y) * 0.05;
-      camera.lookAt(coin.position);
+      camera.lookAt(coinGroup.position);
 
       renderer.render(scene, camera);
     }
@@ -271,9 +301,12 @@
 
     return {
       setProgress: function(pct) {
-        // Camera flies toward coin: z 18→4.5, y 3→0.5 as pct 0→100
         camTgtZ = 18 - (pct / 100) * 13.5;
         camTgtY = 3  - (pct / 100) * 2.5;
+      },
+      startLanding: function(cb) {
+        flipSlowing = true;
+        landingCb   = cb;
       },
       burst: function(onComplete) {
         camTgtZ = -5;
