@@ -208,9 +208,18 @@
     coinGroup.position.set(0, 0.5, 0);
     coinGroup.add(coin);
     scene.add(coinGroup);
-    new THREE.TextureLoader().load('captain-guido.png', function(tex) {
+    new THREE.TextureLoader().load('captain-guido.png', function(loaded) {
+      var sz  = 512;
+      var cvs = document.createElement('canvas');
+      cvs.width = sz; cvs.height = sz;
+      var ctx = cvs.getContext('2d');
+      // Fill gold so transparent PNG areas show coin colour, not black
+      ctx.fillStyle = '#f8e080';
+      ctx.fillRect(0, 0, sz, sz);
+      ctx.drawImage(loaded.image, 0, 0, sz, sz);
+      var tex = new THREE.CanvasTexture(cvs);
       tex.center.set(0.5, 0.5);
-      tex.rotation = Math.PI / 2;   // correct 90° so logo is upright
+      tex.rotation = Math.PI / 2;
       faceMat.map = tex;
       faceMat.needsUpdate = true;
     });
