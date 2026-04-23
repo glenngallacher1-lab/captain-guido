@@ -1,5 +1,5 @@
 {
-  "maintenance": false,
+  "maintenance": true,
   "stats": {
     "chapters": 12,
     "lbs": 0,
@@ -106,7 +106,7 @@
     },
     "p2-3": {
       "done": false,
-      "note": "whitelist google form complete. "
+      "note": ""
     },
     "p2-4": {
       "done": false,
@@ -117,11 +117,11 @@
       "note": ""
     },
     "p2-6": {
-      "done": true,
+      "done": false,
       "note": ""
     },
     "p2-7": {
-      "done": true,
+      "done": false,
       "note": ""
     },
     "p2-8": {
@@ -219,7 +219,7 @@
   },
   "social": {
     "twitter": "",
-    "discord": "https://discord.gg/DASNCfrr",
+    "discord": "",
     "telegram": ""
   },
   "presale": {
