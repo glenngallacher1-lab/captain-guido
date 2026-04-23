@@ -3319,6 +3319,30 @@ html {
   transition: opacity 0.3s ease-out;
 }
 
+/* ── Loader text exit animation ──────────────────────────────── */
+.lte-outer {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.lte-inner {
+  display: inline-block;
+  transform: translateY(110%);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lte-reveal .lte-inner {
+  transform: translateY(0);
+}
+.lte-zoom {
+  animation: lteZoom 0.78s cubic-bezier(0.4, 0, 1, 1) forwards;
+  transform-origin: center center;
+}
+@keyframes lteZoom {
+  0%   { transform: scale(1);  opacity: 1; }
+  45%  { transform: scale(3.5); opacity: 1; }
+  100% { transform: scale(14); opacity: 0; }
+}
+
 /* ── Scroll progress bar ─────────────────────────────────────────── */
 #scroll-progress {
   position: fixed;
