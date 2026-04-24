@@ -29,6 +29,13 @@
   <!-- Premium fonts: Inter (body) + JetBrains Mono (data) + Orbitron (display headings) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@600;700;900&display=swap" rel="stylesheet">
   
+  <style>
+    body{background:#020810}
+    #entry-screen{position:fixed;top:0;left:0;width:100%;height:100vh;display:flex;align-items:center;justify-content:center;z-index:10000}
+    #cosmic-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 100%,#0a1628 0%,#020810 60%,#000306 100%)}
+    .loader-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+    .entry-logo{width:250px;height:250px;border-radius:50%;border:3px solid #4ec4c4}
+  </style>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="entry-active">
@@ -51,7 +58,7 @@
       <!-- Logo -->
       <div class="loader-logo-wrap">
         <div class="sonar-rings" aria-hidden="true"></div>
-        <img src="captain-guido.png" alt="Captain Guido" class="entry-logo" width="160" height="160">
+        <img src="captain-guido.png" alt="Captain Guido" class="entry-logo" width="250" height="250">
       </div>
 
       <!-- Title -->
