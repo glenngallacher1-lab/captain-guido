@@ -157,9 +157,9 @@
         pctEl.textContent = '100%';
         if (statEl) statEl.textContent = 'READY';
         if (threeScene) {
-          threeScene.startLanding(function() { playTextExit(enterSite); });
+          threeScene.startLanding(enterSite);
         } else {
-          playTextExit(enterSite);
+          enterSite();
         }
       }
     }
@@ -296,45 +296,49 @@
 
     return {
       setProgress: function(pct) {
-        camTgtZ = 18 - (pct / 100) * 13.5;
-        camTgtY = 3  - (pct / 100) * 2.5;
+        // Camera descends throughout loading so it's already in motion at 100%
+        camTgtZ = 18 - (pct / 100) * 14.5;
+        camTgtY = 3  - (pct / 100) * 3.5;
       },
       startLanding: function(cb) {
-        // Begin camera descent and wave swell immediately — non-blocking.
-        // cb fires right away so the text exit overlaps with the camera move.
-        camTgtZ = 4.5;
-        camTgtY = -1;
-        var dur    = 2200;   // wave swell runs through the whole text exit
-        var start  = performance.now();
-        var w1Base = wave1.baseOpacity;
-        var w2Base = wave2.baseOpacity;
-        function waveRamp(now) {
+        // 1. Fade the Three.js canvas out so the home page shows through
+        var fadeDur = 950;
+        var fadeStart = performance.now();
+        function fadeCanvas(now) {
           if (!running) return;
-          var p  = Math.min((now - start) / dur, 1);
-          var ep = 1 - Math.pow(1 - p, 3);          // ease-out cubic
-          wave1.mat.opacity = w1Base + (0.55 - w1Base) * ep;
-          wave2.mat.opacity = w2Base + (0.35 - w2Base) * ep;
-          if (p < 1) requestAnimationFrame(waveRamp);
+          var p = Math.min((now - fadeStart) / fadeDur, 1);
+          canvas.style.opacity = String(1 - p);
+          if (p < 1) requestAnimationFrame(fadeCanvas);
         }
-        requestAnimationFrame(waveRamp);
-        if (cb) cb();   // text exit begins in parallel — one continuous motion
+        requestAnimationFrame(fadeCanvas);
+
+        // 2. Set the home page globe to a high altitude so it starts tiny/far
+        if (window._globe) {
+          window._globe.pointOfView({ lat: 20, lng: 10, altitude: 6.5 }, 0);
+        }
+
+        // 3. Clear the map boot overlay and reveal the hero content immediately
+        var overlay = document.getElementById('mapBootOverlay');
+        if (overlay) overlay.classList.add('boot-done');
+        var heroContent = document.querySelector('.hero-content');
+        if (heroContent) heroContent.classList.add('hero-revealed');
+        var heroStats = document.querySelector('.hero-stats');
+        if (heroStats) heroStats.classList.add('stats-revealed');
+
+        // 4. Fire cb immediately — globe zoom + entry fade are the transition
+        if (cb) cb();
       },
       burst: function(onComplete) {
-        // Rush camera through the surface and flash light — non-blocking.
-        // onComplete fires immediately so the screen fade overlaps the rush.
-        camTgtZ = -10;
-        camTgtY = -4;
-        var dur   = 1000;   // flash arc runs during the 1.2s screen fade
-        var start = performance.now();
-        function flashArc(now) {
-          if (!running) return;
-          var p = Math.min((now - start) / dur, 1);
-          burstMult = 1 + Math.sin(p * Math.PI) * 3.5;  // smooth bell curve
-          if (p < 1) requestAnimationFrame(flashArc);
-          else burstMult = 1;
+        // Zoom the globe from altitude 6.5 → 2.0 over exactly 1.2s —
+        // synchronized with the entry screen dissolve so the globe
+        // arrives in position just as the loading screen becomes invisible.
+        if (window._globe) {
+          window._globe.pointOfView({ lat: 20, lng: 10, altitude: 2.0 }, 1200);
         }
-        requestAnimationFrame(flashArc);
-        if (onComplete) onComplete();  // fade starts immediately — all concurrent
+        // Gentle forward push on the Three.js camera during the canvas fade
+        camTgtZ = 1;
+        camTgtY = -1.5;
+        if (onComplete) onComplete();
       },
       stop: function() {
         running = false;
