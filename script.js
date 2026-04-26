@@ -214,19 +214,19 @@
     rimLight.position.set(7, 1, -6);
     scene.add(rimLight);
 
-    // Stars — sky only, strictly above the waterline
+    // Stars — sky only, above waterline, fog disabled so they're always visible
     var starCount = 8000;
     var starPos = new Float32Array(starCount * 3);
     for (var si = 0; si < starCount; si++) {
       var i3 = si * 3;
-      starPos[i3]     = (Math.random() - 0.5) * 400;
-      starPos[i3 + 1] = Math.random() * 80 + 6;
-      starPos[i3 + 2] = (Math.random() - 0.5) * 400;
+      starPos[i3]     = (Math.random() - 0.5) * 300;  // x
+      starPos[i3 + 1] = Math.random() * 8 + 1.5;       // y: 1.5–9.5 (above waves, in camera FOV)
+      starPos[i3 + 2] = (Math.random() - 0.5) * 300;  // z
     }
     var starGeo = new THREE.BufferGeometry();
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
     scene.add(new THREE.Points(starGeo,
-      new THREE.PointsMaterial({ color: 0xffffff, size: 0.35, transparent: true, opacity: 0.95 })
+      new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, transparent: true, opacity: 1.0, fog: false })
     ));
 
     // Ocean waves — horizontal planes (rotation.x=-PI/2), animate local Z for real height variation
