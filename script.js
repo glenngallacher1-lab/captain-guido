@@ -214,20 +214,35 @@
     rimLight.position.set(7, 1, -6);
     scene.add(rimLight);
 
-    // Stars — sky only, above waterline, fog disabled so they're always visible
-    var starCount = 8000;
-    var starPos = new Float32Array(starCount * 3);
-    for (var si = 0; si < starCount; si++) {
-      var i3 = si * 3;
-      starPos[i3]     = (Math.random() - 0.5) * 300;  // x
-      starPos[i3 + 1] = Math.random() * 8 + 1.5;       // y: 1.5–9.5 (above waves, in camera FOV)
-      starPos[i3 + 2] = (Math.random() - 0.5) * 300;  // z
+    // Stars — 2D canvas overlay in the upper half of the entry screen.
+    // Bypasses Three.js camera/fog entirely so they're always visible.
+    var starCanvas = document.createElement('canvas');
+    starCanvas.width  = W;
+    starCanvas.height = Math.round(H * 0.5);
+    starCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:50%;z-index:1;pointer-events:none;';
+    entryEl.insertBefore(starCanvas, entryEl.firstChild);
+
+    function drawStars() {
+      var sc = starCanvas.getContext('2d');
+      sc.clearRect(0, 0, starCanvas.width, starCanvas.height);
+      for (var s = 0; s < 1000; s++) {
+        var sx = Math.random() * starCanvas.width;
+        var sy = Math.random() * starCanvas.height;
+        var sr = Math.random() * 1.3 + 0.2;
+        var sa = Math.random() * 0.55 + 0.45;
+        sc.beginPath();
+        sc.arc(sx, sy, sr, 0, Math.PI * 2);
+        sc.fillStyle = 'rgba(255,255,255,' + sa + ')';
+        sc.fill();
+      }
     }
-    var starGeo = new THREE.BufferGeometry();
-    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-    scene.add(new THREE.Points(starGeo,
-      new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, transparent: true, opacity: 1.0, fog: false })
-    ));
+    drawStars();
+
+    window.addEventListener('resize', function() {
+      starCanvas.width  = window.innerWidth;
+      starCanvas.height = Math.round(window.innerHeight * 0.5);
+      drawStars();
+    });
 
     // Ocean waves — horizontal planes (rotation.x=-PI/2), animate local Z for real height variation
     var wRes = 60;
