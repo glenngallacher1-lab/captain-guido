@@ -321,7 +321,7 @@
         var textEl = document.createElement('div');
         textEl.style.cssText = [
           'position:absolute',
-          'top:22%',
+          'top:8%',
           'left:6%',
           'right:6%',
           'color:#00d4ff',
