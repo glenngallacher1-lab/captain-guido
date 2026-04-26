@@ -215,18 +215,18 @@
     scene.add(rimLight);
 
     // Stars — sky only, strictly above the waterline
-    var starCount = 1400;
+    var starCount = 4000;
     var starPos = new Float32Array(starCount * 3);
     for (var si = 0; si < starCount; si++) {
       var i3 = si * 3;
-      starPos[i3]     = (Math.random() - 0.5) * 600;  // x: wide spread
-      starPos[i3 + 1] = Math.random() * 110 + 8;       // y: 8–118 (sky only, above waves)
-      starPos[i3 + 2] = (Math.random() - 0.5) * 600;  // z: deep spread
+      starPos[i3]     = (Math.random() - 0.5) * 400;  // x
+      starPos[i3 + 1] = Math.random() * 80 + 6;        // y: 6–86, sky only
+      starPos[i3 + 2] = (Math.random() - 0.5) * 400;  // z
     }
     var starGeo = new THREE.BufferGeometry();
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
     scene.add(new THREE.Points(starGeo,
-      new THREE.PointsMaterial({ color: 0xaaccee, size: 0.22, transparent: true, opacity: 0.6 })
+      new THREE.PointsMaterial({ color: 0xbbddff, size: 0.28, transparent: true, opacity: 0.75 })
     ));
 
     // Ocean waves — horizontal planes (rotation.x=-PI/2), animate local Z for real height variation
