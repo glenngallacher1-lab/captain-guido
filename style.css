@@ -3220,11 +3220,11 @@ html {
   overflow: visible;
 }
 
-/* Entry screen fades to reveal home page after logo punch */
+/* Entry screen dissolves into home page after logo punch */
 #entry-screen.zoom-exit {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease-out;
+  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ── Loader text exit animation ──────────────────────────────── */

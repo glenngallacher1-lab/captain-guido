@@ -32,11 +32,13 @@
       threeScene.burst(function() {
         entryScreen.classList.add('zoom-exit');
         document.body.style.overflow = 'auto';
+        // Keep Three.js scene alive for the full 1.2s crossfade,
+        // then clean up once the entry screen is invisible
         setTimeout(function() {
           document.body.classList.remove('entry-active');
           entryScreen.style.display = 'none';
           threeScene.stop();
-        }, 350);
+        }, 1250);
       });
     } else {
       entryScreen.classList.add('zoom-exit');
@@ -44,7 +46,7 @@
       setTimeout(function() {
         document.body.classList.remove('entry-active');
         entryScreen.style.display = 'none';
-      }, 700);
+      }, 1250);
     }
   }
 
