@@ -236,8 +236,8 @@
       var origZ = new Float32Array(pos.count);
       return { pos: pos, origZ: origZ, phase: phase, mat: mat, baseOpacity: opacity };
     }
-    var wave1 = makeWavePlane(0x00d4ff, 0.28, -2.5, -10,  0);
-    var wave2 = makeWavePlane(0x00ffe0, 0.15, -4.5, -20, 1.8);
+    var wave1 = makeWavePlane(0x0b2d6e, 0.55, -2.5, -10,  0);
+    var wave2 = makeWavePlane(0x061840, 0.38, -4.5, -20, 1.8);
 
     // Resize
     window.addEventListener('resize', function() {
