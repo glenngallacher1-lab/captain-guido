@@ -312,19 +312,18 @@
           'SYSTEM ONLINE'
         ];
 
-        var textEl = document.createElement('pre');
+        var textEl = document.createElement('div');
         textEl.style.cssText = [
           'position:absolute',
-          'bottom:32%',
-          'left:50%',
-          'transform:translateX(-50%)',
+          'top:22%',
+          'left:6%',
+          'right:6%',
           'color:#00d4ff',
           'font-family:"JetBrains Mono",monospace',
-          'font-size:1rem',
+          'font-size:0.85rem',
           'letter-spacing:2px',
-          'line-height:1.8',
-          'text-align:left',
-          'white-space:pre',
+          'white-space:nowrap',
+          'overflow:hidden',
           'z-index:10',
           'pointer-events:none',
           'text-shadow:0 0 10px rgba(0,212,255,0.7)',
@@ -380,11 +379,11 @@
             charIdx++;
             setTimeout(typeLine, 14);
           } else {
-            current += '\n';
+            if (lineIdx < lines.length - 1) current += '  ·  ';
             textEl.textContent = current;
             lineIdx++;
             charIdx = 0;
-            setTimeout(typeLine, lineIdx === lines.length - 1 ? 300 : 90);
+            setTimeout(typeLine, lineIdx === lines.length - 1 ? 300 : 60);
           }
         }
 
