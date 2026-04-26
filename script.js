@@ -315,12 +315,12 @@
         var textEl = document.createElement('pre');
         textEl.style.cssText = [
           'position:absolute',
-          'bottom:18%',
+          'bottom:32%',
           'left:50%',
           'transform:translateX(-50%)',
           'color:#00d4ff',
           'font-family:"JetBrains Mono",monospace',
-          'font-size:0.72rem',
+          'font-size:1rem',
           'letter-spacing:2px',
           'line-height:1.8',
           'text-align:left',
