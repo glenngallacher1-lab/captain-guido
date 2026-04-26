@@ -300,40 +300,41 @@
         camTgtY = 3  - (pct / 100) * 2.5;
       },
       startLanding: function(cb) {
-        // Push camera down toward the ocean surface and brighten waves
-        // as the loading bar reaches 100%, priming the dive.
-        camTgtZ = 5;
-        camTgtY = -0.5;
-        var dur   = 700;
-        var start = performance.now();
+        // Begin camera descent and wave swell immediately — non-blocking.
+        // cb fires right away so the text exit overlaps with the camera move.
+        camTgtZ = 4.5;
+        camTgtY = -1;
+        var dur    = 2200;   // wave swell runs through the whole text exit
+        var start  = performance.now();
         var w1Base = wave1.baseOpacity;
         var w2Base = wave2.baseOpacity;
-        function tick(now) {
+        function waveRamp(now) {
+          if (!running) return;
           var p  = Math.min((now - start) / dur, 1);
-          var ep = 1 - Math.pow(1 - p, 2);          // ease-out quad
-          wave1.mat.opacity = w1Base + (0.52 - w1Base) * ep;
-          wave2.mat.opacity = w2Base + (0.32 - w2Base) * ep;
-          if (p < 1) { requestAnimationFrame(tick); }
-          else        { if (cb) cb(); }
+          var ep = 1 - Math.pow(1 - p, 3);          // ease-out cubic
+          wave1.mat.opacity = w1Base + (0.55 - w1Base) * ep;
+          wave2.mat.opacity = w2Base + (0.35 - w2Base) * ep;
+          if (p < 1) requestAnimationFrame(waveRamp);
         }
-        requestAnimationFrame(tick);
+        requestAnimationFrame(waveRamp);
+        if (cb) cb();   // text exit begins in parallel — one continuous motion
       },
       burst: function(onComplete) {
-        // Aqua flash + camera rushes through the water surface,
-        // then calls onComplete so the screen fade begins mid-dive.
+        // Rush camera through the surface and flash light — non-blocking.
+        // onComplete fires immediately so the screen fade overlaps the rush.
         camTgtZ = -10;
         camTgtY = -4;
-        var dur   = 420;
+        var dur   = 1000;   // flash arc runs during the 1.2s screen fade
         var start = performance.now();
-        function tick(now) {
-          var p     = Math.min((now - start) / dur, 1);
-          var flash = p < 0.35 ? p / 0.35 : 1 - (p - 0.35) / 0.65;
-          burstMult = 1 + flash * 4;                // peak at 5× light intensity
-          wave1.mat.opacity = wave1.baseOpacity * (1 - p * 0.4) + flash * 0.3;
-          if (p < 1) { requestAnimationFrame(tick); }
-          else        { burstMult = 1; if (onComplete) onComplete(); }
+        function flashArc(now) {
+          if (!running) return;
+          var p = Math.min((now - start) / dur, 1);
+          burstMult = 1 + Math.sin(p * Math.PI) * 3.5;  // smooth bell curve
+          if (p < 1) requestAnimationFrame(flashArc);
+          else burstMult = 1;
         }
-        requestAnimationFrame(tick);
+        requestAnimationFrame(flashArc);
+        if (onComplete) onComplete();  // fade starts immediately — all concurrent
       },
       stop: function() {
         running = false;
