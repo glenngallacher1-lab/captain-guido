@@ -214,18 +214,20 @@
     rimLight.position.set(7, 1, -6);
     scene.add(rimLight);
 
-    // Stars — 2D canvas overlay in the upper half of the entry screen.
-    // Bypasses Three.js camera/fog entirely so they're always visible.
+    // Stars — full-height 2D canvas overlay with gradient fade at bottom
+    // so stars dissolve seamlessly into the wave horizon, no hard line.
     var starCanvas = document.createElement('canvas');
-    starCanvas.width  = W;
-    starCanvas.height = Math.round(H * 0.5);
-    starCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:50%;z-index:1;pointer-events:none;';
+    starCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;';
     entryEl.insertBefore(starCanvas, entryEl.firstChild);
 
     function drawStars() {
+      starCanvas.width  = window.innerWidth;
+      starCanvas.height = window.innerHeight;
       var sc = starCanvas.getContext('2d');
       sc.clearRect(0, 0, starCanvas.width, starCanvas.height);
-      for (var s = 0; s < 1000; s++) {
+
+      // Draw 1200 stars across the full canvas
+      for (var s = 0; s < 1200; s++) {
         var sx = Math.random() * starCanvas.width;
         var sy = Math.random() * starCanvas.height;
         var sr = Math.random() * 1.3 + 0.2;
@@ -235,14 +237,22 @@
         sc.fillStyle = 'rgba(255,255,255,' + sa + ')';
         sc.fill();
       }
+
+      // Gradient mask — stars stay bright at top, fade to transparent
+      // at ~65% down so they meet the wave horizon with no hard edge.
+      var mask = sc.createLinearGradient(0, 0, 0, starCanvas.height);
+      mask.addColorStop(0,    'rgba(0,0,0,0)');
+      mask.addColorStop(0.55, 'rgba(0,0,0,0)');
+      mask.addColorStop(0.78, 'rgba(0,0,0,1)');
+      mask.addColorStop(1,    'rgba(0,0,0,1)');
+      sc.globalCompositeOperation = 'destination-out';
+      sc.fillStyle = mask;
+      sc.fillRect(0, 0, starCanvas.width, starCanvas.height);
+      sc.globalCompositeOperation = 'source-over';
     }
     drawStars();
 
-    window.addEventListener('resize', function() {
-      starCanvas.width  = window.innerWidth;
-      starCanvas.height = Math.round(window.innerHeight * 0.5);
-      drawStars();
-    });
+    window.addEventListener('resize', drawStars);
 
     // Ocean waves — horizontal planes (rotation.x=-PI/2), animate local Z for real height variation
     var wRes = 60;
