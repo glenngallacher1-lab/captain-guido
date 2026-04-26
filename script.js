@@ -301,32 +301,95 @@
         camTgtY = 3  - (pct / 100) * 3.5;
       },
       startLanding: function(cb) {
-        // 1. Fade the Three.js canvas out so the home page shows through
-        var fadeDur = 950;
-        var fadeStart = performance.now();
-        function fadeCanvas(now) {
-          if (!running) return;
-          var p = Math.min((now - fadeStart) / fadeDur, 1);
-          canvas.style.opacity = String(1 - p);
-          if (p < 1) requestAnimationFrame(fadeCanvas);
+        // ── Ledger typewriter on the loading screen ───────────────────────────
+        // Runs over the waves while the camera sits in position.
+        // When SYSTEM ONLINE finishes the globe swoops in.
+        var lines = [
+          'NAUTILUS LEDGER v1.0',
+          'INITIALIZING OCEAN GRID...',
+          'SYNCING CHAPTER NODES...',
+          'TRACKING HASHWIND COORDINATES...',
+          'SYSTEM ONLINE'
+        ];
+
+        var textEl = document.createElement('pre');
+        textEl.style.cssText = [
+          'position:absolute',
+          'bottom:18%',
+          'left:50%',
+          'transform:translateX(-50%)',
+          'color:#00d4ff',
+          'font-family:"JetBrains Mono",monospace',
+          'font-size:0.72rem',
+          'letter-spacing:2px',
+          'line-height:1.8',
+          'text-align:left',
+          'white-space:pre',
+          'z-index:10',
+          'pointer-events:none',
+          'text-shadow:0 0 10px rgba(0,212,255,0.7)',
+          'opacity:1',
+          'transition:opacity 0.6s ease'
+        ].join(';');
+        var entryEl = document.getElementById('entry-screen');
+        if (entryEl) entryEl.appendChild(textEl);
+
+        var lineIdx = 0, charIdx = 0, current = '';
+
+        function typeLine() {
+          if (lineIdx >= lines.length) {
+            // All lines done — brief hold then swoop
+            setTimeout(function() {
+              // Fade typewriter text out
+              textEl.style.opacity = '0';
+
+              // Fade Three.js canvas so home page shows through
+              var fadeDur = 950;
+              var fadeStart = performance.now();
+              function fadeCanvas(now) {
+                if (!running) return;
+                var p = Math.min((now - fadeStart) / fadeDur, 1);
+                canvas.style.opacity = String(1 - p);
+                if (p < 1) requestAnimationFrame(fadeCanvas);
+              }
+              requestAnimationFrame(fadeCanvas);
+
+              // Position globe far away before it zooms
+              if (window._globe) {
+                window._globe.pointOfView({ lat: 20, lng: 10, altitude: 6.5 }, 0);
+              }
+
+              // Clear map boot overlay + reveal hero content
+              var overlay = document.getElementById('mapBootOverlay');
+              if (overlay) overlay.classList.add('boot-done');
+              var heroContent = document.querySelector('.hero-content');
+              if (heroContent) heroContent.classList.add('hero-revealed');
+              var heroStats = document.querySelector('.hero-stats');
+              if (heroStats) heroStats.classList.add('stats-revealed');
+
+              // Slight delay so canvas starts fading before the globe swoops
+              setTimeout(function() { if (cb) cb(); }, 200);
+            }, 400);
+            return;
+          }
+
+          var target = lines[lineIdx];
+          if (charIdx < target.length) {
+            current += target[charIdx];
+            textEl.textContent = current;
+            charIdx++;
+            setTimeout(typeLine, 14);
+          } else {
+            current += '\n';
+            textEl.textContent = current;
+            lineIdx++;
+            charIdx = 0;
+            setTimeout(typeLine, lineIdx === lines.length - 1 ? 300 : 90);
+          }
         }
-        requestAnimationFrame(fadeCanvas);
 
-        // 2. Set the home page globe to a high altitude so it starts tiny/far
-        if (window._globe) {
-          window._globe.pointOfView({ lat: 20, lng: 10, altitude: 6.5 }, 0);
-        }
-
-        // 3. Clear the map boot overlay and reveal the hero content immediately
-        var overlay = document.getElementById('mapBootOverlay');
-        if (overlay) overlay.classList.add('boot-done');
-        var heroContent = document.querySelector('.hero-content');
-        if (heroContent) heroContent.classList.add('hero-revealed');
-        var heroStats = document.querySelector('.hero-stats');
-        if (heroStats) heroStats.classList.add('stats-revealed');
-
-        // 4. Fire cb immediately — globe zoom + entry fade are the transition
-        if (cb) cb();
+        // Small delay before typing starts so it feels intentional
+        setTimeout(typeLine, 300);
       },
       burst: function(onComplete) {
         // Zoom the globe from altitude 6.5 → 2.0 over exactly 1.2s —
