@@ -633,9 +633,6 @@
 
     globe.pointOfView({ lat: 20, lng: 10, altitude: 2.0 });
 
-    // Apply sonar ring to latest unlocked chapter on the globe
-    updateGlobeSonar();
-
     // Slow auto-rotate, stops on first interaction
     var controls = globe.controls();
     controls.autoRotate      = true;
@@ -901,36 +898,38 @@
 
   // ─── CHAPTER BACKGROUND PATHS ────────────────────────────────────────────
   // ─── CHAPTER CARD LINKS ──────────────────────────────────────────────────
-  function updateGlobeSonar() {
-    if (!window._globe || !window._globeChapters) return;
+  function updateChapterSonar() {
+    // Remove any previous sonar state
+    document.querySelectorAll('.chapter-sonar-ring').forEach(function(el) { el.remove(); });
+    document.querySelectorAll('.chapter-card').forEach(function(card) {
+      card.classList.remove('chapter-unlocked', 'chapter-sonar-active');
+    });
 
-    var unlockedChapters = window._globeChapters.filter(function(c) { return c.unlocked; });
-    if (!unlockedChapters.length) {
-      // No unlocked chapters — only locked green rings
-      window._globe
-        .ringColor(function(d) {
-          return function(t) { return 'rgba(74,222,128,' + Math.max(0, 0.85 - t * 0.85) + ')'; };
-        })
-        .ringsData(window._globeChapters.filter(function(c) { return !c.unlocked; }));
-      return;
-    }
+    // Collect unlocked cards and their chapter numbers
+    var unlocked = [];
+    document.querySelectorAll('.chapter-card').forEach(function(card) {
+      var badge  = card.querySelector('.status-badge');
+      var numEl  = card.querySelector('.chapter-number');
+      if (!badge || !numEl || !badge.classList.contains('unlocked')) return;
+      var num = parseInt(numEl.textContent.replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(num)) unlocked.push({ card: card, num: num });
+    });
 
-    // Highest-numbered unlocked chapter gets the orange sonar ring
-    unlockedChapters.sort(function(a, b) { return b.num - a.num; });
-    var latestNum = unlockedChapters[0].num;
+    if (!unlocked.length) return;
 
-    var ringsArr = window._globeChapters
-      .filter(function(c) { return !c.unlocked || c.num === latestNum; })
-      .map(function(c) { return Object.assign({}, c, { _sonar: c.num === latestNum }); });
+    // All unlocked → orange accent
+    unlocked.forEach(function(item) {
+      item.card.classList.add('chapter-unlocked');
+    });
 
-    window._globe
-      .ringColor(function(d) {
-        if (d._sonar) {
-          return function(t) { return 'rgba(244,168,54,' + Math.max(0, 0.9 - t * 0.9) + ')'; };
-        }
-        return function(t) { return 'rgba(74,222,128,' + Math.max(0, 0.85 - t * 0.85) + ')'; };
-      })
-      .ringsData(ringsArr);
+    // Highest-numbered unlocked → sonar ring
+    unlocked.sort(function(a, b) { return b.num - a.num; });
+    var latest = unlocked[0].card;
+    latest.classList.add('chapter-sonar-active');
+
+    var ring = document.createElement('div');
+    ring.className = 'chapter-sonar-ring';
+    latest.appendChild(ring);
   }
 
   function initChapterLinks() {
@@ -1095,13 +1094,15 @@
 
       // Refresh globe if already running
       if (window._globe && window._globeChapters) {
-        window._globe.pointsData(window._globeChapters);
-        updateGlobeSonar();
+        window._globe
+          .pointsData(window._globeChapters)
+          .ringsData(window._globeChapters.filter(function(c) { return !c.unlocked; }));
       }
 
       // Re-inject background paths now that badges are updated
       injectChapterPaths();
       initChapterLinks();
+      updateChapterSonar();
     }
 
     // Social links
@@ -1210,6 +1211,7 @@
     initNavigation();
     injectChapterPaths();
     initChapterLinks();
+    updateChapterSonar();
 
     // Boot sequence fires the first time the map scrolls into view
     var mapSection = document.getElementById('hero-map');
