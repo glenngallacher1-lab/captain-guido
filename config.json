@@ -97,19 +97,19 @@
       "note": ""
     },
     "p2-1": {
-      "done": false,
-      "note": ""
+      "done": true,
+      "note": "done\n"
     },
     "p2-2": {
       "done": false,
       "note": ""
     },
     "p2-3": {
-      "done": false,
+      "done": true,
       "note": ""
     },
     "p2-4": {
-      "done": false,
+      "done": true,
       "note": ""
     },
     "p2-5": {
@@ -121,8 +121,8 @@
       "note": ""
     },
     "p2-7": {
-      "done": false,
-      "note": ""
+      "done": true,
+      "note": "Jude finished this "
     },
     "p2-8": {
       "done": false,
