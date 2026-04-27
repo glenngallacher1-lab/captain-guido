@@ -380,15 +380,15 @@
         var textEl = document.createElement('div');
         textEl.style.cssText = [
           'position:absolute',
-          'top:8%',
-          'left:6%',
-          'right:6%',
+          'top:40%',
+          'left:50%',
+          'transform:translate(-50%,-50%)',
           'color:#00d4ff',
           'font-family:"JetBrains Mono",monospace',
           'font-size:0.85rem',
           'letter-spacing:2px',
-          'white-space:nowrap',
-          'overflow:hidden',
+          'text-align:center',
+          'line-height:2',
           'z-index:10',
           'pointer-events:none',
           'text-shadow:0 0 10px rgba(0,212,255,0.7)',
@@ -399,6 +399,9 @@
         if (entryEl) entryEl.appendChild(textEl);
 
         var lineIdx = 0, charIdx = 0, current = '';
+        var lineEl = document.createElement('div');
+        lineEl.style.whiteSpace = 'nowrap';
+        textEl.appendChild(lineEl);
 
         function typeLine() {
           if (lineIdx >= lines.length) {
@@ -440,15 +443,22 @@
           var target = lines[lineIdx];
           if (charIdx < target.length) {
             current += target[charIdx];
-            textEl.textContent = current;
+            lineEl.textContent = current;
             charIdx++;
             setTimeout(typeLine, 14);
           } else {
-            if (lineIdx < lines.length - 1) current += '  ·  ';
-            textEl.textContent = current;
             lineIdx++;
             charIdx = 0;
-            setTimeout(typeLine, lineIdx === lines.length - 1 ? 300 : 60);
+            current = '';
+            var pause = lineIdx >= lines.length ? 300 : 90;
+            setTimeout(function() {
+              if (lineIdx < lines.length) {
+                lineEl = document.createElement('div');
+                lineEl.style.whiteSpace = 'nowrap';
+                textEl.appendChild(lineEl);
+              }
+              typeLine();
+            }, pause);
           }
         }
 
