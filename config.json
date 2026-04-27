@@ -8,11 +8,11 @@
   "chapters": [
     {
       "num": "01",
-      "unlocked": false
+      "unlocked": true
     },
     {
       "num": "02",
-      "unlocked": false
+      "unlocked": true
     },
     {
       "num": "03",
