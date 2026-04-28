@@ -1986,12 +1986,13 @@
 
     const saved = localStorage.getItem('cgc_gh_token');
     if (saved) document.getElementById('gh-token-input').value = '•'.repeat(20);
-    if (ghReady()) loadConfig();
     if (localStorage.getItem('cgc_ai_url')) {
       document.getElementById('ai-worker-url').value    = localStorage.getItem('cgc_ai_url');
       document.getElementById('ai-worker-secret').value = '•'.repeat(16);
       setAIStatus(true, 'AI configured');
     }
+    if (_ghWorker() && !saved) setTokenStatus(true, 'Connected via server');
+    if (ghReady()) loadConfig();
     ttRenderHistory();
   }
 
@@ -2243,7 +2244,7 @@
 
   async function ttRenderHistory() {
     var warn = document.getElementById('tt-token-warn');
-    if (warn) warn.style.display = localStorage.getItem('cgc_gh_token') ? 'none' : 'block';
+    if (warn) warn.style.display = ghReady() ? 'none' : 'block';
     var userEl = document.getElementById('tt-user');
     if (userEl) userEl.value = ttCurrentUser();
     var isGlennSession = ttCurrentUser().toLowerCase() === 'glenn';
